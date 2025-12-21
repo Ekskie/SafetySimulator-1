@@ -897,3 +897,77 @@ a {
         opacity: 0;
     }
 }
+/* =========================================
+   10. CUSTOM SYSTEM CURSOR
+   ========================================= */
+
+/* 1. Hide default cursor on all interactive elements */
+body, a, button, input, select, textarea, .btn, .card {
+    cursor: none !important;
+}
+
+/* 2. Main Cursor Container */
+#custom-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    pointer-events: none; /* Important: lets clicks pass through */
+    z-index: 99999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease;
+    mix-blend-mode: exclusion; /* Makes it visible on light & dark backgrounds */
+}
+
+/* 3. The Central "Precision" Dot */
+.cursor-dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 4px;
+    height: 4px;
+    background-color: var(--safezard-green);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 8px var(--safezard-green);
+}
+
+/* 4. The Outer "Targeting" Ring */
+.cursor-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 1px solid var(--safezard-green);
+    border-radius: 50%;
+    opacity: 0.6;
+    transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* 5. State: Hovering over links/buttons */
+#custom-cursor.cursor-hover .cursor-ring {
+    width: 50px;
+    height: 50px;
+    top: -15px; /* (50 - 20) / 2 = 15 offset to keep centered */
+    left: -15px;
+    border-color: var(--safezard-caution-yellow);
+    background-color: rgba(241, 196, 15, 0.1);
+    border-width: 2px;
+    border-style: dashed; /* Cyberpunk dashed look */
+    animation: cursorSpin 4s linear infinite;
+}
+
+#custom-cursor.cursor-hover .cursor-dot {
+    background-color: var(--safezard-caution-yellow);
+    box-shadow: 0 0 15px var(--safezard-caution-yellow);
+    width: 8px;
+    height: 8px;
+}
+
+/* Optional: Rotate animation for the active ring */
+@keyframes cursorSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(180deg); }
+}
