@@ -11,7 +11,7 @@
             <div class="me-3">
                 <span class="badge bg-transparent border border-success text-success rounded-0">LIVE FEED</span>
             </div>
-            <h4 class="mb-0 text-uppercase fw-bold text-white ls-1">
+            <h4 class="mb-0 text-uppercase fw-bold  ls-1">
                 {{ scenario.title }}
             </h4>
             <div class="ms-auto d-flex align-items-center gap-3">
@@ -47,8 +47,8 @@
                     
                     <div class="text-center mb-5 animate-slide-down">
                         <i class="bi bi-exclamation-triangle-fill text-warning display-1 mb-3 glow-pulse"></i>
-                        <h2 class="text-white text-uppercase fw-bold ls-2">Hazard Detected</h2>
-                        <p class="lead text-white-50" id="decision-prompt">Analyze the situation and select the correct protocol.</p>
+                        <h2 class=" text-uppercase fw-bold ls-2">Hazard Detected</h2>
+                        <p class="lead -50" id="decision-prompt">Analyze the situation and select the correct protocol.</p>
                     </div>
 
                     <div class="d-grid gap-3 col-10 col-md-6" id="decision-choices">
@@ -67,7 +67,7 @@
                 <!-- Start Screen Overlay -->
                 <div id="start-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center bg-black bg-opacity-75" style="z-index: 60; backdrop-filter: blur(10px);">
                     <div class="card bg-transparent border border-success p-5 text-center" style="max-width: 500px; box-shadow: 0 0 30px rgba(0, 255, 136, 0.1);">
-                        <h3 class="text-white text-uppercase fw-bold mb-3 ls-1">Mission Ready</h3>
+                        <h3 class=" text-uppercase fw-bold mb-3 ls-1">Mission Ready</h3>
                         <p class="text-muted mb-4">
                             Review objectives. Identify hazards immediately. Time is critical.
                         </p>
@@ -81,8 +81,8 @@
         </div>
 
         <!-- Playback Controls / Status Bar -->
-        <div class="bg-dark border border-top-0 border-secondary p-2 d-flex align-items-center">
-            <button id="play-pause-btn" class="btn btn-link text-white text-decoration-none me-3">
+        <div class=" border border-top-0 border-secondary p-2 d-flex align-items-center">
+            <button id="play-pause-btn" class="btn btn-link  text-decoration-none me-3">
                 <i class="bi bi-play-fill fs-4" id="play-icon"></i>
             </button>
             
@@ -92,7 +92,7 @@
                 </div>
             </div>
 
-            <button id="fullscreen-btn" class="btn btn-link text-white text-decoration-none ms-3">
+            <button id="fullscreen-btn" class="btn btn-link  text-decoration-none ms-3">
                 <i class="bi bi-fullscreen"></i>
             </button>
         </div>

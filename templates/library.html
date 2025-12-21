@@ -40,7 +40,7 @@
                     <div class="col-lg-6">
                         <label class="text-uppercase small text-muted mb-1">Search Query</label>
                         <div class="input-group">
-                            <span class="input-group-text bg-dark border-secondary text-success">
+                            <span class="input-group-text  border-secondary text-success">
                                 <i class="bi bi-search"></i>
                             </span>
                             <input type="text" id="search-input" class="form-control form-control-lg fw-bold" 
@@ -82,7 +82,7 @@
                 
                 <!-- Data Card -->
                 <div class="card h-100 position-relative overflow-hidden library-card" 
-                     style="background-color: rgba(20, 20, 20, 0.6); border: 1px solid rgba(255,255,255,0.1);">
+                     style=" border: 1px solid rgba(255,255,255,0.1);">
                     
                     <!-- Decorative corner accent -->
                     <div style="position: absolute; top: 0; right: 0; width: 0; height: 0; 
@@ -91,14 +91,14 @@
 
                     <div class="card-header bg-transparent border-bottom border-secondary d-flex justify-content-between align-items-center py-3">
                         <span class="badge rounded-0 fw-normal ls-1 text-uppercase" 
-                              style="background-color: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
+                              style=" border: 1px solid rgba(255,255,255,0.2);">
                               <i class="bi {% if scenario.workplace == 'laboratory' %}bi-flask{% elif scenario.workplace == 'facility' %}bi-building-gear{% else %}bi-tree{% endif %} me-1"></i>
                               {{ scenario.workplace }}
                         </span>
                         
                         <!-- Dynamic Status Badge -->
                         <span class="status-badge badge rounded-0 text-uppercase fw-bold" 
-                              style="background-color: transparent; color: #666; border: 1px solid #444;">
+                              style="color: #666; border: 1px solid #444;">
                             <i class="bi bi-circle-fill small me-1" style="font-size: 0.5rem;"></i> Not Started
                         </span>
                     </div>
@@ -116,13 +116,13 @@
                             <div class="col-6">
                                 <div class="bg-black bg-opacity-25 p-2 border border-dark text-center">
                                     <small class="d-block text-muted text-uppercase" style="font-size: 0.65rem;">Difficulty</small>
-                                    <span class="text-white fw-bold small text-uppercase">{{ scenario.difficulty }}</span>
+                                    <span class=" fw-bold small text-uppercase">{{ scenario.difficulty }}</span>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="bg-black bg-opacity-25 p-2 border border-dark text-center">
                                     <small class="d-block text-muted text-uppercase" style="font-size: 0.65rem;">Est. Time</small>
-                                    <span class="text-white fw-bold small">{{ scenario.duration }} min</span>
+                                    <span class=" fw-bold small">{{ scenario.duration }} min</span>
                                 </div>
                             </div>
                         </div>
@@ -220,7 +220,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if(dbStatusIndicator) {
                     dbStatusIndicator.innerHTML = '<i class="bi bi-database-check me-1 text-success"></i> Database: Connected';
                     dbStatusIndicator.classList.remove('text-muted');
-                    dbStatusIndicator.classList.add('text-white');
                 }
                 
                 updateLibraryItems();
@@ -283,8 +282,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     statusBadge.style.borderColor = 'var(--safezard-green)';
                     
                     btnAction.textContent = 'REVIEW MISSION';
-                    btnAction.style.borderColor = '#fff';
-                    btnAction.style.color = '#fff';
+                    btnAction.style.borderColor = 'var(--safezard-text)';
+                    btnAction.style.color = 'var(--safezard-text)';
                     
                     // Set data attribute for filtering
                     item.dataset.status = 'completed';

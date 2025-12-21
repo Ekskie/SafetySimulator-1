@@ -35,7 +35,7 @@
                             <span class="position-absolute bottom-0 end-0 p-2 bg-success border border-dark rounded-circle" style="transform: translate(-10px, -10px);"></span>
                         </div>
 
-                        <h3 class="fw-bold text-white mb-1">
+                        <h3 class="fw-bold  mb-1">
                             <!-- SAFE CHECK: Only try to split if user_email exists -->
                             {% if user_email and '@' in user_email %}
                                 {{ user_email.split('@')[0] | upper }}
@@ -46,10 +46,10 @@
                         <p class="text-muted text-uppercase small ls-2 mb-4">Safety Officer Trainee</p>
                         
                         <!-- Details List -->
-                        <div class="text-start bg-dark bg-opacity-50 p-3 rounded border border-secondary mb-4">
+                        <div class="text-start  bg-opacity-50 p-3 rounded border border-secondary mb-4">
                             <div class="d-flex justify-content-between mb-2">
                                 <span class="text-muted small text-uppercase">ID Hash</span>
-                                <span class="text-white small font-monospace">
+                                <span class=" small font-monospace">
                                     {% if current_user.is_authenticated %}
                                         {{ current_user.id[:8] }}...
                                     {% else %}
@@ -63,7 +63,7 @@
                             </div>
                             <div class="d-flex justify-content-between">
                                 <span class="text-muted small text-uppercase">Role</span>
-                                <span class="text-white small text-uppercase">Student</span>
+                                <span class=" small text-uppercase">Student</span>
                             </div>
                         </div>
 
@@ -84,7 +84,7 @@
                             <i class="bi bi-award-fill" style="font-size: 4rem; color: var(--safezard-caution-yellow);"></i>
                         </div>
                         <div class="flex-grow-1 text-center text-md-start">
-                            <h4 class="text-white text-uppercase fw-bold mb-1">Clearance Level 1</h4>
+                            <h4 class=" text-uppercase fw-bold mb-1">Clearance Level 1</h4>
                             <p class="text-muted small mb-0">Complete more training modules to increase your safety clearance and access advanced simulations.</p>
                         </div>
                         <div class="ms-md-4 mt-3 mt-md-0">
@@ -101,7 +101,7 @@
                 </div>
 
                 <!-- Row 2: Account Actions -->
-                <div class="card bg-dark bg-opacity-25 border-secondary">
+                <div class="card  bg-opacity-25 border-secondary">
                     <div class="card-header bg-transparent border-bottom border-secondary">
                         <span class="text-uppercase fw-bold small text-muted ls-1">
                             <i class="bi bi-gear-wide-connected me-2"></i> Account Settings
@@ -109,7 +109,7 @@
                     </div>
                     <div class="card-body p-0">
                         <div class="list-group list-group-flush">
-                            <a href="#" class="list-group-item list-group-item-action bg-transparent border-secondary text-white py-3 d-flex align-items-center">
+                            <a href="#" class="list-group-item list-group-item-action bg-transparent border-secondary  py-3 d-flex align-items-center">
                                 <div class="me-3 text-muted"><i class="bi bi-envelope fs-5"></i></div>
                                 <div>
                                     <h6 class="mb-0 small text-uppercase fw-bold">Change Email Address</h6>
@@ -119,7 +119,7 @@
                                 </div>
                                 <i class="bi bi-chevron-right ms-auto text-muted small"></i>
                             </a>
-                            <a href="#" class="list-group-item list-group-item-action bg-transparent border-secondary text-white py-3 d-flex align-items-center">
+                            <a href="#" class="list-group-item list-group-item-action bg-transparent border-secondary  py-3 d-flex align-items-center">
                                 <div class="me-3 text-muted"><i class="bi bi-key fs-5"></i></div>
                                 <div>
                                     <h6 class="mb-0 small text-uppercase fw-bold">Reset Password</h6>
@@ -127,7 +127,7 @@
                                 </div>
                                 <i class="bi bi-chevron-right ms-auto text-muted small"></i>
                             </a>
-                            <a href="#" class="list-group-item list-group-item-action bg-transparent border-secondary text-white py-3 d-flex align-items-center">
+                            <a href="#" class="list-group-item list-group-item-action bg-transparent border-secondary  py-3 d-flex align-items-center">
                                 <div class="me-3 text-muted"><i class="bi bi-bell fs-5"></i></div>
                                 <div>
                                     <h6 class="mb-0 small text-uppercase fw-bold">Notifications</h6>

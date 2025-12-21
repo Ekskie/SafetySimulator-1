@@ -12,7 +12,7 @@
                 <span style="color: var(--safezard-green);">Mission</span> Report
             </h1>
             <div class="ms-auto">
-                <span class="badge bg-dark border border-secondary text-white p-2 rounded-0 font-monospace">
+                <span class="badge  border border-secondary  p-2 rounded-0 font-monospace">
                     ID: {{ scenario.id | upper }}
                 </span>
             </div>
@@ -22,7 +22,7 @@
         <div id="quiz-container" class="card bg-transparent border border-secondary shadow-lg position-relative overflow-hidden">
             
             <!-- Progress Bar Top -->
-            <div class="progress rounded-0 bg-dark" style="height: 4px;">
+            <div class="progress rounded-0 " style="height: 4px;">
                 <div id="quiz-progress" class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
             </div>
 
@@ -37,7 +37,7 @@
                         <div class="spinner-grow text-success spinner-grow-sm" role="status"></div>
                     </div>
                     
-                    <h3 class="card-title text-white fw-bold mb-4" id="question-text">
+                    <h3 class="card-title  fw-bold mb-4" id="question-text">
                         Loading assessment data...
                     </h3>
 
@@ -51,12 +51,12 @@
                 <div id="results-section" class="text-center d-none animate-fade-in">
                     <div class="mb-4">
                         <i id="result-icon" class="bi bi-shield-check display-1 text-success mb-3 d-block"></i>
-                        <h2 class="text-uppercase fw-bold text-white ls-2 mb-2">Assessment Complete</h2>
+                        <h2 class="text-uppercase fw-bold  ls-2 mb-2">Assessment Complete</h2>
                         <p class="text-muted" id="result-message">Processing metrics...</p>
                     </div>
 
                     <!-- Score Card -->
-                    <div class="card bg-dark bg-opacity-50 border-secondary mx-auto mb-5" style="max-width: 400px;">
+                    <div class="card  bg-opacity-50 border-secondary mx-auto mb-5" style="max-width: 400px;">
                         <div class="card-body py-4">
                             <div class="small text-uppercase text-muted ls-2 mb-2">Proficiency Score</div>
                             <h1 class="display-2 fw-bold mb-0" id="final-score" style="color: var(--safezard-green);">0%</h1>
