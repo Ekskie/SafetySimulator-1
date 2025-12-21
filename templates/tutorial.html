@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}SafeZard - System Manual{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        
+        <!-- Header Section -->
+        <div class="d-flex align-items-center mb-4 border-bottom border-secondary pb-3">
+            <h1 class="mb-0 text-uppercase fw-bold" style="letter-spacing: 2px;">
+                <span style="color: var(--safezard-green);">System</span> Manual
+            </h1>
+            <div class="ms-auto text-muted small text-uppercase d-none d-md-block">
+                <i class="bi bi-book-half me-1"></i> Protocol v1.0
+            </div>
+        </div>
+
+        <p class="lead mb-5 text-muted" style="max-width: 700px;">
+            Welcome to the SafeZard Training Interface. Review the operational guidelines below to understand navigation, simulation controls, and hazard identification protocols.
+        </p>
+
+        <!-- Tutorial Timeline / Steps -->
+        <div class="tutorial-timeline position-relative">
+            <!-- Vertical Line -->
+            <div class="timeline-line"></div>
+
+            <!-- Step 1: Interface -->
+            <div class="row g-0 mb-5 tutorial-step align-items-center">
+                <div class="col-md-2 text-center position-relative">
+                    <div class="step-marker">01</div>
+                </div>
+                <div class="col-md-10">
+                    <div class="card bg-transparent border border-secondary tutorial-card">
+                        <div class="card-body p-4 d-flex flex-column flex-md-row align-items-center">
+                            <div class="me-md-4 mb-3 mb-md-0 text-center">
+                                <img src="{{ url_for('static', filename='assets/tutorial/main_menu.svg') }}" 
+                                     alt="Interface" class="tutorial-icon"
+                                     onerror="this.src='https://placehold.co/100x100/121212/00ff88?text=UI'">
+                            </div>
+                            <div>
+                                <h4 class="text-uppercase fw-bold text-white mb-2">Command Interface</h4>
+                                <p class="text-muted mb-0">
+                                    Navigate the system using the <strong>Sidebar Dock</strong> on the left. Access the Main Menu for mission selection, Library for archives, and Analytics for performance data. The active module is highlighted in <span class="text-success">Neon Green</span>.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Simulation -->
+            <div class="row g-0 mb-5 tutorial-step align-items-center">
+                <div class="col-md-2 text-center position-relative">
+                    <div class="step-marker">02</div>
+                </div>
+                <div class="col-md-10">
+                    <div class="card bg-transparent border border-secondary tutorial-card">
+                        <div class="card-body p-4 d-flex flex-column flex-md-row align-items-center">
+                            <div class="me-md-4 mb-3 mb-md-0 text-center">
+                                <img src="{{ url_for('static', filename='assets/tutorial/video_player.svg') }}" 
+                                     alt="Video Player" class="tutorial-icon"
+                                     onerror="this.src='https://placehold.co/100x100/121212/00ff88?text=PLAY'">
+                            </div>
+                            <div>
+                                <h4 class="text-uppercase fw-bold text-white mb-2">Video Simulation</h4>
+                                <p class="text-muted mb-0">
+                                    Immersive video scenarios replicate real-world environments. Observe the surroundings carefully. Controls for <strong>Play, Pause, and Replay</strong> are located at the bottom of the viewport.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Hazards -->
+            <div class="row g-0 mb-5 tutorial-step align-items-center">
+                <div class="col-md-2 text-center position-relative">
+                    <div class="step-marker">03</div>
+                </div>
+                <div class="col-md-10">
+                    <div class="card bg-transparent border border-secondary tutorial-card">
+                        <div class="card-body p-4 d-flex flex-column flex-md-row align-items-center">
+                            <div class="me-md-4 mb-3 mb-md-0 text-center">
+                                <img src="{{ url_for('static', filename='assets/tutorial/decision_points.svg') }}" 
+                                     alt="Hazards" class="tutorial-icon"
+                                     onerror="this.src='https://placehold.co/100x100/121212/00ff88?text=WARN'">
+                            </div>
+                            <div>
+                                <h4 class="text-uppercase fw-bold text-white mb-2">Hazard Identification</h4>
+                                <p class="text-muted mb-0">
+                                    Critical incidents require immediate input. When a <strong>Decision Point</strong> appears, the simulation will pause. Select the correct safety protocol from the on-screen options to proceed.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Assessment -->
+            <div class="row g-0 mb-5 tutorial-step align-items-center">
+                <div class="col-md-2 text-center position-relative">
+                    <div class="step-marker">04</div>
+                </div>
+                <div class="col-md-10">
+                    <div class="card bg-transparent border border-secondary tutorial-card">
+                        <div class="card-body p-4 d-flex flex-column flex-md-row align-items-center">
+                            <div class="me-md-4 mb-3 mb-md-0 text-center">
+                                <img src="{{ url_for('static', filename='assets/tutorial/assessment.svg') }}" 
+                                     alt="Assessment" class="tutorial-icon"
+                                     onerror="this.src='https://placehold.co/100x100/121212/00ff88?text=TEST'">
+                            </div>
+                            <div>
+                                <h4 class="text-uppercase fw-bold text-white mb-2">Performance Review</h4>
+                                <p class="text-muted mb-0">
+                                    Upon mission completion, a detailed <strong>Assessment Report</strong> is generated. Proficiency scores are logged in the Analytics module. Aim for >80% accuracy to earn certification badges.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Action Footer -->
+        <div class="text-center mt-5 pt-4 border-top border-secondary">
+            <p class="text-muted small text-uppercase mb-4">Briefing Complete</p>
+            <a href="/scenario_select" class="btn btn-game-start" style="padding: 15px 50px; font-size: 1.2rem;">
+                Start Training
+            </a>
+        </div>
+
+    </div>
+</section>
+
+<!-- Scoped Styles for Tutorial -->
+<style>
+    /* Vertical Line */
+    .timeline-line {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 8.33333%; /* Center of col-md-2 (approx) */
+        width: 2px;
+        background: linear-gradient(to bottom, transparent, var(--safezard-green), transparent);
+        z-index: 0;
+        opacity: 0.3;
+    }
+
+    /* Number Marker */
+    .step-marker {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        background-color: #000;
+        border: 2px solid var(--safezard-green);
+        color: var(--safezard-green);
+        font-weight: 800;
+        font-size: 1.2rem;
+        border-radius: 50%; /* Circle */
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+    }
+
+    /* Icon styling */
+    .tutorial-icon {
+        width: 80px;
+        height: 80px;
+        filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
+        transition: transform 0.3s ease;
+    }
+
+    /* Card Hover Effect */
+    .tutorial-card {
+        background: rgba(20, 20, 20, 0.6);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .tutorial-card:hover {
+        background: rgba(30, 30, 30, 0.9);
+        border-color: var(--safezard-green) !important;
+        transform: translateX(10px);
+        box-shadow: -5px 5px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .tutorial-card:hover .tutorial-icon {
+        transform: scale(1.1);
+        filter: drop-shadow(0 0 10px var(--safezard-green));
+    }
+
+    /* Decorative corner for cards */
+    .tutorial-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 20px;
+        height: 20px;
+        background: linear-gradient(45deg, transparent 50%, rgba(255,255,255,0.05) 50%);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        border-left: 1px solid rgba(255,255,255,0.1);
+    }
+
+    @media (max-width: 768px) {
+        .timeline-line {
+            left: 25px;
+        }
+        .step-marker {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+        .tutorial-card:hover {
+            transform: translateY(-5px);
+        }
+    }
+</style>
+{% endblock %}

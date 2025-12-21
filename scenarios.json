@@ -1,0 +1,605 @@
+[
+  {
+    "id": "Water Leak in the Computer Lab",
+    "workplace": "laboratory",
+    "subcategory": "computer_lab",
+    "hazards": ["Water Leak"],
+    "title": "Water Leak in the Computer Lab",
+    "description": "Respond to a water leak in the computer Lab.",
+    "difficulty": "Easy",
+    "startNode": "s1set",
+    "nodes": [
+      {
+        "id": "s1set",
+        "videoUrl": "/static/videos/LAB/COMP/s1set.mp4",
+        "pauseAt": 15.0,
+        "decisions": [
+          {
+            "id": "ignore", "label": "IGNORE & KEEP WORKING", "nextNode": "s1A_DP2"
+          },
+          {
+            "id": "cloth", "label": "GRAB CLOTH & CLEAN", "nextNode": "s1B_DP2"
+          },
+          {
+            "id": "stop", "label": "STOP, GET OUT", "nextNode": "s1C_DP2"
+          }
+        ]
+      },
+      {
+        "id": "s1A_DP2",
+        "videoUrl": "/static/videos/LAB/COMP/s1aSet.mp4",
+        "pauseAt": 10.0,
+        "decisions": [
+          { 
+            "id": "unplug", "label": "UNPLUG", "nextNode": "s1a1" 
+          },
+          { 
+            "id": "s1a2", "label": "PANIC & RUN AWAY", "nextNode": "s1a2"
+          }
+        ]
+      },
+      {
+        "id": "s1a1",
+        "videoUrl": "/static/videos/LAB/COMP/s1a1.mp4"
+      },
+      {
+        "id": "s1a2",
+        "videoUrl": "/static/videos/LAB/COMP/s1a2.mp4"
+      },
+      {
+        "id": "s1B_DP2",
+        "videoUrl": "/static/videos/LAB/COMP/s1bSet.mp4",
+        "pauseAt": 7.0,
+        "decisions": [
+          { 
+            "id": "wipe", "label": "WIPE", "nextNode": "s1b1" 
+          },
+          { 
+            "id": "unplug", "label": "UNPLUG", "nextNode": "s1b2" 
+          }
+        ]
+      },
+      {
+        "id": "s1b1",
+        "videoUrl": "/static/videos/LAB/COMP/s1b1.mp4"
+      },
+      {
+        "id": "s1b2",
+        "videoUrl": "/static/videos/LAB/COMP/s1c2.mp4"
+      },
+      {
+        "id": "s1C_DP2",
+        "videoUrl": "/static/videos/LAB/COMP/s1cSet.mp4",
+        "pauseAt": 5.0,
+        "decisions": [
+          { 
+            "id": "s1c1", "label": "SUPERVISOR", "nextNode": "s1c1" 
+          },
+          { 
+            "id": "s1c2", "label": "CLASSMATE", "nextNode": "s1c2" 
+          }
+        ]
+      },
+      {
+        "id": "s1c1",
+        "videoUrl": "/static/videos/LAB/COMP/s1c1.mp4"
+      },
+      {
+        "id": "s1c2",
+        "videoUrl": "/static/videos/LAB/COMP/s1c2.mp4"
+      }
+    ],
+    "quiz": {
+      "questions": [
+        {
+          "text": "A water leak is dripping near your power outlet. What is the safest first response?",
+          "options": [
+            "Ignore it and keep working",
+            "Grab a cloth and try to clean it up yourself",
+            "Stop, move away, and report it",
+            "none of the above"
+          ],
+          "correctOption": 2
+        },
+        {
+          "text": "Why is unplugging a computer with wet or damp hands dangerous?",
+          "options": [
+            "It may damage the cloth",
+            "It risks electrocution from live electricity",
+            "It will take too long",
+            "It only makes the outlet dirty"
+          ],
+          "correctOption": 1
+        },
+        {
+          "text": "If you panic and run away without telling anyone, what is the consequence?",
+          "options": [
+            "The hazard remains and others are at risk",
+            "The water will dry quickly",
+            "The lab equipment will be safe",
+            "Someone else will automatically fix it"
+          ],
+          "correctOption": 0
+        },
+        {
+          "text": "If you wipe the outlet face directly, what could happen?",
+          "options": [
+            "The outlet may short circuit and spark",
+            "The cloth will absorb all the water safely",
+            "The leak will stop immediately",
+            "Nothing dangerous occurs"
+          ],
+          "correctOption": 0
+        },
+        {
+          "text": "Who should you call first when reporting a water leak near electronics?",
+          "options": [
+            "A classmate nearby",
+            "The Lab Supervisor or Campus Maintenance",
+            "Check the outlet yourself",
+            "Nobody, just wait"
+          ],
+          "correctOption": 1
+        }
+      ]
+    }
+  },
+  
+
+
+
+
+
+  {
+    "id": "Chemical Spill in the Laboratory",
+    "workplace": "laboratory",
+    "subcategory": "chemical_lab",
+    "hazards": ["Chemical Spill"],
+    "title": "Chemical Spill in the Laboratory",
+    "description": "Handle a hazardous chemical spill in the laboratory.",
+    "difficulty": "Advanced",
+    "startNode": "s3set",
+    "nodes": [
+      {
+        "id": "s3set",
+        "videoUrl": "/static/videos/LAB/CHEM/s3set.mp4",
+        "pauseAt": 17.0,
+        "decisions": [
+          {
+            "id": "towel", "label": "TRY TO CLEAN WITH TOWEL", "nextNode": "s3A_DP2"
+          },
+          {
+            "id": "window", "label": "OPEN WINDOW & LEAVE", "nextNode": "s3B_DP2"
+          },
+          {
+            "id": "sp", "label": "STEP AWAY & ALERT THE SUPERVISOR", "nextNode": "s3C_DP2"
+          }
+        ]
+      },
+      {
+        "id": "s3A_DP2",
+        "videoUrl": "/static/videos/LAB/CHEM/s3aSet.mp4",
+        "pauseAt": 8.0,
+        "decisions": [
+          { 
+            "id": "sink", "label": "RUN TO THE SINK", "nextNode": "s3a1" 
+          },
+          { 
+            "id": "moreTowels", "label": "KEEP CLEANING, MORE TOWELS", "nextNode": "s3a2"
+          }
+        ]
+      },
+      {
+        "id": "s3a1",
+        "videoUrl": "/static/videos/LAB/CHEM/s3safetyWash.mp4"
+      },
+      {
+        "id": "s3a2",
+        "videoUrl": "/static/videos/LAB/CHEM/s3a2.mp4"
+      },
+      {
+        "id": "s3B_DP2",
+        "videoUrl": "/static/videos/LAB/CHEM/s3bSet.mp4",
+        "pauseAt": 8.0,
+        "decisions": [
+          { 
+            "id": "home", "label": "GO HOME, HOPE IT AIRS OUT", "nextNode": "s3b1" 
+          },
+          { 
+            "id": "warn", "label": "WARN THE OTHERS", "nextNode": "s3b2" 
+          },
+          { 
+            "id": "call", "label": "CALL FOR SAFETY", "nextNode": "s3b3" 
+          }
+        ]
+      },
+      {
+        "id": "s3b1",
+        "videoUrl": "/static/videos/LAB/CHEM/s3b1.mp4"
+      },
+      {
+        "id": "s3b2",
+        "videoUrl": "/static/videos/LAB/CHEM/s3b2.mp4"
+      },
+      {
+        "id": "s3b3",
+        "videoUrl": "/static/videos/LAB/CHEM/s3b3.mp4"
+      },
+      {
+        "id": "s3C_DP2",
+        "videoUrl": "/static/videos/LAB/CHEM/s3cSet.mp4",
+        "pauseAt": 4.0,
+        "decisions": [
+          { 
+            "id": "s1c1", "label": "SECURE AREA", "nextNode": "s3c1" 
+          },
+          { 
+            "id": "s1c2", "label": "INFORM OTHERS", "nextNode": "s3c2" 
+          }
+        ]
+      },
+      {
+        "id": "s3c1",
+        "videoUrl": "/static/videos/LAB/CHEM/s3c1.mp4"
+      },
+      {
+        "id": "s3c2",
+        "videoUrl": "/static/videos/LAB/CHEM/s3c2.mp4"
+      }
+    ],
+    "quiz": {
+      "questions": [
+        {
+          "text": "You accidentally spill acid in the lab and fumes are visible. What is the safest first response?",
+          "options": [
+            "Panic and clean with paper towels",
+            "Open a window and leave the lab",
+            "Step away immediately and alert the supervisor",
+            "Ignore it and keep working"
+          ],
+          "correctOption": 2
+        },
+        {
+          "text": "Why is trying to soak up acid with paper towels dangerous?",
+          "options": [
+            "It wastes lab supplies",
+            "The acid can burn through and injure your hands",
+            "It makes the spill look smaller",
+            "It will take too long"
+          ],
+          "correctOption": 1
+        },
+        {
+          "text": "If your hand is burning after contact with acid, what should you do?",
+          "options": [
+            "Run to the emergency safety sink and seek medical aid",
+            "Keep cleaning with more towels",
+            "Ignore the pain and continue working",
+            "Wait for it to stop burning"
+          ],
+          "correctOption": 0
+        },
+        {
+          "text": "If you leave the lab after opening a window, what is the best next step?",
+          "options": [
+            "Go home and hope it airs out",
+            "Stand by the door and warn others not to enter",
+            "Call the campus safety office while keeping a safe distance",
+            "Do nothing further"
+          ],
+          "correctOption": 2
+        },
+        {
+          "text": "After alerting the supervisor about the spill, what is an appropriate next action?",
+          "options": [
+            "Secure the area by standing at the door or posting a warning sign",
+            "Check the spill yourself to see how bad it is",
+            "Leave the building without telling anyone else",
+            "Continue your experiment nearby"
+          ],
+          "correctOption": 0
+        }
+      ]
+    }
+  },
+
+
+
+
+
+  {
+    "id": "Improper Handling of Agricultural Chemicals",
+    "workplace": "laboratory",
+    "subcategory": "agriculture_lab",
+    "hazards": ["Improper Handling of Agricultural Chemicals"],
+    "title": "Improper Handling of Agricultural Chemicals",
+    "description": "Respond to an incident regarding Improper Handling of Agricultural Chemicals.",
+    "difficulty": "Intermediate",
+    "startNode": "s7set",
+    "nodes": [
+      {
+        "id": "s7set",
+        "videoUrl": "/static/videos/LAB/AGRI/s7settings.mp4",
+        "pauseAt": 8.0,
+        "decisions": [
+          {
+            "id": "openmix", "label": "OPEN AND MIX WITH BARE HANDS", "nextNode": "s7A_DP2"
+          },
+          {
+            "id": "gloves", "label": "PUT ON GLOVES, BUT SKIP THE LABELS", "nextNode": "s7B_DP2"
+          },
+          {
+            "id": "label", "label": "READ THE LABEL/S, EQUIP PROPER GEAR", "nextNode": "s7C_DP2"
+          }
+        ]
+      },
+      {
+        "id": "s7A_DP2",
+        "videoUrl": "/static/videos/LAB/AGRI/s7aSet.mp4",
+        "pauseAt": 7.0,
+        "decisions": [
+          { 
+            "id": "sink", "label": "RUN TO THE SINK", "nextNode": "s7a1" 
+          },
+          { 
+            "id": "wipeitoff", "label": "JUST WIPE IT OFF, KEEP WORKING", "nextNode": "s7a2"
+          }
+        ]
+      },
+      {
+        "id": "s7a1",
+        "videoUrl": "/static/videos/LAB/AGRI/s7a1.mp4"
+      },
+      {
+        "id": "s7a2",
+        "videoUrl": "/static/videos/LAB/AGRI/s7a2.mp4"
+      },
+      {
+        "id": "s7B_DP2",
+        "videoUrl": "/static/videos/LAB/AGRI/s7bSet.mp4",
+        "pauseAt": 12.0,
+        "decisions": [
+          { 
+            "id": "WATER", "label": "ADD WATER TO STOP THE REACTION", "nextNode": "s7b1" 
+          },
+          { 
+            "id": "bavar", "label": "BACK AWAY, VENTIALTE THE AREA, REPORT", "nextNode": "s7b2" 
+          }
+        ]
+      },
+      {
+        "id": "s7b1",
+        "videoUrl": "/static/videos/LAB/AGRI/s7b1.mp4"
+      },
+      {
+        "id": "s7b2",
+        "videoUrl": "/static/videos/LAB/AGRI/s7b2.mp4"
+      },
+      {
+        "id": "s7C_DP2",
+        "videoUrl": "/static/videos/LAB/AGRI/s7cSet.mp4",
+        "pauseAt": 8.0,
+        "decisions": [
+          { 
+            "id": "outside", "label": "PREP OUTSIDE", "nextNode": "s7c1" 
+          },
+          { 
+            "id": "inside", "label": "STAY INSIDE TO SAVE TIME", "nextNode": "s7c2" 
+          }
+        ]
+      },
+      {
+        "id": "s7c1",
+        "videoUrl": "/static/videos/LAB/AGRI/s7c1.mp4"
+      },
+      {
+        "id": "s7c2",
+        "videoUrl": "/static/videos/LAB/AGRI/s7c2.mp4"
+      }
+    ],
+    "quiz": {
+      "questions": [
+        {
+          "text": "You are about to handle agricultural chemicals. What is the safest first step?",
+          "options": [
+            "Open containers and mix with bare hands",
+            "Put on gloves but skip reading labels",
+            "Read all labels (SDS) and put on full PPE",
+            "Ignore PPE and start mixing quickly"
+          ],
+          "correctOption": 2
+        },
+        {
+          "text": "Why is handling chemicals with bare hands dangerous?",
+          "options": [
+            "It wastes product",
+            "Chemicals can burn or irritate skin immediately",
+            "It slows down the experiment",
+            "It makes mixing uneven"
+          ],
+          "correctOption": 1
+        },
+        {
+          "text": "If your skin is burning after chemical contact, what should you do?",
+          "options": [
+            "Run to the emergency wash station and flush your skin",
+            "Just wipe it off and keep working",
+            "Ignore it and continue mixing",
+            "Cover it with a cloth"
+          ],
+          "correctOption": 0
+        },
+        {
+          "text": "If chemicals react and release choking fumes, what is the correct response?",
+          "options": [
+            "Add water to stop the reaction",
+            "Back away, activate ventilation, and report it",
+            "Cover the bucket with a lid",
+            "Ignore the fumes and keep mixing"
+          ],
+          "correctOption": 1
+        },
+        {
+          "text": "Where should you perform chemical mixing after putting on PPE?",
+          "options": [
+            "Inside the greenhouse to save time",
+            "In the outdoor preparation area beside the greenhouse",
+            "On the lab bench with windows closed",
+            "Anywhere convenient"
+          ],
+          "correctOption": 1
+        }
+      ]
+    }
+  },
+
+
+
+
+
+  {
+    "id": "Grease Fire in the Food Lab",
+    "workplace": "laboratory",
+    "subcategory": "culinary_lab",
+    "hazards": ["Grease Fire"],
+    "title": "Grease Fire in the Food Lab",
+    "description": "Respond to grease fire in the food lab.",
+    "difficulty": "Intermediate",
+    "startNode": "s5set",
+    "nodes": [
+      {
+        "id": "s5set",
+        "videoUrl": "/static/videos/LAB/FOOD/s5set.mp4",
+        "pauseAt": 16.0,
+        "decisions": [
+          {
+            "id": "throw", "label": "PANIC & THROW WATER", "nextNode": "s5A_DP2"
+          },
+          {
+            "id": "swat", "label": "USE CLOTH TO SWAT THE FIRE", "nextNode": "s5B_DP2"
+          },
+          {
+            "id": "stove", "label": "TURN OFF STOVE & COVER WITH LID", "nextNode": "s5C_DP2"
+          }
+        ]
+      },
+      {
+        "id": "s5A_DP2",
+        "videoUrl": "/static/videos/LAB/FOOD/s5aSet.mp4",
+        "pauseAt": 4.0,
+        "decisions": [
+          { 
+            "id": "alarm", "label": "PULL THE FIRE ALARM", "nextNode": "s5a1" 
+          },
+          { 
+            "id": "blanket", "label": "THROW A BLANKET", "nextNode": "s5a2"
+          }
+        ]
+      },
+      {
+        "id": "s5a1",
+        "videoUrl": "/static/videos/LAB/FOOD/s5a1.mp4"
+      },
+      {
+        "id": "s5a2",
+        "videoUrl": "/static/videos/LAB/FOOD/s5a2.mp4"
+      },
+      {
+        "id": "s5B_DP2",
+        "videoUrl": "/static/videos/LAB/FOOD/s5bSet.mp4",
+        "pauseAt": 7.0,
+        "decisions": [
+          { 
+            "id": "floor", "label": "DROP IT ON THE FLOOR", "nextNode": "s5b1" 
+          },
+          { 
+            "id": "firesink", "label": "THROW IT INTO THE SINK", "nextNode": "s5b2" 
+          }
+        ]
+      },
+      {
+        "id": "s5b1",
+        "videoUrl": "/static/videos/LAB/FOOD/s5b1.mp4"
+      },
+      {
+        "id": "s5b2",
+        "videoUrl": "/static/videos/LAB/FOOD/s5b2.mp4"
+      },
+      {
+        "id": "s5C_DP2",
+        "videoUrl": "/static/videos/LAB/FOOD/s5cSet.mp4",
+        "pauseAt": 7.0,
+        "decisions": [
+          { 
+            "id": "leaveit", "label": "LEAVE IT ON", "nextNode": "s5c1" 
+          },
+          { 
+            "id": "remove", "label": "REMOVE", "nextNode": "s5c2" 
+          }
+        ]
+      },
+      {
+        "id": "s5c1",
+        "videoUrl": "/static/videos/LAB/FOOD/s5c1.mp4"
+      },
+      {
+        "id": "s5c2",
+        "videoUrl": "/static/videos/LAB/FOOD/s5c2.mp4"
+      }
+    ],
+    "quiz": {
+      "questions": [
+        {
+          "text": "A grease fire starts in your pan. What is the safest first response?",
+          "options": [
+            "Throw water on the fire",
+            "Swat at it with a cloth",
+            "Turn off the stove and cover the pan with a metal lid",
+            "Ignore it and keep cooking"
+          ],
+          "correctOption": 2
+        },
+        {
+          "text": "Why is throwing water on a grease fire dangerous?",
+          "options": [
+            "It makes the pan too hot",
+            "It vaporizes and spreads burning grease, creating a fireball",
+            "It wastes water",
+            "It only delays the fire"
+          ],
+          "correctOption": 1
+        },
+        {
+          "text": "If flames spread to the counter and cabinets, what is the best action?",
+          "options": [
+            "Throw more water on it",
+            "Try to smother it with paper towels",
+            "Ignore it and hope it burns out",
+            "Pull the fire alarm and evacuate"
+          ],
+          "correctOption": 3
+        },
+        {
+          "text": "Why is swatting at a grease fire with a cloth unsafe?",
+          "options": [
+            "It takes too long",
+            "It wastes lab materials",
+            "The cloth can ignite and spread flames",
+            "It only makes smoke worse"
+          ],
+          "correctOption": 2
+        },
+        {
+          "text": "After covering the pan with a metal lid and extinguishing the flames, what should you do next?",
+          "options": [
+            "Leave the lid on and do not move the pan",
+            "Remove the lid immediately to check",
+            "Pour water to cool the pan",
+            "Continue cooking as normal"
+          ],
+          "correctOption": 0
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,602 @@
+[
+  {
+    "id": "lab_chemical_spill",
+    "title": "Laboratory Chemical Spill",
+    "description": "Learn how to handle hazardous chemical spills in a university laboratory setting.",
+    "workplace": "laboratory",
+    "difficulty": "Intermediate",
+    "duration": 15,
+    "completions": 142,
+    "avgScore": 78,
+    "startNode": "intro",
+    "nodes": [
+      {
+        "id": "intro",
+        "videoUrl": "/static/videos/lab_spill_intro.mp4",
+        "pauseAt": 8.5,
+        "decisions": [
+          {
+            "id": "inspect_alone",
+            "label": "Inspect Alone",
+            "description": "Investigate the spill by yourself",
+            "iconUrl": "/static/assets/decisions/magnifying_glass.svg",
+            "nextNode": "inspect_alone_outcome"
+          },
+          {
+            "id": "call_supervisor",
+            "label": "Alert Supervisor",
+            "description": "Call your supervisor for guidance",
+            "iconUrl": "/static/assets/decisions/phone.svg",
+            "nextNode": "call_supervisor_outcome"
+          },
+          {
+            "id": "evacuate",
+            "label": "Evacuate Lab",
+            "description": "Pull the alarm and evacuate everyone",
+            "iconUrl": "/static/assets/decisions/exit_sign.svg",
+            "nextNode": "evacuate_outcome"
+          }
+        ]
+      },
+      {
+        "id": "inspect_alone_outcome",
+        "videoUrl": "/static/videos/lab_spill_inspect_alone.mp4",
+        "pauseAt": 9.2,
+        "decisions": [
+          {
+            "id": "use_paper",
+            "label": "Use Paper Towels",
+            "description": "Clean with available paper towels",
+            "nextNode": "paper_towel_outcome"
+          },
+          {
+            "id": "use_spill_kit",
+            "label": "Use Spill Kit",
+            "description": "Find the chemical spill kit",
+            "nextNode": "spill_kit_outcome"
+          },
+          {
+            "id": "leave_spill",
+            "label": "Leave and Report",
+            "description": "Exit and report to supervisor",
+            "nextNode": "leave_spill_outcome"
+          }
+        ]
+      },
+      {
+        "id": "paper_towel_outcome",
+        "videoUrl": "/static/videos/lab_spill_paper_towel.mp4",
+        "nextNode": "conclusion_fail"
+      },
+      {
+        "id": "spill_kit_outcome",
+        "videoUrl": "/static/videos/lab_spill_kit.mp4",
+        "pauseAt": 7.8,
+        "decisions": [
+          {
+            "id": "no_ppe",
+            "label": "Clean Immediately",
+            "description": "Start cleaning without changing PPE",
+            "nextNode": "no_ppe_outcome"
+          },
+          {
+            "id": "wear_ppe",
+            "label": "Wear Proper PPE",
+            "description": "Put on gloves, goggles, and lab coat",
+            "nextNode": "wear_ppe_outcome"
+          },
+          {
+            "id": "check_sds",
+            "label": "Check SDS First",
+            "description": "Check Safety Data Sheet before proceeding",
+            "nextNode": "check_sds_outcome"
+          }
+        ]
+      },
+      {
+        "id": "no_ppe_outcome",
+        "videoUrl": "/static/videos/lab_spill_no_ppe.mp4",
+        "nextNode": "conclusion_fail"
+      },
+      {
+        "id": "wear_ppe_outcome",
+        "videoUrl": "/static/videos/lab_spill_ppe.mp4",
+        "nextNode": "conclusion_partial"
+      },
+      {
+        "id": "check_sds_outcome",
+        "videoUrl": "/static/videos/lab_spill_sds.mp4",
+        "nextNode": "conclusion_success"
+      },
+      {
+        "id": "leave_spill_outcome",
+        "videoUrl": "/static/videos/lab_spill_leave.mp4",
+        "nextNode": "conclusion_partial"
+      },
+      {
+        "id": "call_supervisor_outcome",
+        "videoUrl": "/static/videos/lab_spill_supervisor.mp4",
+        "pauseAt": 10.5,
+        "decisions": [
+          {
+            "id": "wait_supervisor",
+            "label": "Wait for Supervisor",
+            "description": "Don't touch anything until supervisor arrives",
+            "nextNode": "wait_supervisor_outcome"
+          },
+          {
+            "id": "follow_protocol",
+            "label": "Follow Protocol",
+            "description": "Check protocol and begin containment",
+            "nextNode": "follow_protocol_outcome"
+          },
+          {
+            "id": "call_emergency",
+            "label": "Call Emergency Services",
+            "description": "Call campus emergency response team",
+            "nextNode": "call_emergency_outcome"
+          }
+        ]
+      },
+      {
+        "id": "wait_supervisor_outcome",
+        "videoUrl": "/static/videos/lab_spill_wait.mp4",
+        "nextNode": "conclusion_partial"
+      },
+      {
+        "id": "follow_protocol_outcome",
+        "videoUrl": "/static/videos/lab_spill_protocol.mp4",
+        "nextNode": "conclusion_success"
+      },
+      {
+        "id": "call_emergency_outcome",
+        "videoUrl": "/static/videos/lab_spill_emergency.mp4",
+        "nextNode": "conclusion_success"
+      },
+      {
+        "id": "evacuate_outcome",
+        "videoUrl": "/static/videos/lab_spill_evacuate.mp4",
+        "pauseAt": 8.3,
+        "decisions": [
+          {
+            "id": "evacuate_immediate",
+            "label": "Immediate Evacuation",
+            "description": "Leave everything and exit immediately",
+            "nextNode": "evacuate_immediate_outcome"
+          },
+          {
+            "id": "secure_materials",
+            "label": "Secure Materials First",
+            "description": "Quickly secure hazardous materials, then evacuate",
+            "nextNode": "secure_materials_outcome"
+          },
+          {
+            "id": "help_others",
+            "label": "Help Others",
+            "description": "Ensure everyone evacuates safely",
+            "nextNode": "help_others_outcome"
+          }
+        ]
+      },
+      {
+        "id": "evacuate_immediate_outcome",
+        "videoUrl": "/static/videos/lab_spill_immediate_evac.mp4",
+        "nextNode": "conclusion_partial"
+      },
+      {
+        "id": "secure_materials_outcome",
+        "videoUrl": "/static/videos/lab_spill_secure.mp4",
+        "nextNode": "conclusion_success"
+      },
+      {
+        "id": "help_others_outcome",
+        "videoUrl": "/static/videos/lab_spill_help_others.mp4",
+        "nextNode": "conclusion_success"
+      },
+      {
+        "id": "conclusion_success",
+        "videoUrl": "/static/videos/lab_spill_success.mp4"
+      },
+      {
+        "id": "conclusion_partial",
+        "videoUrl": "/static/videos/lab_spill_partial.mp4"
+      },
+      {
+        "id": "conclusion_fail",
+        "videoUrl": "/static/videos/lab_spill_fail.mp4"
+      }
+    ],
+    "quiz": {
+      "questions": [
+        {
+          "text": "What should be your first action when encountering a chemical spill?",
+          "options": [
+            "Immediately try to clean it up",
+            "Assess the situation and identify the chemical",
+            "Call 911",
+            "Ignore it if it's small"
+          ],
+          "correctOption": 1
+        },
+        {
+          "text": "When using a chemical spill kit, what is the most important precaution?",
+          "options": [
+            "Work quickly to minimize exposure time",
+            "Call a supervisor before using the kit",
+            "Wear appropriate PPE and check the SDS",
+            "Use all materials in the kit at once"
+          ],
+          "correctOption": 2
+        },
+        {
+          "text": "What does SDS stand for in laboratory safety?",
+          "options": [
+            "Safe Disposal System",
+            "Safety Data Sheet",
+            "Spill Defense Strategy",
+            "Systematic Decontamination Sequence"
+          ],
+          "correctOption": 1
+        },
+        {
+          "text": "When is evacuation the most appropriate response to a chemical spill?",
+          "options": [
+            "For any spill, regardless of size",
+            "When the spill is large or involves highly hazardous materials",
+            "Only when instructed by emergency services",
+            "Only after attempting to clean up the spill"
+          ],
+          "correctOption": 1
+        },
+        {
+          "text": "What should you do with contaminated cleanup materials after addressing a spill?",
+          "options": [
+            "Dispose of them in regular trash",
+            "Wash and reuse them",
+            "Place them in a hazardous waste container",
+            "Leave them for custodial staff"
+          ],
+          "correctOption": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "electrical_safety",
+    "title": "Electrical Safety in Facilities",
+    "description": "Learn to identify and respond to electrical hazards in campus facilities maintenance.",
+    "workplace": "facility",
+    "difficulty": "Beginner",
+    "duration": 12,
+    "completions": 87,
+    "avgScore": 82,
+    "startNode": "intro",
+    "nodes": [
+      {
+        "id": "intro",
+        "videoUrl": "/static/videos/electrical_intro.mp4",
+        "pauseAt": 8.0,
+        "decisions": [
+          {
+            "id": "use_damaged_tools",
+            "label": "Use Available Tools",
+            "description": "Proceed with the repair using slightly damaged tools",
+            "iconUrl": "/static/assets/decisions/tools.svg",
+            "nextNode": "damaged_tools_outcome"
+          },
+          {
+            "id": "report_hazard",
+            "label": "Report Hazard",
+            "description": "Report the electrical hazard to supervisor",
+            "iconUrl": "/static/assets/decisions/clipboard.svg",
+            "nextNode": "report_hazard_outcome"
+          },
+          {
+            "id": "find_new_tools",
+            "label": "Find Proper Tools",
+            "description": "Delay the work to obtain proper tools first",
+            "iconUrl": "/static/assets/decisions/toolbox.svg",
+            "nextNode": "proper_tools_outcome"
+          }
+        ]
+      },
+      {
+        "id": "damaged_tools_outcome",
+        "videoUrl": "/static/videos/electrical_damaged_tools.mp4",
+        "nextNode": "conclusion_fail"
+      },
+      {
+        "id": "report_hazard_outcome",
+        "videoUrl": "/static/videos/electrical_report.mp4",
+        "nextNode": "conclusion_partial"
+      },
+      {
+        "id": "proper_tools_outcome",
+        "videoUrl": "/static/videos/electrical_proper_tools.mp4",
+        "nextNode": "conclusion_success"
+      },
+      {
+        "id": "conclusion_success",
+        "videoUrl": "/static/videos/electrical_success.mp4"
+      },
+      {
+        "id": "conclusion_partial",
+        "videoUrl": "/static/videos/electrical_partial.mp4"
+      },
+      {
+        "id": "conclusion_fail",
+        "videoUrl": "/static/videos/electrical_fail.mp4"
+      }
+    ],
+    "quiz": {
+      "questions": [
+        {
+          "text": "What should you do if you notice damaged electrical tools?",
+          "options": [
+            "Use them carefully to avoid further damage",
+            "Report them and find proper replacement tools",
+            "Repair them yourself before use",
+            "Use them only for minor tasks"
+          ],
+          "correctOption": 1
+        },
+        {
+          "text": "When working with electrical systems, what is the most important safety procedure?",
+          "options": [
+            "Wearing rubber gloves",
+            "Working quickly to minimize exposure",
+            "Verifying power is off and using lockout/tagout procedures",
+            "Using only one hand to prevent electrical shocks"
+          ],
+          "correctOption": 2
+        },
+        {
+          "text": "What is the proper response to finding an electrical hazard in a campus facility?",
+          "options": [
+            "Fix it immediately",
+            "Mark the area and report it to maintenance",
+            "Shut off all power to the building",
+            "Leave it for someone else to find"
+          ],
+          "correctOption": 1
+        }
+      ]
+    }
+  },
+  {
+    "id": "outdoor_weather",
+    "title": "Outdoor Fieldwork in Severe Weather",
+    "description": "Prepare for and respond to weather hazards during outdoor research and campus activities.",
+    "workplace": "outdoor",
+    "difficulty": "Advanced",
+    "duration": 18,
+    "completions": 52,
+    "avgScore": 75,
+    "startNode": "intro",
+    "nodes": [
+      {
+        "id": "intro",
+        "videoUrl": "/static/videos/outdoor_intro.mp4",
+        "pauseAt": 9.0,
+        "decisions": [
+          {
+            "id": "continue_work",
+            "label": "Continue Working",
+            "description": "Continue the fieldwork despite weather warnings",
+            "iconUrl": "/static/assets/decisions/field_notes.svg",
+            "nextNode": "continue_work_outcome"
+          },
+          {
+            "id": "seek_shelter",
+            "label": "Seek Shelter",
+            "description": "Find immediate shelter from the approaching storm",
+            "iconUrl": "/static/assets/decisions/shelter.svg",
+            "nextNode": "seek_shelter_outcome"
+          },
+          {
+            "id": "return_campus",
+            "label": "Return to Campus",
+            "description": "Pack up and return to campus immediately",
+            "iconUrl": "/static/assets/decisions/campus.svg",
+            "nextNode": "return_campus_outcome"
+          }
+        ]
+      },
+      {
+        "id": "continue_work_outcome",
+        "videoUrl": "/static/videos/outdoor_continue_work.mp4",
+        "pauseAt": 7.5,
+        "decisions": [
+          {
+            "id": "use_metal_equipment",
+            "label": "Use Metal Equipment",
+            "description": "Continue using metal equipment for measurements",
+            "iconUrl": "/static/assets/decisions/metal_tools.svg",
+            "nextNode": "metal_equipment_outcome"
+          },
+          {
+            "id": "switch_equipment",
+            "label": "Switch Equipment",
+            "description": "Switch to non-conductive equipment",
+            "iconUrl": "/static/assets/decisions/plastic_tools.svg",
+            "nextNode": "switch_equipment_outcome"
+          },
+          {
+            "id": "delay_measurements",
+            "label": "Delay Measurements",
+            "description": "Put away equipment until storm passes",
+            "iconUrl": "/static/assets/decisions/clock.svg",
+            "nextNode": "delay_measurements_outcome"
+          }
+        ]
+      },
+      {
+        "id": "metal_equipment_outcome",
+        "videoUrl": "/static/videos/outdoor_metal_equipment.mp4",
+        "nextNode": "conclusion_fail"
+      },
+      {
+        "id": "switch_equipment_outcome",
+        "videoUrl": "/static/videos/outdoor_switch_equipment.mp4",
+        "nextNode": "conclusion_partial"
+      },
+      {
+        "id": "delay_measurements_outcome",
+        "videoUrl": "/static/videos/outdoor_delay_measurements.mp4",
+        "nextNode": "conclusion_partial"
+      },
+      {
+        "id": "seek_shelter_outcome",
+        "videoUrl": "/static/videos/outdoor_seek_shelter.mp4",
+        "pauseAt": 8.0,
+        "decisions": [
+          {
+            "id": "under_tree",
+            "label": "Shelter Under Tree",
+            "description": "Take cover under a large tree",
+            "iconUrl": "/static/assets/decisions/tree.svg",
+            "nextNode": "under_tree_outcome"
+          },
+          {
+            "id": "in_vehicle",
+            "label": "Return to Vehicle",
+            "description": "Go back to the research vehicle",
+            "iconUrl": "/static/assets/decisions/vehicle.svg",
+            "nextNode": "in_vehicle_outcome"
+          },
+          {
+            "id": "nearby_building",
+            "label": "Find Building",
+            "description": "Locate the nearest campus building",
+            "iconUrl": "/static/assets/decisions/building.svg",
+            "nextNode": "nearby_building_outcome"
+          }
+        ]
+      },
+      {
+        "id": "under_tree_outcome",
+        "videoUrl": "/static/videos/outdoor_under_tree.mp4",
+        "nextNode": "conclusion_fail"
+      },
+      {
+        "id": "in_vehicle_outcome",
+        "videoUrl": "/static/videos/outdoor_in_vehicle.mp4",
+        "nextNode": "conclusion_success"
+      },
+      {
+        "id": "nearby_building_outcome",
+        "videoUrl": "/static/videos/outdoor_nearby_building.mp4",
+        "nextNode": "conclusion_success"
+      },
+      {
+        "id": "return_campus_outcome",
+        "videoUrl": "/static/videos/outdoor_return_campus.mp4",
+        "pauseAt": 6.5,
+        "decisions": [
+          {
+            "id": "notify_no_one",
+            "label": "Return Silently",
+            "description": "Return without notifying team members",
+            "iconUrl": "/static/assets/decisions/quiet.svg",
+            "nextNode": "notify_no_one_outcome"
+          },
+          {
+            "id": "notify_supervisor",
+            "label": "Notify Supervisor",
+            "description": "Contact supervisor about your decision",
+            "iconUrl": "/static/assets/decisions/phone.svg",
+            "nextNode": "notify_supervisor_outcome"
+          },
+          {
+            "id": "group_decision",
+            "label": "Group Decision",
+            "description": "Gather the team for a group decision",
+            "iconUrl": "/static/assets/decisions/group.svg",
+            "nextNode": "group_decision_outcome"
+          }
+        ]
+      },
+      {
+        "id": "notify_no_one_outcome",
+        "videoUrl": "/static/videos/outdoor_notify_no_one.mp4",
+        "nextNode": "conclusion_fail"
+      },
+      {
+        "id": "notify_supervisor_outcome",
+        "videoUrl": "/static/videos/outdoor_notify_supervisor.mp4",
+        "nextNode": "conclusion_partial"
+      },
+      {
+        "id": "group_decision_outcome",
+        "videoUrl": "/static/videos/outdoor_group_decision.mp4",
+        "nextNode": "conclusion_success"
+      },
+      {
+        "id": "conclusion_success",
+        "videoUrl": "/static/videos/outdoor_success.mp4"
+      },
+      {
+        "id": "conclusion_partial",
+        "videoUrl": "/static/videos/outdoor_partial.mp4"
+      },
+      {
+        "id": "conclusion_fail",
+        "videoUrl": "/static/videos/outdoor_fail.mp4"
+      }
+    ],
+    "quiz": {
+      "questions": [
+        {
+          "text": "What is the recommended action when you hear thunder during outdoor fieldwork?",
+          "options": [
+            "Continue work but move to a higher elevation",
+            "Seek shelter immediately and count seconds between lightning and thunder",
+            "Use only plastic or wooden equipment",
+            "Continue work but move to open ground away from trees"
+          ],
+          "correctOption": 1
+        },
+        {
+          "text": "Which of the following is the safest place to shelter during a thunderstorm?",
+          "options": [
+            "Under a tall, isolated tree",
+            "In a sturdy building or hard-topped vehicle",
+            "In an open field away from tall objects",
+            "Under a small group of trees"
+          ],
+          "correctOption": 1
+        },
+        {
+          "text": "What is the '30-30 Rule' for lightning safety?",
+          "options": [
+            "Seek shelter when temperature drops 30 degrees in 30 minutes",
+            "Count 30 seconds between lightning and thunder; wait 30 minutes after last thunder before resuming activity",
+            "Stay 30 feet away from 30-foot tall objects",
+            "Shelter for 30 minutes with a group of 30 people minimum"
+          ],
+          "correctOption": 1
+        },
+        {
+          "text": "What communication protocol should be followed when deciding to suspend outdoor fieldwork?",
+          "options": [
+            "Make individual decisions without notifying others",
+            "Only notify the senior-most team member",
+            "Contact your supervisor and ensure all team members are accounted for",
+            "Continue until university administration issues an alert"
+          ],
+          "correctOption": 2
+        },
+        {
+          "text": "What equipment precaution should be taken during a potential lightning storm?",
+          "options": [
+            "Continue using metal equipment but maintain contact with the ground",
+            "Wrap metal equipment in rubber or plastic coverings",
+            "Put away all metal equipment and avoid contact with conductive materials",
+            "Hold equipment close to your body to protect it from rain"
+          ],
+          "correctOption": 2
+        }
+      ]
+    }
+  }
+]

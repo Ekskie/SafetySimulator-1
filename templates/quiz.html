@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}SafeZard - Final Assessment{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container" style="max-width: 900px;">
+        
+        <!-- Header -->
+        <div class="d-flex align-items-center mb-5 border-bottom border-secondary pb-3">
+            <h1 class="mb-0 text-uppercase fw-bold" style="letter-spacing: 2px;">
+                <span style="color: var(--safezard-green);">Mission</span> Report
+            </h1>
+            <div class="ms-auto">
+                <span class="badge bg-dark border border-secondary text-white p-2 rounded-0 font-monospace">
+                    ID: {{ scenario.id | upper }}
+                </span>
+            </div>
+        </div>
+
+        <!-- Quiz Container -->
+        <div id="quiz-container" class="card bg-transparent border border-secondary shadow-lg position-relative overflow-hidden">
+            
+            <!-- Progress Bar Top -->
+            <div class="progress rounded-0 bg-dark" style="height: 4px;">
+                <div id="quiz-progress" class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
+            </div>
+
+            <div class="card-body p-4 p-md-5">
+                
+                <!-- Question Section -->
+                <div id="question-section" class="mb-5">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <span class="text-success small text-uppercase fw-bold ls-2">
+                            Query <span id="current-question-num">1</span> / <span id="total-questions">0</span>
+                        </span>
+                        <div class="spinner-grow text-success spinner-grow-sm" role="status"></div>
+                    </div>
+                    
+                    <h3 class="card-title text-white fw-bold mb-4" id="question-text">
+                        Loading assessment data...
+                    </h3>
+
+                    <!-- Options -->
+                    <div class="d-grid gap-3" id="options-container">
+                        <!-- Options injected by JS -->
+                    </div>
+                </div>
+
+                <!-- Results Section (Hidden initially) -->
+                <div id="results-section" class="text-center d-none animate-fade-in">
+                    <div class="mb-4">
+                        <i id="result-icon" class="bi bi-shield-check display-1 text-success mb-3 d-block"></i>
+                        <h2 class="text-uppercase fw-bold text-white ls-2 mb-2">Assessment Complete</h2>
+                        <p class="text-muted" id="result-message">Processing metrics...</p>
+                    </div>
+
+                    <!-- Score Card -->
+                    <div class="card bg-dark bg-opacity-50 border-secondary mx-auto mb-5" style="max-width: 400px;">
+                        <div class="card-body py-4">
+                            <div class="small text-uppercase text-muted ls-2 mb-2">Proficiency Score</div>
+                            <h1 class="display-2 fw-bold mb-0" id="final-score" style="color: var(--safezard-green);">0%</h1>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="/scenario_select" class="btn btn-outline-light text-uppercase rounded-0 px-4 py-3 fw-bold" style="letter-spacing: 1px;">
+                            Return to Base
+                        </a>
+                        <button onclick="location.reload()" class="btn btn-game-start py-3 px-5 fs-6">
+                            Retry Mission
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- Decorative HUD Elements -->
+            <div style="position: absolute; bottom: 0; right: 0; width: 0; height: 0; 
+                        border-bottom: 30px solid var(--safezard-green); 
+                        border-left: 30px solid transparent; opacity: 0.5;"></div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Data for JS -->
+<script>
+    const SCENARIO_ID = "{{ scenario.id }}";
+    const QUIZ_DATA = {{ scenario.quiz | tojson | safe }};
+</script>
+
+<!-- Scoped Styles -->
+<style>
+    .quiz-option {
+        background: rgba(30, 30, 30, 0.6);
+        border: 1px solid var(--safezard-border);
+        color: var(--safezard-text);
+        padding: 1.25rem;
+        text-align: left;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        position: relative;
+        font-weight: 500;
+    }
+
+    .quiz-option:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--safezard-text);
+    }
+
+    .quiz-option.selected {
+        background: rgba(0, 255, 136, 0.1);
+        border-color: var(--safezard-green);
+        color: var(--safezard-green);
+        font-weight: 700;
+    }
+
+    .quiz-option.correct {
+        background: rgba(25, 135, 84, 0.2) !important;
+        border-color: #198754 !important;
+        color: #fff !important;
+    }
+
+    .quiz-option.incorrect {
+        background: rgba(220, 53, 69, 0.2) !important;
+        border-color: #dc3545 !important;
+        color: #fff !important;
+    }
+    
+    .animate-fade-in {
+        animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/quiz.js') }}"></script>
+{% endblock %}

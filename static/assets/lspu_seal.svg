@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- LSPU Seal - Simplified SVG version -->
+  <!-- Outer circle -->
+  <circle cx="100" cy="100" r="95" fill="#103F26" stroke="#F0A500" stroke-width="4"/>
+  
+  <!-- Inner circle -->
+  <circle cx="100" cy="100" r="80" fill="none" stroke="#F0A500" stroke-width="2"/>
+  
+  <!-- Text around circle -->
+  <path id="circle-text-top" d="M 100,25 a 75,75 0 0 1 0,150" fill="none" />
+  <path id="circle-text-bottom" d="M 100,175 a 75,75 0 0 1 0,-150" fill="none" />
+  
+  <text fill="#F0A500" font-family="Arial" font-weight="bold" font-size="12">
+    <textPath href="#circle-text-top" startOffset="15%">LAGUNA STATE POLYTECHNIC UNIVERSITY</textPath>
+  </text>
+  
+  <text fill="#F0A500" font-family="Arial" font-weight="bold" font-size="12">
+    <textPath href="#circle-text-bottom" startOffset="22%">SINILOAN CAMPUS • ESTABLISHED 1994</textPath>
+  </text>
+  
+  <!-- Flame symbol -->
+  <path d="M100,55 C90,70 80,85 90,100 C100,115 90,125 85,130 C100,125 115,115 115,90 C115,80 110,70 100,55z" fill="#F0A500"/>
+  
+  <!-- Book symbol -->
+  <path d="M70,110 L130,110 L130,140 L70,140 Z" fill="#297F43"/>
+  <path d="M70,110 L100,120 L130,110 L130,140 L100,150 L70,140 Z" fill="none" stroke="#F0A500" stroke-width="2"/>
+  
+  <!-- LSPU Letters -->
+  <text x="85" y="133" fill="#F0A500" font-family="Arial" font-weight="bold" font-size="18">LSPU</text>
+</svg>

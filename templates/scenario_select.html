@@ -1,0 +1,366 @@
+{% extends "base.html" %}
+
+{% block title %}SafeZard - Select Mission{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="d-flex align-items-center mb-4 border-bottom border-secondary pb-3">
+            <h1 class="mb-0 text-uppercase fw-bold" style="letter-spacing: 2px;">
+                <span style="color: var(--safezard-green);">Select</span> Mission
+            </h1>
+            <div class="ms-auto text-muted small text-uppercase">
+                <i class="bi bi-shield-check me-1"></i> Database: <span id="db-status">Connecting...</span>
+            </div>
+        </div>
+        
+        <p class="lead mb-5 text-muted" style="max-width: 700px;">
+            Initialize simulation protocols. Select an operational environment to view available safety scenarios and hazard training modules.
+        </p>
+        
+        <!-- 1. Environment Filter (Tabs) -->
+        <div class="mb-5">
+            <h5 class="text-uppercase text-muted small fw-bold mb-3 ls-2">Sector Selection</h5>
+            <div class="filter-buttons-container">
+                <input type="radio" class="filter-radio" name="workplace" id="laboratory" value="laboratory" checked>
+                <label class="filter-button" for="laboratory">
+                    <i class="bi bi-flask"></i> 
+                    Laboratory
+                </label>
+                
+                <input type="radio" class="filter-radio" name="workplace" id="facility" value="facility">
+                <label class="filter-button" for="facility">
+                    <i class="bi bi-building-gear"></i> 
+                    Facility
+                </label>
+            </div>
+        </div>
+        
+        <!-- 2. Subcategory / Hazard Slider -->
+        <div id="subcategory-container" class="mb-5">
+            <div class="card bg-transparent border-0">
+                <!-- Header with Dynamic Title -->
+                <div class="d-flex justify-content-between align-items-end mb-3 px-2">
+                    <h4 class="card-title text-white text-uppercase mb-0" id="subcategory-title">
+                        <i class="bi bi-grid-3x3-gap-fill me-2 text-success"></i>
+                        Available Modules
+                    </h4>
+                    <span class="badge bg-dark border border-secondary text-muted rounded-0">
+                        Swipe to Navigate
+                    </span>
+                </div>
+                
+                <!-- The Slider -->
+                <div class="subcategory-slider">
+                    <div class="slider-controls">
+                        <button class="slider-arrow prev" id="subcategory-prev">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <button class="slider-arrow next" id="subcategory-next">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="subcategory-slider-container">
+                        <div class="subcategory-cards">
+                            <!-- Cards injected by JS -->
+                            <div class="text-center w-100 py-5">
+                                <div class="spinner-border text-success" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2 text-muted">Loading Progress Data...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Hidden Grid Container (Optional fallback) -->
+        <div class="row g-4 scenario-grid d-none" id="scenario-grid-container">
+            {% if not scenarios %}
+            <div class="col-12">
+                <div class="alert alert-dark border-secondary text-center p-5">
+                    <i class="bi bi-database-x fs-1 text-muted mb-3 d-block"></i>
+                    No scenarios currently loaded in the database.
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // --- Data Definitions ---
+    const scenarioContentData = {
+        "laboratory": {
+            "title": "Laboratory Sector",
+            "items": {
+                "computer_lab": { "name": "Computer Lab", "icon": "bi bi-pc-display", "hazards": ["Water Leak", "Octopus Wiring"] },
+                "agriculture_lab": { "name": "Agriculture Lab", "icon": "bi bi-tree", "hazards": ["Improper Handling of Agricultural Chemicals", "Exposure to Biological Hazards"] },
+                "chemical_lab": { "name": "Chemical Lab", "icon": "bi bi-radioactive", "hazards": ["Chemical Spill", "Unlabeled Chemical Container"] },
+                "culinary_lab": { "name": "Culinary Lab", "icon": "bi bi-fire", "hazards": ["Grease Fire", "Cross-Contamination and Bacterial Risk"] }
+            }
+        },
+        "facility": {
+            "title": "Facility Sector",
+            "items": {
+                "gymnasium": { "name": "Gymnasium", "icon": "bi bi-dribbble", "hazards": ["Slips and falls on wet or sweaty floors", "Equipment malfunction", "Impact injuries"] },
+                "campus_offices": { "name": "Campus Offices", "icon": "bi bi-briefcase", "hazards": ["Ergonomic strain", "Tripping hazards", "Fire hazards"] },
+                "library": { "name": "Library", "icon": "bi bi-book", "hazards": ["Falling objects", "Tripping hazards", "Electrical hazards"] },
+                "clinic": { "name": "Clinic", "icon": "bi bi-hospital", "hazards": ["Infectious diseases", "Needlestick injuries", "Chemical exposure"] }
+            }
+        }
+    };
+
+    // Scenarios from Backend
+    const allScenariosData = {{ scenarios | tojson | safe }};
+    
+    // --- State ---
+    let currentEnvironment = 'laboratory';
+    let currentSubcategory = '';
+    let sliderInterval;
+    let userProgressData = {}; // Store fetched DB data here
+
+    // --- DOM Elements ---
+    const dom = {
+        filters: document.querySelectorAll('input[name="workplace"]'),
+        title: document.getElementById('subcategory-title'),
+        sliderContainer: document.querySelector('.subcategory-cards'),
+        prevBtn: document.getElementById('subcategory-prev'),
+        nextBtn: document.getElementById('subcategory-next'),
+        dbStatus: document.getElementById('db-status')
+    };
+
+    // --- Core Functions ---
+
+    // Fetch Progress from API
+    async function fetchProgress() {
+        try {
+            const response = await fetch('/api/get_analytics');
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Database Sync Debug:", data); // Debug Log
+
+                // Convert list to map for easier lookup: { scenario_id: { completed: true, score: 90 } }
+                let recordCount = 0;
+                if (data.progress) {
+                    recordCount = data.progress.length;
+                    data.progress.forEach(item => {
+                        userProgressData[item.scenario_id] = {
+                            completed: item.completed,
+                            score: item.score
+                        };
+                    });
+                }
+                
+                // Detailed Status Update
+                if (recordCount > 0) {
+                    dom.dbStatus.textContent = "Synced";
+                    dom.dbStatus.classList.remove('text-muted', 'text-danger');
+                    dom.dbStatus.classList.add('text-success');
+                } else {
+                    dom.dbStatus.textContent = "Synced (No Data Found)";
+                    dom.dbStatus.classList.remove('text-muted', 'text-success');
+                    dom.dbStatus.classList.add('text-warning');
+                    console.warn("Database returned 0 records. Check RLS policies or Service Key.");
+                }
+                
+                // Initial Render AFTER data is loaded
+                renderSlider('subcategories', scenarioContentData['laboratory'].items);
+                startAutoRotate();
+            } else {
+                // STRICT ERROR: No Fallback
+                console.warn('Failed to fetch analytics');
+                handleDBError();
+            }
+        } catch (error) {
+            console.error('Error fetching progress:', error);
+            handleDBError();
+        }
+    }
+
+    function handleDBError() {
+        dom.dbStatus.innerHTML = '<i class="bi bi-exclamation-triangle-fill"></i> DB Connection Failed';
+        dom.dbStatus.classList.remove('text-muted', 'text-success');
+        dom.dbStatus.classList.add('text-danger');
+        
+        // We still render the slider so the user can see the modules,
+        // but no progress data will be shown (badges will be missing).
+        // userProgressData remains empty.
+        renderSlider('subcategories', scenarioContentData['laboratory'].items);
+        startAutoRotate();
+    }
+
+    function getScenarioProgress(scenarioId) {
+        return userProgressData[scenarioId] || null;
+    }
+
+    function init() {
+        // Event Listeners for Filters
+        dom.filters.forEach(btn => {
+            btn.addEventListener('change', (e) => {
+                currentEnvironment = e.target.value;
+                currentSubcategory = ''; // Reset sub
+                renderSlider('subcategories', scenarioContentData[currentEnvironment].items);
+            });
+        });
+
+        // Slider Nav
+        dom.prevBtn.addEventListener('click', () => rotateSlider('prev'));
+        dom.nextBtn.addEventListener('click', () => rotateSlider('next'));
+        
+        // Auto Rotate Control
+        const sliderWrapper = document.querySelector('.subcategory-slider');
+        sliderWrapper.addEventListener('mouseenter', () => clearInterval(sliderInterval));
+        sliderWrapper.addEventListener('mouseleave', startAutoRotate);
+
+        // Start Data Fetch
+        fetchProgress();
+    }
+
+    function renderSlider(type, data) {
+        dom.sliderContainer.innerHTML = '';
+        let items = [];
+
+        if (type === 'subcategories') {
+            dom.title.innerHTML = `<i class="bi bi-grid-3x3-gap-fill me-2 text-success"></i> ${scenarioContentData[currentEnvironment].title} Modules`;
+            items = Object.keys(data).map(key => ({
+                id: key,
+                name: data[key].name,
+                icon: data[key].icon,
+                type: 'subcategory'
+            }));
+        } else if (type === 'hazards') {
+            dom.title.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-2 text-warning"></i> ${currentSubcategory.replace('_', ' ')} Hazards`;
+            items = data.map(hazard => ({
+                name: hazard,
+                type: 'hazard'
+            }));
+        }
+
+        if (items.length === 0) {
+            dom.sliderContainer.innerHTML = '<div class="text-muted">No modules available.</div>';
+            return;
+        }
+
+        items.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'subcategory-card';
+            
+            if (item.type === 'subcategory') {
+                card.innerHTML = `
+                    <div class="subcategory-icon"><i class="${item.icon}"></i></div>
+                    <h5>${item.name}</h5>
+                    <div class="mt-3 text-muted small text-uppercase" style="font-size: 0.7rem;">Select to View</div>
+                `;
+                card.onclick = () => {
+                    currentSubcategory = item.id; // Store ID strictly
+                    // Get hazards from the data structure using the ID
+                    const hazards = scenarioContentData[currentEnvironment].items[item.id].hazards;
+                    renderSlider('hazards', hazards);
+                };
+            } else {
+                // Hazard Card (The playable item)
+                // Find matching scenario
+                const scenario = allScenariosData.find(s => 
+                    s.workplace === currentEnvironment && 
+                    // Simplified matching: check if hazard string exists in scenario hazards
+                    (s.hazards && s.hazards.includes(item.name))
+                );
+
+                let statusBadge = '';
+                let btnText = 'Start Simulation';
+                let btnClass = 'text-white';
+                
+                if (scenario) {
+                    const progress = getScenarioProgress(scenario.id);
+                    // DEBUG: Log progress to help identify ID mismatches
+                    if (progress) console.log(`Found progress for ${scenario.id}:`, progress);
+
+                    if (progress && progress.completed) {
+                        statusBadge = '<div class="badge bg-success mb-2">COMPLETED</div>';
+                        btnText = 'Replay Mission';
+                        btnClass = 'text-success';
+                    } else if (progress) {
+                        statusBadge = '<div class="badge bg-warning text-dark mb-2">IN PROGRESS</div>';
+                        btnText = 'Resume';
+                        btnClass = 'text-warning';
+                    }
+
+                    card.innerHTML = `
+                        ${statusBadge}
+                        <div class="subcategory-icon" style="border-color: ${progress?.completed ? 'var(--safezard-green)' : '#fff'}">
+                            <i class="bi bi-exclamation-diamond-fill"></i>
+                        </div>
+                        <h5 class="mb-2">${item.name}</h5>
+                        <div class="mt-auto ${btnClass} small text-uppercase fw-bold">
+                            ${btnText} <i class="bi bi-chevron-right"></i>
+                        </div>
+                    `;
+                    card.onclick = () => window.location.href = `/player/${scenario.id}`;
+                } else {
+                    card.classList.add('disabled');
+                    card.style.opacity = '0.5';
+                    card.innerHTML = `
+                        <div class="subcategory-icon border-secondary text-secondary"><i class="bi bi-lock-fill"></i></div>
+                        <h5 class="text-muted">${item.name}</h5>
+                        <div class="mt-auto text-muted small">LOCKED / NO DATA</div>
+                    `;
+                }
+            }
+            dom.sliderContainer.appendChild(card);
+        });
+
+        updateSliderClasses();
+    }
+
+    function rotateSlider(dir) {
+        const cards = Array.from(document.querySelectorAll('.subcategory-card'));
+        if (cards.length < 2) return;
+
+        let activeIdx = cards.findIndex(c => c.classList.contains('active-card'));
+        // If no active card (first load), set 0
+        if (activeIdx === -1) activeIdx = 0;
+
+        let newIdx;
+        if (dir === 'next') {
+            newIdx = (activeIdx + 1) % cards.length;
+        } else {
+            newIdx = (activeIdx - 1 + cards.length) % cards.length;
+        }
+
+        cards.forEach(c => c.classList.remove('active-card', 'prev-card', 'next-card'));
+        
+        cards[newIdx].classList.add('active-card');
+        cards[(newIdx - 1 + cards.length) % cards.length].classList.add('prev-card');
+        cards[(newIdx + 1) % cards.length].classList.add('next-card');
+    }
+
+    function updateSliderClasses() {
+        const cards = document.querySelectorAll('.subcategory-card');
+        if (cards.length === 0) return;
+        
+        // Reset
+        cards.forEach(c => c.classList.remove('active-card', 'prev-card', 'next-card'));
+        
+        // Initialize 0 as active
+        cards[0].classList.add('active-card');
+        if (cards.length > 1) {
+            cards[cards.length - 1].classList.add('prev-card');
+            cards[1].classList.add('next-card');
+        }
+    }
+
+    function startAutoRotate() {
+        clearInterval(sliderInterval);
+        sliderInterval = setInterval(() => rotateSlider('next'), 4000);
+    }
+
+    // Run
+    document.addEventListener('DOMContentLoaded', init);
+
+</script>
+{% endblock %}

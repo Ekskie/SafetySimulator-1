@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200" width="300" height="200">
+  <!-- SafeZard Video Player Illustration -->
+  <style>
+    .device { fill: #34495e; stroke: #2c3e50; stroke-width: 5; }
+    .screen { fill: #1a1a1a; }
+    .scene { fill: #3498db; opacity: 0.3; }
+    .controls { fill: rgba(255,255,255,0.2); }
+    .play-btn { fill: #e74c3c; }
+    .person { fill: #f39c12; }
+  </style>
+  
+  <!-- Device Frame -->
+  <rect x="25" y="20" width="250" height="160" rx="10" ry="10" class="device" />
+  
+  <!-- Screen -->
+  <rect x="35" y="30" width="230" height="140" class="screen" />
+  
+  <!-- Video Scene (simplified lab setting) -->
+  <rect x="45" y="40" width="210" height="100" class="scene" />
+  
+  <!-- Person silhouette -->
+  <circle cx="100" cy="80" r="15" class="person" />
+  <rect x="90" y="95" width="20" height="30" rx="5" ry="5" class="person" />
+  
+  <!-- Lab equipment silhouette -->
+  <rect x="150" y="60" width="40" height="70" rx="2" ry="2" fill="#95a5a6" />
+  
+  <!-- Video Controls -->
+  <rect x="45" y="150" width="210" height="10" class="controls" />
+  <circle cx="55" cy="155" r="5" class="play-btn" />
+  
+  <!-- Progress indicator -->
+  <rect x="70" y="152.5" width="60" height="5" fill="#3498db" />
+  <rect x="130" y="152.5" width="115" height="5" fill="rgba(255,255,255,0.1)" />
+</svg>

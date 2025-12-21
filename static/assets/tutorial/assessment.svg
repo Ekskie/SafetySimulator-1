@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200" width="300" height="200">
+  <!-- SafeZard Assessment Illustration -->
+  <style>
+    .bg { fill: #2c3e50; }
+    .card { fill: #34495e; }
+    .text { font-family: Arial, sans-serif; fill: #ffffff; text-anchor: start; }
+    .title { font-weight: bold; text-anchor: middle; }
+    .option { fill: none; stroke: #7f8c8d; stroke-width: 1; }
+    .option-selected { fill: none; stroke: #3498db; stroke-width: 2; }
+    .correct { fill: #2ecc71; }
+    .incorrect { fill: #e74c3c; }
+  </style>
+  
+  <!-- Background -->
+  <rect x="10" y="10" width="280" height="180" rx="10" ry="10" class="bg" />
+  
+  <!-- Title -->
+  <text x="150" y="35" class="text title" font-size="16" text-anchor="middle">SafeZard Assessment</text>
+  
+  <!-- Question Card -->
+  <rect x="30" y="50" width="240" height="120" rx="5" ry="5" class="card" />
+  
+  <!-- Question -->
+  <text x="40" y="70" class="text" font-size="12">1. What was the first step in handling</text>
+  <text x="40" y="85" class="text" font-size="12">the chemical spill?</text>
+  
+  <!-- Options -->
+  <rect x="40" y="95" width="15" height="15" class="option-selected" />
+  <text x="65" y="107" class="text" font-size="12">A. Evacuate the area</text>
+  <rect x="40" y="120" width="15" height="15" class="option" />
+  <text x="65" y="132" class="text" font-size="12">B. Clean with paper towels</text>
+  <rect x="40" y="145" width="15" height="15" class="option" />
+  <text x="65" y="157" class="text" font-size="12">C. Call for help</text>
+  
+  <!-- Correct/Incorrect Indicator -->
+  <circle cx="250" cy="103" r="8" class="correct" />
+  <path d="M 245,103 L 250,108 L 255,98" stroke="white" stroke-width="2" fill="none" />
+</svg>

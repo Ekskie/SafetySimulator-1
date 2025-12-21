@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200" width="300" height="200">
+  <!-- SafeZard Main Menu Illustration -->
+  <style>
+    .bg { fill: #2c3e50; }
+    .button { fill: #34495e; stroke: #3498db; stroke-width: 2; }
+    .button-primary { fill: #3498db; stroke: none; }
+    .text { font-family: Arial, sans-serif; fill: #ffffff; text-anchor: middle; }
+    .title { font-weight: bold; }
+  </style>
+  
+  <!-- Background -->
+  <rect x="10" y="10" width="280" height="180" rx="20" ry="20" class="bg" />
+  
+  <!-- Title -->
+  <text x="150" y="50" class="text title" font-size="24">SafeZard</text>
+  <text x="150" y="70" class="text" font-size="10">Your digital workplace hazard safety training program</text>
+  
+  <!-- Menu Buttons -->
+  <rect x="75" y="90" width="150" height="20" rx="5" ry="5" class="button-primary" />
+  <text x="150" y="105" class="text" font-size="12">START</text>
+  
+  <rect x="75" y="120" width="150" height="20" rx="5" ry="5" class="button" />
+  <text x="150" y="135" class="text" font-size="12">TUTORIAL</text>
+  
+  <rect x="75" y="150" width="150" height="20" rx="5" ry="5" class="button" />
+  <text x="150" y="165" class="text" font-size="12">LIBRARY</text>
+</svg>

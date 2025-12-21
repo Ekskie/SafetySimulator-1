@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100" width="400" height="100">
+  <!-- SafeZard Logo - Text only version with LSPU-Siniloan Green Theme -->
+  <defs>
+    <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2E7D32" /> <!-- LSPU Campus Green -->
+      <stop offset="100%" stop-color="#C6FF00" /> <!-- Performance Lime -->
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  
+  <style>
+    .logo-text { font-family: 'Arial Black', Gadget, Arial, sans-serif; font-weight: bold; letter-spacing: 1px; }
+    .text-gradient { fill: url(#logo-gradient); filter: url(#glow); }
+    .text-yellow { fill: #F9A825; } /* Safety Yellow */
+    .text-white { fill: #FAFAFA; }
+    .slogan { font-family: Arial, sans-serif; font-size: 14px; }
+    .highlight { opacity: 0.8; }
+  </style>
+  
+  <!-- Main Logo Text -->
+  <text x="200" y="58" class="logo-text text-gradient" text-anchor="middle" font-size="48">SafeZard</text>
+  
+  <!-- Slogan -->
+  <text x="200" y="80" class="slogan text-white" text-anchor="middle">Interactive Workplace Safety Training</text>
+</svg>

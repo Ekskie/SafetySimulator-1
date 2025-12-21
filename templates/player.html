@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}SafeZard - Simulation Active{% endblock %}
+
+{% block content %}
+<section class="py-4 h-100 d-flex flex-column">
+    <div class="container flex-grow-1 d-flex flex-column">
+        
+        <!-- Mission Header (HUD Style) -->
+        <div class="d-flex align-items-center mb-3 border-bottom border-secondary pb-2">
+            <div class="me-3">
+                <span class="badge bg-transparent border border-success text-success rounded-0">LIVE FEED</span>
+            </div>
+            <h4 class="mb-0 text-uppercase fw-bold text-white ls-1">
+                {{ scenario.title }}
+            </h4>
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <div class="text-muted small text-uppercase d-none d-md-block">
+                    <i class="bi bi-clock me-1"></i> <span id="timer-display">00:00</span>
+                </div>
+                <a href="/scenario_select" class="btn btn-sm btn-outline-danger text-uppercase fw-bold rounded-0" style="letter-spacing: 1px;">
+                    Abort Mission
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Viewport (Video & Overlay) -->
+        <div class="row flex-grow-1 g-0 bg-black position-relative overflow-hidden border border-secondary" style="min-height: 60vh;">
+            
+            <!-- Video Container -->
+            <div class="col-12 h-100 position-relative" id="video-container">
+                <!-- Video Element -->
+                <video id="scenario-video" class="w-100 h-100 object-fit-cover" playsinline>
+                    <source src="{{ url_for('static', filename='videos/' ~ scenario.video_file) }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+
+                <!-- Overlay UI (HUD Corners) -->
+                <div class="hud-corner top-left"></div>
+                <div class="hud-corner top-right"></div>
+                <div class="hud-corner bottom-left"></div>
+                <div class="hud-corner bottom-right"></div>
+
+                <!-- Decision Point Overlay (Hidden by default) -->
+                <div id="decision-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-none flex-column align-items-center justify-content-center" 
+                     style="background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 100;">
+                    
+                    <div class="text-center mb-5 animate-slide-down">
+                        <i class="bi bi-exclamation-triangle-fill text-warning display-1 mb-3 glow-pulse"></i>
+                        <h2 class="text-white text-uppercase fw-bold ls-2">Hazard Detected</h2>
+                        <p class="lead text-white-50" id="decision-prompt">Analyze the situation and select the correct protocol.</p>
+                    </div>
+
+                    <div class="d-grid gap-3 col-10 col-md-6" id="decision-choices">
+                        <!-- Choices injected via JS -->
+                    </div>
+                </div>
+
+                <!-- Loading / Buffer Spinner -->
+                <div id="loading-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-black" style="z-index: 50;">
+                    <div class="text-center">
+                        <div class="spinner-border text-success mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+                        <div class="text-success small text-uppercase ls-2">Initializing System...</div>
+                    </div>
+                </div>
+
+                <!-- Start Screen Overlay -->
+                <div id="start-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center bg-black bg-opacity-75" style="z-index: 60; backdrop-filter: blur(10px);">
+                    <div class="card bg-transparent border border-success p-5 text-center" style="max-width: 500px; box-shadow: 0 0 30px rgba(0, 255, 136, 0.1);">
+                        <h3 class="text-white text-uppercase fw-bold mb-3 ls-1">Mission Ready</h3>
+                        <p class="text-muted mb-4">
+                            Review objectives. Identify hazards immediately. Time is critical.
+                        </p>
+                        <button id="start-btn" class="btn btn-game-start">
+                            Execute
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Playback Controls / Status Bar -->
+        <div class="bg-dark border border-top-0 border-secondary p-2 d-flex align-items-center">
+            <button id="play-pause-btn" class="btn btn-link text-white text-decoration-none me-3">
+                <i class="bi bi-play-fill fs-4" id="play-icon"></i>
+            </button>
+            
+            <div class="flex-grow-1 mx-3">
+                <div class="progress bg-secondary" style="height: 4px;">
+                    <div id="progress-bar" class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <button id="fullscreen-btn" class="btn btn-link text-white text-decoration-none ms-3">
+                <i class="bi bi-fullscreen"></i>
+            </button>
+        </div>
+
+    </div>
+</section>
+
+<!-- Data for JS -->
+<script>
+    const SCENARIO_DATA = {{ scenario | tojson | safe }};
+</script>
+
+<!-- Scoped Styles for HUD -->
+<style>
+    /* HUD Corner Accents */
+    .hud-corner {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        border: 2px solid var(--safezard-green);
+        z-index: 10;
+        pointer-events: none;
+        opacity: 0.6;
+    }
+    .top-left { top: 20px; left: 20px; border-right: 0; border-bottom: 0; }
+    .top-right { top: 20px; right: 20px; border-left: 0; border-bottom: 0; }
+    .bottom-left { bottom: 20px; left: 20px; border-right: 0; border-top: 0; }
+    .bottom-right { bottom: 20px; right: 20px; border-left: 0; border-top: 0; }
+
+    /* Choice Buttons */
+    .choice-btn {
+        background: rgba(20, 20, 20, 0.9);
+        border: 1px solid var(--safezard-border);
+        color: white;
+        padding: 1.5rem;
+        text-align: left;
+        transition: all 0.2s ease;
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 1px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .choice-btn:hover {
+        background: rgba(0, 255, 136, 0.1);
+        border-color: var(--safezard-green);
+        color: var(--safezard-green);
+        transform: translateX(5px);
+    }
+
+    .choice-btn::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: transparent;
+        transition: background 0.2s;
+    }
+
+    .choice-btn:hover::before {
+        background: var(--safezard-green);
+    }
+
+    /* Animations */
+    .glow-pulse {
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { text-shadow: 0 0 10px rgba(241, 196, 15, 0.5); }
+        50% { text-shadow: 0 0 20px rgba(241, 196, 15, 0.8); transform: scale(1.05); }
+        100% { text-shadow: 0 0 10px rgba(241, 196, 15, 0.5); }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/video_player.js') }}"></script>
+{% endblock %}

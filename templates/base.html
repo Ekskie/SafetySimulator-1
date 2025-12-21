@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{% block title %}SafeZard - Interactive Safety Training{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css">
+    <!-- Lexend Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Base CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a0a">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- MOBILE HEADER (Visible only on mobile) -->
+    <div class="mobile-header d-md-none d-flex align-items-center justify-content-between px-3 py-2 border-bottom border-secondary bg-dark" style="z-index: 1060; position: fixed; top: 0; left: 0; right: 0; height: 60px;">
+        <a href="/" class="d-flex align-items-center text-decoration-none">
+             <i class="bi bi-shield-lock-fill text-success fs-2 me-2"></i>
+             <span class="fw-bold text-white tracking-wider">SAFEZARD</span>
+        </a>
+        <button class="btn btn-link text-white p-0" id="mobileMenuToggle">
+            <i class="bi bi-list fs-1"></i>
+        </button>
+    </div>
+
+    <!-- 1. PERMANENT MINI SIDEBAR (Fixed Left) -->
+    <div class="sidebar-mini d-flex flex-column flex-shrink-0" id="mainSidebar">
+        <!-- Sidebar Header / Logo Icon -->
+        <a href="/"
+            class="d-flex align-items-center justify-content-center link-dark text-decoration-none border-bottom d-none d-md-flex"
+            style="height: 80px; background-color: var(--safezard-panel-bg); border-color: var(--safezard-border) !important;">
+            <i class="bi bi-shield-lock-fill" style="font-size: 2rem; color: var(--safezard-green); filter: drop-shadow(0 0 5px var(--safezard-green));"></i>
+            <span class="sidebar-text ms-2 fw-bold tracking-wider" style="color: var(--safezard-text);">SAFEZARD</span>
+        </a>
+
+        <!-- Mobile Close Button -->
+        <div class="d-md-none text-end p-3">
+             <button class="btn btn-sm btn-outline-secondary" id="mobileMenuClose">
+                <i class="bi bi-x-lg"></i> Close Menu
+             </button>
+        </div>
+
+        <!-- Menu Items with Data Attributes for Previews -->
+        <ul class="nav nav-flush flex-column mb-auto text-center mt-3">
+            <li class="nav-item">
+                <a href="/" class="nav-link" data-preview="menu">
+                    <i class="bi bi-house-door-fill"></i>
+                    <span class="sidebar-text">MAIN MENU</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/scenario_select" class="nav-link" data-preview="training">
+                    <i class="bi bi-joystick"></i> 
+                    <span class="sidebar-text">TRAINING</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/library" class="nav-link" data-preview="library">
+                    <i class="bi bi-collection-play-fill"></i>
+                    <span class="sidebar-text">LIBRARY</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/analytics" class="nav-link" data-preview="analytics">
+                    <i class="bi bi-graph-up-arrow"></i>
+                    <span class="sidebar-text">STATS</span>
+                </a>
+            </li>
+            <!-- NEW PROFILE NAVIGATION -->
+            <li class="nav-item">
+                <a href="/profile" class="nav-link" data-preview="profile">
+                    <i class="bi bi-person-badge-fill"></i>
+                    <span class="sidebar-text">PROFILE</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/tutorial" class="nav-link" data-preview="tutorial">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <span class="sidebar-text">TUTORIAL</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/about" class="nav-link" data-preview="about">
+                    <i class="bi bi-shield-fill"></i>
+                    <span class="sidebar-text">ABOUT</span>
+                </a>
+            </li>
+            
+            <!-- Separator -->
+            <li class="my-2 border-top" style="border-color: var(--safezard-border) !important;"></li>
+
+            <!-- Theme Toggle Button -->
+            <li class="nav-item">
+                <button class="nav-link w-100 border-0" id="themeToggle" style="text-align: left;">
+                    <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
+                    <span class="sidebar-text">SWITCH MODE</span>
+                </button>
+            </li>
+        </ul>
+
+        <!-- Bottom User/Settings -->
+        <div class="dropdown border-top mt-auto" style="border-color: var(--safezard-border) !important;">
+            <a href="#"
+                class="d-flex align-items-center justify-content-center py-3 link-dark text-decoration-none dropdown-toggle sidebar-user"
+                id="dropdownUser3" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white" style="width: 32px; height: 32px;">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <span class="sidebar-text ms-2 small fw-bold">
+                    {% if current_user.is_authenticated %}
+                        {{ current_user.username }}
+                    {% else %}
+                        Guest
+                    {% endif %}
+                </span>
+            </a>
+            <ul class="dropdown-menu text-small shadow border-secondary" aria-labelledby="dropdownUser3" style="background-color: var(--safezard-panel-bg);">
+                {% if current_user.is_authenticated %}
+                    <li><span class="dropdown-item-text text-muted small">{{ current_user.email }}</span></li>
+                    <li><a class="dropdown-item" href="/profile">My Profile</a></li>
+                    <li><hr class="dropdown-divider bg-secondary"></li>
+                    <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}">Sign out</a></li>
+                {% else %}
+                    <li><a class="dropdown-item text-success" href="{{ url_for('auth') }}">Login / Register</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- 2. PREVIEW CONTAINER (Popups appear here) -->
+    <!-- HIDDEN ON MOBILE to save space -->
+    <div class="preview-container d-none d-md-block">
+        <!-- (Same preview panels, styles handle their look) -->
+        <div id="preview-menu" class="preview-panel">
+            <i class="bi bi-house-door preview-icon-large"></i>
+            <h2 class="preview-title">Dashboard</h2>
+            <p class="preview-desc">Return to the operational hub.</p>
+        </div>
+        <div id="preview-training" class="preview-panel">
+            <i class="bi bi-crosshair preview-icon-large"></i>
+            <h2 class="preview-title">Start Training</h2>
+            <p class="preview-desc">Initiate safety simulation protocols. Select environment and difficulty level.</p>
+            <div class="preview-stats-row">
+                <div class="stat-box">
+                    <i class="bi bi-flask-fill fs-3 mb-2 d-block text-success"></i>
+                    <div class="stat-label">Lab Ops</div>
+                </div>
+                <div class="stat-box">
+                    <i class="bi bi-building-fill fs-3 mb-2 d-block text-warning"></i>
+                    <div class="stat-label">Facilities</div>
+                </div>
+            </div>
+        </div>
+        <div id="preview-library" class="preview-panel">
+            <i class="bi bi-collection-play preview-icon-large"></i>
+            <h2 class="preview-title">Archives</h2>
+            <p class="preview-desc">Access the complete database of safety modules and historical records.</p>
+            <div class="preview-stats-row">
+                <div class="stat-box">
+                    <div class="stat-value">11</div>
+                    <div class="stat-label">Modules</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">Domains</div>
+                </div>
+            </div>
+        </div>
+        <div id="preview-analytics" class="preview-panel">
+            <i class="bi bi-graph-up-arrow preview-icon-large text-warning"></i>
+            <h2 class="preview-title">Performance</h2>
+            <p class="preview-desc">Analyze user metrics, completion rates, and proficiency scores.</p>
+            <div class="preview-stats-row">
+                <div class="stat-box">
+                    <div class="stat-value">72%</div>
+                    <div class="stat-label">Rating</div>
+                </div>
+            </div>
+        </div>
+        <!-- NEW PREVIEW PANEL FOR PROFILE -->
+        <div id="preview-profile" class="preview-panel">
+            <i class="bi bi-person-badge-fill preview-icon-large text-primary"></i>
+            <h2 class="preview-title">Identity</h2>
+            <p class="preview-desc">Manage operator credentials, account settings, and personal records.</p>
+        </div>
+        <div id="preview-tutorial" class="preview-panel">
+            <i class="bi bi-info-circle preview-icon-large text-info"></i>
+            <h2 class="preview-title">Tutorial</h2>
+            <p class="preview-desc">System orientation and basic operational guidelines.</p>
+        </div>
+        <div id="preview-about" class="preview-panel">
+            <i class="bi bi-shield-fill preview-icon-large text-success"></i>
+            <h2 class="preview-title">System Info</h2>
+            <p class="preview-desc">SafeZard v1.0 // Interactive Safety Training Platform.</p>
+        </div>
+    </div>
+
+    <!-- 3. GLOBAL OVERLAY (Backdrop) -->
+    <div id="global-overlay"></div>
+
+    <!-- 4. MAIN CONTENT WRAPPER -->
+    <main class="flex-grow-1 position-relative main-content-wrapper">
+        <div class="content-spacer d-md-none" style="height: 60px;"></div> <!-- Spacer for fixed mobile header -->
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Version Badge -->
+    <div class="position-fixed top-0 end-0 mt-3 me-3 d-none d-md-block" style="z-index: 1050;">
+        <span class="badge bg-black text-white border border-secondary rounded-0 p-2 opacity-50 fw-light" style="font-family: monospace;">SYS.VER.1.0.BETA</span>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Main Logic & Theme Logic -->
+    <script src="{{ url_for('static', filename='js/theme-toggle.js') }}"></script>
+
+    <!-- Script to handle Sidebar Previews and Mobile Menu -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidebarLinks = document.querySelectorAll('.sidebar-mini .nav-link');
+            const previewPanels = document.querySelectorAll('.preview-panel');
+            const sidebar = document.getElementById('mainSidebar');
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const mobileMenuClose = document.getElementById('mobileMenuClose');
+            const globalOverlay = document.getElementById('global-overlay');
+
+            // --- Desktop Hover Previews ---
+            sidebarLinks.forEach(link => {
+                link.addEventListener('mouseenter', function () {
+                    // Disable previews on mobile
+                    if (window.innerWidth < 768) return;
+
+                    if(this.id === 'themeToggle') return; // Skip preview for toggle button
+                    
+                    // Hide all previews first
+                    previewPanels.forEach(p => p.classList.remove('active'));
+
+                    // Get target
+                    const targetId = 'preview-' + this.getAttribute('data-preview');
+                    const targetPanel = document.getElementById(targetId);
+
+                    if (targetPanel) {
+                        targetPanel.classList.add('active');
+                    }
+                });
+            });
+
+            // Hide previews when leaving the sidebar area completely
+            sidebar.addEventListener('mouseleave', function () {
+                if (window.innerWidth < 768) return;
+                previewPanels.forEach(p => p.classList.remove('active'));
+            });
+
+            // --- Mobile Menu Logic ---
+            function toggleMobileMenu() {
+                sidebar.classList.toggle('mobile-open');
+                globalOverlay.classList.toggle('active');
+            }
+
+            if (mobileMenuToggle) {
+                mobileMenuToggle.addEventListener('click', toggleMobileMenu);
+            }
+
+            if (mobileMenuClose) {
+                mobileMenuClose.addEventListener('click', toggleMobileMenu);
+            }
+
+            if (globalOverlay) {
+                globalOverlay.addEventListener('click', function() {
+                    sidebar.classList.remove('mobile-open');
+                    globalOverlay.classList.remove('active');
+                });
+            }
+            
+            // Close mobile menu on link click
+             sidebarLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth < 768) {
+                        sidebar.classList.remove('mobile-open');
+                        globalOverlay.classList.remove('active');
+                    }
+                });
+            });
+        });
+    </script>
+
+    {% block scripts %}{% endblock %}
+    {% block extra_js %}{% endblock %}
+
+</body>
+
+</html>

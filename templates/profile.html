@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}SafeZard - Operator Profile{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        
+        <!-- Header -->
+        <div class="d-flex align-items-center mb-5 border-bottom border-secondary pb-3">
+            <h1 class="mb-0 text-uppercase fw-bold" style="letter-spacing: 2px;">
+                <span style="color: var(--safezard-green);">Operator</span> Identity
+            </h1>
+            <div class="ms-auto text-muted small text-uppercase d-none d-md-block">
+                <i class="bi bi-shield-lock me-1"></i> Access Level: Authorized
+            </div>
+        </div>
+
+        <div class="row g-4">
+            
+            <!-- Left Column: User Identity Card -->
+            <div class="col-lg-4">
+                <div class="card h-100 bg-transparent border border-secondary shadow-lg position-relative overflow-hidden">
+                    <!-- Top accent -->
+                    <div style="height: 4px; background: var(--safezard-green);"></div>
+                    
+                    <div class="card-body text-center p-5">
+                        <div class="mb-4 position-relative d-inline-block">
+                            <!-- Avatar Circle -->
+                            <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto" 
+                                 style="width: 120px; height: 120px; background: rgba(255,255,255,0.05); border: 2px solid var(--safezard-green);">
+                                <i class="bi bi-person-bounding-box" style="font-size: 3.5rem; color: var(--safezard-green);"></i>
+                            </div>
+                            <!-- Status Dot -->
+                            <span class="position-absolute bottom-0 end-0 p-2 bg-success border border-dark rounded-circle" style="transform: translate(-10px, -10px);"></span>
+                        </div>
+
+                        <h3 class="fw-bold text-white mb-1">
+                            <!-- SAFE CHECK: Only try to split if user_email exists -->
+                            {% if user_email and '@' in user_email %}
+                                {{ user_email.split('@')[0] | upper }}
+                            {% else %}
+                                OPERATOR
+                            {% endif %}
+                        </h3>
+                        <p class="text-muted text-uppercase small ls-2 mb-4">Safety Officer Trainee</p>
+                        
+                        <!-- Details List -->
+                        <div class="text-start bg-dark bg-opacity-50 p-3 rounded border border-secondary mb-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small text-uppercase">ID Hash</span>
+                                <span class="text-white small font-monospace">
+                                    {% if current_user.is_authenticated %}
+                                        {{ current_user.id[:8] }}...
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small text-uppercase">Status</span>
+                                <span class="text-success small fw-bold text-uppercase">Active</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted small text-uppercase">Role</span>
+                                <span class="text-white small text-uppercase">Student</span>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-outline-light w-100 text-uppercase fw-bold" style="font-size: 0.85rem;">
+                            <i class="bi bi-pencil-square me-2"></i> Edit Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Stats & Settings -->
+            <div class="col-lg-8">
+                
+                <!-- Row 1: Clearance Badge / Summary -->
+                <div class="card bg-transparent border border-secondary mb-4 overflow-hidden">
+                    <div class="card-body p-4 d-flex align-items-center flex-column flex-md-row">
+                        <div class="text-center text-md-start mb-3 mb-md-0 me-md-4">
+                            <i class="bi bi-award-fill" style="font-size: 4rem; color: var(--safezard-caution-yellow);"></i>
+                        </div>
+                        <div class="flex-grow-1 text-center text-md-start">
+                            <h4 class="text-white text-uppercase fw-bold mb-1">Clearance Level 1</h4>
+                            <p class="text-muted small mb-0">Complete more training modules to increase your safety clearance and access advanced simulations.</p>
+                        </div>
+                        <div class="ms-md-4 mt-3 mt-md-0">
+                             <a href="/scenario_select" class="btn btn-success text-uppercase fw-bold px-4 py-2" 
+                                style="background-color: var(--safezard-green); color: #000; border: none;">
+                                Resume Training
+                             </a>
+                        </div>
+                    </div>
+                    <!-- Progress Bar Decorative -->
+                    <div class="progress" style="height: 4px; background-color: rgba(255,255,255,0.1); border-radius: 0;">
+                        <div class="progress-bar" role="progressbar" style="width: 35%; background-color: var(--safezard-caution-yellow);" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+
+                <!-- Row 2: Account Actions -->
+                <div class="card bg-dark bg-opacity-25 border-secondary">
+                    <div class="card-header bg-transparent border-bottom border-secondary">
+                        <span class="text-uppercase fw-bold small text-muted ls-1">
+                            <i class="bi bi-gear-wide-connected me-2"></i> Account Settings
+                        </span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            <a href="#" class="list-group-item list-group-item-action bg-transparent border-secondary text-white py-3 d-flex align-items-center">
+                                <div class="me-3 text-muted"><i class="bi bi-envelope fs-5"></i></div>
+                                <div>
+                                    <h6 class="mb-0 small text-uppercase fw-bold">Change Email Address</h6>
+                                    <small class="text-muted" style="font-size: 0.75rem;">
+                                        {% if user_email %}{{ user_email }}{% else %}Update contact information{% endif %}
+                                    </small>
+                                </div>
+                                <i class="bi bi-chevron-right ms-auto text-muted small"></i>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action bg-transparent border-secondary text-white py-3 d-flex align-items-center">
+                                <div class="me-3 text-muted"><i class="bi bi-key fs-5"></i></div>
+                                <div>
+                                    <h6 class="mb-0 small text-uppercase fw-bold">Reset Password</h6>
+                                    <small class="text-muted" style="font-size: 0.75rem;">Secure your account credentials</small>
+                                </div>
+                                <i class="bi bi-chevron-right ms-auto text-muted small"></i>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action bg-transparent border-secondary text-white py-3 d-flex align-items-center">
+                                <div class="me-3 text-muted"><i class="bi bi-bell fs-5"></i></div>
+                                <div>
+                                    <h6 class="mb-0 small text-uppercase fw-bold">Notifications</h6>
+                                    <small class="text-muted" style="font-size: 0.75rem;">Manage training reminders</small>
+                                </div>
+                                <div class="form-check form-switch ms-auto">
+                                    <input class="form-check-input" type="checkbox" id="notifSwitch" checked>
+                                </div>
+                            </a>
+                            <a href="{{ url_for('logout') }}" class="list-group-item list-group-item-action bg-transparent border-secondary text-danger py-3 d-flex align-items-center">
+                                <div class="me-3 text-danger"><i class="bi bi-box-arrow-right fs-5"></i></div>
+                                <div>
+                                    <h6 class="mb-0 small text-uppercase fw-bold">Sign Out</h6>
+                                    <small class="text-danger-emphasis" style="font-size: 0.75rem;">Terminate session securely</small>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

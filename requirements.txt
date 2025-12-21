@@ -1,0 +1,6 @@
+Flask
+Flask-Login
+supabase
+python-dotenv
+gotrue
+gunicorn

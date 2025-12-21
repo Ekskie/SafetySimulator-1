@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}SafeZard - System Information{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        
+        <!-- Header Section -->
+        <div class="d-flex align-items-center mb-4 border-bottom border-secondary pb-3">
+            <h1 class="mb-0 text-uppercase fw-bold" style="letter-spacing: 2px;">
+                <span style="color: var(--safezard-green);">System</span> Info
+            </h1>
+            <div class="ms-auto text-muted small text-uppercase d-none d-md-block">
+                <i class="bi bi-cpu-fill me-1"></i> Build v1.0.0
+            </div>
+        </div>
+
+        <p class="lead mb-5 text-muted" style="max-width: 700px;">
+            Technical specifications and development credits for the SafeZard Interactive Safety Training Platform.
+        </p>
+
+        <!-- Project Overview (System Specs Style) -->
+        <div class="card bg-transparent border border-secondary mb-5 overflow-hidden">
+            <div class="card-header bg-dark bg-opacity-50 border-bottom border-secondary py-3">
+                <h5 class="text-uppercase fw-bold text-white mb-0 ls-1">
+                    <i class="bi bi-terminal-fill me-2 text-success"></i>Project Directive
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <p class="text-muted mb-4">
+                            SafeZard is an advanced interactive simulation designed to enhance workplace safety awareness in laboratory and facility environments. Utilizing immersive video scenarios and real-time decision-making protocols, the system trains users to identify, assess, and mitigate potential hazards effectively.
+                        </p>
+                        <p class="text-muted mb-0">
+                            The platform employs a gamified learning approach, tracking user proficiency through analytics and providing immediate feedback on safety protocol adherence.
+                        </p>
+                    </div>
+                    <div class="col-lg-4 border-start border-secondary">
+                        <ul class="list-unstyled mb-0 text-muted small text-uppercase font-monospace">
+                            <li class="mb-2 d-flex justify-content-between">
+                                <span>Platform:</span> <span class="text-white">Web / Mobile</span>
+                            </li>
+                            <li class="mb-2 d-flex justify-content-between">
+                                <span>Framework:</span> <span class="text-white">Flask / Python</span>
+                            </li>
+                            <li class="mb-2 d-flex justify-content-between">
+                                <span>Database:</span> <span class="text-white">SQL / JSON</span>
+                            </li>
+                            <li class="mb-2 d-flex justify-content-between">
+                                <span>Status:</span> <span class="text-success">Operational</span>
+                            </li>
+                            <li class="d-flex justify-content-between">
+                                <span>License:</span> <span class="text-white">MIT / Open Source</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Development Team (Roster Style) -->
+        <h5 class="text-uppercase text-muted small fw-bold mb-4 ls-2">Development Unit</h5>
+        <div class="row g-4 mb-5">
+            
+            <!-- Dev 1 -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card bg-transparent border border-secondary h-100 developer-card">
+                    <div class="card-body text-center p-4">
+                        <div class="developer-avatar mb-3 mx-auto">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        <h5 class="text-white text-uppercase fw-bold mb-1">Developer 1</h5>
+                        <div class="text-success small text-uppercase mb-3">Lead Architect</div>
+                        <p class="text-muted small mb-0">
+                            Core systems design, backend logic, and database architecture.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dev 2 -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card bg-transparent border border-secondary h-100 developer-card">
+                    <div class="card-body text-center p-4">
+                        <div class="developer-avatar mb-3 mx-auto">
+                            <i class="bi bi-person-lines-fill"></i>
+                        </div>
+                        <h5 class="text-white text-uppercase fw-bold mb-1">Developer 2</h5>
+                        <div class="text-warning small text-uppercase mb-3">Frontend Engineer</div>
+                        <p class="text-muted small mb-0">
+                            UI/UX implementation, responsive design, and interactivity.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dev 3 -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card bg-transparent border border-secondary h-100 developer-card">
+                    <div class="card-body text-center p-4">
+                        <div class="developer-avatar mb-3 mx-auto">
+                            <i class="bi bi-camera-reels-fill"></i>
+                        </div>
+                        <h5 class="text-white text-uppercase fw-bold mb-1">Developer 3</h5>
+                        <div class="text-info small text-uppercase mb-3">Content Specialist</div>
+                        <p class="text-muted small mb-0">
+                            Scenario production, video assets, and safety protocol research.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dev 4 -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card bg-transparent border border-secondary h-100 developer-card">
+                    <div class="card-body text-center p-4">
+                        <div class="developer-avatar mb-3 mx-auto">
+                            <i class="bi bi-bug-fill"></i>
+                        </div>
+                        <h5 class="text-white text-uppercase fw-bold mb-1">Developer 4</h5>
+                        <div class="text-danger small text-uppercase mb-3">QA / Testing</div>
+                        <p class="text-muted small mb-0">
+                            System debugging, quality assurance, and user testing.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Tech Stack / Acknowledgments -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card bg-dark bg-opacity-50 border-secondary">
+                    <div class="card-body p-4 text-center">
+                        <h6 class="text-uppercase text-muted small fw-bold mb-3 ls-1">Powered By</h6>
+                        <div class="d-flex justify-content-center gap-4 flex-wrap opacity-50 tech-logos">
+                            <span class="d-flex align-items-center"><i class="bi bi-bootstrap-fill fs-4 me-2"></i> Bootstrap 5</span>
+                            <span class="d-flex align-items-center"><i class="bi bi-filetype-py fs-4 me-2"></i> Flask</span>
+                            <span class="d-flex align-items-center"><i class="bi bi-filetype-js fs-4 me-2"></i> Chart.js</span>
+                            <span class="d-flex align-items-center"><i class="bi bi-fonts fs-4 me-2"></i> Lexend</span>
+                            <span class="d-flex align-items-center"><i class="bi bi-box-seam fs-4 me-2"></i> FontAwesome</span>
+                        </div>
+                        <div class="mt-4 pt-3 border-top border-secondary">
+                            <p class="text-muted small mb-0 text-uppercase">
+                                © 2025 SafeZard Initiative. All Rights Reserved. <br>
+                                Laguna State Polytechnic University.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Scoped Styles -->
+<style>
+    .developer-card {
+        transition: all 0.3s ease;
+        background: rgba(20, 20, 20, 0.4);
+    }
+    
+    .developer-card:hover {
+        background: rgba(30, 30, 30, 0.8);
+        border-color: var(--safezard-green) !important;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .developer-avatar {
+        width: 80px;
+        height: 80px;
+        background: #000;
+        border: 2px solid var(--safezard-text-muted);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: var(--safezard-text-muted);
+        transition: all 0.3s ease;
+    }
+
+    .developer-card:hover .developer-avatar {
+        border-color: var(--safezard-green);
+        color: var(--safezard-green);
+        box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+    }
+
+    .tech-logos span {
+        transition: opacity 0.2s;
+        cursor: default;
+    }
+    
+    .tech-logos span:hover {
+        opacity: 1;
+        color: white;
+    }
+</style>
+{% endblock %}
