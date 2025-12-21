@@ -323,6 +323,7 @@ a {
     z-index: 0;
     perspective: 1000px;
     transform-style: preserve-3d;
+    animation: gridScroll 4s linear infinite;
 }
 
 .hero-shape {
@@ -826,5 +827,73 @@ a {
 @media (min-width: 768px) {
     .main-content-wrapper {
         margin-left: var(--sidebar-width-collapsed);
+    }
+}
+
+/* =========================================
+   8. ANIMATIONS (New Section)
+   ========================================= */
+
+/* 1. Infinite Grid Scroll Animation */
+@keyframes gridScroll {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        /* Must match background-size in .hero-bg-pattern (50px) */
+        background-position: 50px 50px; 
+    }
+}
+
+/* 2. Floating / Bobbing Animation for shapes */
+@keyframes floatPulse {
+    0% {
+        transform: translateY(0px) scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: translateY(-20px) scale(1.1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(0px) scale(1);
+        opacity: 0.8;
+    }
+}
+
+/* Utility class to apply floating animation */
+.anim-float {
+    animation: floatPulse 6s ease-in-out infinite;
+}
+
+/* Variation for slightly different timing */
+.anim-float-delayed {
+    animation: floatPulse 7s ease-in-out infinite 1s; /* 1s delay */
+}
+
+/* =========================================
+   9. MOUSE TRAIL ANIMATION
+   ========================================= */
+.mouse-trail-particle {
+    position: absolute;
+    width: 10px;
+    height: 10px; /* Square block shape */
+    background-color: var(--safezard-green);
+    pointer-events: none; /* Allows clicking through them */
+    opacity: 0.8;
+    z-index: 5;
+    box-shadow: 0 0 5px var(--safezard-green);
+    /* Animation: Fall down slightly and fade out */
+    animation: particleFade 1s ease-out forwards;
+}
+
+@keyframes particleFade {
+    0% {
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(-50%, 50px) scale(0) rotate(90deg); /* Falls and spins */
+        opacity: 0;
     }
 }

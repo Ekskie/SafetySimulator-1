@@ -8,13 +8,13 @@
     <div class="hero-bg-pattern"></div>
     
     <!-- Decorative Shapes - Cyberpunk style -->
-    <div class="hero-shape rounded-circle" style="width: 400px; height: 400px; top: -100px; left: -100px; border-width: 2px; border-style: dashed; opacity: 0.1;"></div>
-    <div class="hero-shape" style="width: 300px; height: 300px; bottom: 50px; right: -50px; transform: rotate(45deg); border: 2px solid var(--safezard-green); opacity: 0.05;"></div>
+<div class="hero-shape rounded-circle anim-float" style="width: 400px; height: 400px; top: -100px; left: -100px; border-width: 2px; border-style: dashed; opacity: 0.1;"></div>
     
-    <!-- Floating particles/grid accent -->
-    <div style="position: absolute; top: 20%; right: 20%; width: 10px; height: 10px; background: var(--safezard-green); box-shadow: 0 0 10px var(--safezard-green);"></div>
-    <div style="position: absolute; bottom: 30%; left: 15%; width: 6px; height: 6px; background: var(--safezard-caution-yellow); box-shadow: 0 0 10px var(--safezard-caution-yellow);"></div>
-
+    <div class="hero-shape anim-float-delayed" style="width: 300px; height: 300px; bottom: 50px; right: -50px; transform: rotate(45deg); border: 2px solid var(--safezard-green); opacity: 0.05;"></div>
+    
+    <div class="anim-float" style="position: absolute; top: 20%; right: 20%; width: 10px; height: 10px; background: var(--safezard-green); box-shadow: 0 0 10px var(--safezard-green);"></div>
+    
+    <div class="anim-float-delayed" style="position: absolute; bottom: 30%; left: 15%; width: 6px; height: 6px; background: var(--safezard-caution-yellow); box-shadow: 0 0 10px var(--safezard-caution-yellow);"></div>
     <!-- Main Content -->
     <div class="hero-content d-flex flex-column align-items-center">
         <!-- Logo Icon with glow -->
@@ -63,4 +63,45 @@
         </div>
     </div>
 </section>
+{% endblock %}
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const heroSection = document.querySelector('.hero-section');
+        
+        if (heroSection) {
+            heroSection.addEventListener('mousemove', function(e) {
+                // 1. Limit particle creation rate (performance)
+                // Only create a particle roughly 40% of the time the mouse moves
+                if (Math.random() > 0.4) return; 
+
+                // 2. Create the particle element
+                const particle = document.createElement('div');
+                particle.classList.add('mouse-trail-particle');
+                
+                // 3. Calculate position relative to the hero section
+                const rect = heroSection.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                
+                // 4. Random variation (Optional: mix Green and Yellow)
+                if (Math.random() > 0.8) {
+                    particle.style.backgroundColor = 'var(--safezard-caution-yellow)';
+                    particle.style.boxShadow = '0 0 5px var(--safezard-caution-yellow)';
+                }
+
+                // 5. Add to DOM
+                heroSection.appendChild(particle);
+
+                // 6. Remove after animation (1000ms matches CSS animation time)
+                setTimeout(() => {
+                    particle.remove();
+                }, 1000);
+            });
+        }
+    });
+</script>
 {% endblock %}
