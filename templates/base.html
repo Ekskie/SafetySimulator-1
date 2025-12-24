@@ -152,9 +152,9 @@
                 <li>
                     <hr class="dropdown-divider bg-secondary">
                 </li>
-                <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}">Sign out</a></li>
+                <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">Sign out</a></li>
                 {% else %}
-                <li><a class="dropdown-item text-success" href="{{ url_for('auth') }}">Login / Register</a></li>
+                <li><a class="dropdown-item text-success" href="{{ url_for('auth.auth') }}">Login / Register</a></li>
                 {% endif %}
             </ul>
         </div>
