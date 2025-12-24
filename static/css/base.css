@@ -746,7 +746,21 @@ a {
 
 /* --- MOBILE STYLES (Max-width 767px) --- */
 @media (max-width: 767px) {
-    /* ===== TEXT SIZING FOR MOBILE ===== */
+    /* ===== COMPREHENSIVE TEXT SIZING FOR MOBILE ===== */
+    
+    /* Sidebar Navigation */
+    .sidebar-mini .nav-link i {
+        font-size: 1.2rem;
+    }
+
+    .sidebar-text {
+        font-size: 0.75rem;
+    }
+
+    .sidebar-text-logo-user {
+        font-size: 0.75rem;
+    }
+
     /* Hero Section */
     .main-title {
         font-size: 2rem;
@@ -755,62 +769,191 @@ a {
     }
 
     .main-subtitle {
-        font-size: 0.8rem;
-        letter-spacing: 3px;
+        font-size: 0.75rem;
+        letter-spacing: 2px;
         margin-bottom: 1.5rem;
         margin-top: 0.5rem;
-        padding: 8px 0;
+        padding: 6px 0;
     }
 
     .btn-game-start {
-        font-size: 0.95rem;
-        padding: 15px 40px;
-        letter-spacing: 2px;
+        font-size: 0.85rem;
+        padding: 12px 30px;
+        letter-spacing: 1px;
     }
 
     /* Preview Panel */
     .preview-icon-large {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
+        font-size: 2rem;
+        margin-bottom: 0.8rem;
     }
 
     .preview-title {
-        font-size: 1.5rem;
-        letter-spacing: 1px;
-        margin-bottom: 0.3rem;
+        font-size: 1.3rem;
+        letter-spacing: 0.8px;
+        margin-bottom: 0.2rem;
     }
 
     .preview-desc {
-        font-size: 0.9rem;
-        margin-bottom: 1rem;
-        padding-left: 0.8rem;
+        font-size: 0.8rem;
+        margin-bottom: 0.8rem;
+        padding-left: 0.6rem;
+        line-height: 1.4;
     }
 
     .stat-value {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
     }
 
     .stat-label {
-        font-size: 0.6rem;
-        letter-spacing: 0.5px;
+        font-size: 0.5rem;
+        letter-spacing: 0.3px;
     }
 
     /* Scenario Cards */
     .subcategory-card h5 {
-        font-size: 0.85rem;
-        letter-spacing: 0.5px;
+        font-size: 0.75rem;
+        letter-spacing: 0.4px;
     }
 
     .subcategory-icon {
-        width: 45px;
-        height: 45px;
-        margin-bottom: 0.8rem;
+        width: 40px;
+        height: 40px;
+        margin-bottom: 0.6rem;
     }
 
     /* Filter Buttons */
+    .filter-button {
+        padding: 15px;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+    }
+
     .filter-button i {
-        font-size: 1.5rem;
-        margin-bottom: 8px;
+        font-size: 1.3rem;
+        margin-bottom: 6px;
+    }
+
+    /* Slider Arrow */
+    .slider-arrow {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+
+    /* Cards and General Text */
+    .card {
+        font-size: 0.9rem;
+    }
+
+    .card-header {
+        font-size: 0.9rem;
+    }
+
+    .form-control,
+    .form-select {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.7rem;
+    }
+
+    /* Generic text elements */
+    p {
+        font-size: 0.9rem;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    h2 {
+        font-size: 1.4rem;
+    }
+
+    h3 {
+        font-size: 1.2rem;
+    }
+
+    h4 {
+        font-size: 1rem;
+    }
+
+    h5 {
+        font-size: 0.9rem;
+    }
+
+    h6 {
+        font-size: 0.8rem;
+    }
+
+    .lead {
+        font-size: 0.95rem;
+    }
+
+    .small {
+        font-size: 0.75rem;
+    }
+
+    /* Button text across the board */
+    .btn {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    .btn-lg {
+        font-size: 1rem;
+        padding: 0.6rem 1rem;
+    }
+
+    .btn-sm {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    /* Links and anchors */
+    a {
+        font-size: inherit;
+    }
+
+    /* Lists */
+    li {
+        font-size: 0.9rem;
+    }
+
+    /* Labels and form text */
+    label {
+        font-size: 0.85rem;
+    }
+
+    .form-text {
+        font-size: 0.75rem;
+    }
+
+    /* Badge and alert text */
+    .badge {
+        font-size: 0.7rem;
+    }
+
+    .alert {
+        font-size: 0.9rem;
+    }
+
+    /* Tooltip and popover */
+    .tooltip-inner {
+        font-size: 0.75rem;
+    }
+
+    .popover-header {
+        font-size: 0.9rem;
+    }
+
+    .popover-body {
+        font-size: 0.85rem;
+    }
+
+    /* Spinner and progress bar text */
+    .spinner-border {
+        width: 1.5rem;
+        height: 1.5rem;
     }
 
     /* ===== LAYOUT ADJUSTMENTS ===== */
@@ -840,7 +983,6 @@ a {
         opacity: 1;
         visibility: visible;
         margin-left: 15px;
-        font-size: 1rem;
         transform: none; /* Remove hover translate on mobile */
     }
     .sidebar-text-logo-user {
@@ -848,7 +990,6 @@ a {
         opacity: 1;
         visibility: visible;
         margin-left: 15px;
-        font-size: 1rem;
         transform: none; /* Remove hover translate on mobile */
     }
 
@@ -913,7 +1054,32 @@ a {
 
     /* Footer Stats */
     .index-footer-stats {
-        padding: 1rem 0;
+        padding: 0.75rem 0;
+    }
+
+    .index-footer-stats .container {
+        padding: 0 0.5rem;
+    }
+
+    .index-footer-stats .col-3,
+    .index-footer-stats .col-md-2 {
+        padding: 0.5rem 0.25rem;
+        border-width: 0.5px !important;
+    }
+
+    .index-footer-stats .small {
+        font-size: 0.6rem;
+        margin-bottom: 0.3rem !important;
+        opacity: 0.6;
+    }
+
+    .index-footer-stats .h5 {
+        font-size: 0.85rem;
+        line-height: 1;
+    }
+
+    .index-footer-stats .bi {
+        font-size: 0.7rem;
     }
 
     /* Preview Panel on Mobile - stack or hide */
