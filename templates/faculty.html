@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}SafeZard - Faculty Dashboard{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        
+        <!-- Header -->
+        <div class="d-flex align-items-center mb-4 border-bottom border-secondary pb-3">
+            <h1 class="mb-0 text-uppercase fw-bold" style="letter-spacing: 2px;">
+                <span style="color: var(--safezard-green);">Faculty</span> Operations
+            </h1>
+            <div class="ms-auto text-muted small text-uppercase">
+                <i class="bi bi-person-workspace me-1"></i> Instructor Mode
+            </div>
+        </div>
+
+        <p class="lead mb-5 text-muted">
+            Monitor student progress, review active training sessions, and analyze class performance metrics.
+        </p>
+
+        <!-- Stats Overview -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="card bg-transparent border border-secondary text-center p-4">
+                    <h2 class="display-4 fw-bold text-white mb-0">{{ students|length }}</h2>
+                    <div class="text-uppercase text-muted small ls-2">Total Students</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-transparent border border-secondary text-center p-4">
+                    <h2 class="display-4 fw-bold text-success mb-0">{{ total_completions }}</h2>
+                    <div class="text-uppercase text-muted small ls-2">Completed Modules</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-transparent border border-secondary text-center p-4">
+                    <h2 class="display-4 fw-bold text-warning mb-0">{{ avg_score }}%</h2>
+                    <div class="text-uppercase text-muted small ls-2">Class Average</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Roster Table -->
+        <div class="card bg-opacity-50 border-secondary shadow-lg">
+            <div class="card-header bg-transparent border-bottom border-secondary d-flex justify-content-between align-items-center">
+                <span class="text-uppercase fw-bold small text-muted ls-1"><i class="bi bi-people-fill me-2"></i>Student Roster</span>
+                <button class="btn btn-sm btn-outline-success rounded-0 text-uppercase" onclick="location.reload()">Refresh Data</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0 align-middle" style="background-color: transparent;">
+                    <thead>
+                        <tr class="text-uppercase small text-muted border-secondary">
+                            <th class="ps-4 py-3">Student Name</th>
+                            <th class="py-3">Modules Active</th>
+                            <th class="py-3">Modules Completed</th>
+                            <th class="py-3 text-center">Avg. Proficiency</th>
+                            <th class="py-3 text-end pe-4">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="border-secondary">
+                        {% for student in students %}
+                        <!-- Added 'cursor-pointer' and modal toggle attributes -->
+                        <tr class="clickable-row" role="button" data-bs-toggle="modal" data-bs-target="#studentModal{{ loop.index }}">
+                            <td class="ps-4">
+                                <div class="fw-bold text-white">{{ student.name }}</div>
+                                <div class="small text-muted" style="font-size: 0.7rem;">{{ student.email }}</div>
+                            </td>
+                            <td>{{ student.active_count }}</td>
+                            <td>{{ student.completed_count }}</td>
+                            <td class="text-center">
+                                <span class="badge {% if student.avg_score >= 80 %}bg-success{% elif student.avg_score >= 50 %}bg-warning{% else %}bg-danger{% endif %} rounded-pill">
+                                    {{ student.avg_score }}%
+                                </span>
+                            </td>
+                            <td class="text-end pe-4">
+                                <button class="btn btn-sm btn-link text-decoration-none text-muted">
+                                    <i class="bi bi-eye-fill"></i> View
+                                </button>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">No student records found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Training Control -->
+        <div class="mt-5 p-4 border border-secondary bg-black bg-opacity-25">
+             <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h5 class="text-uppercase fw-bold text-white mb-1">Instructor Training Access</h5>
+                    <p class="text-muted small mb-0">Instructors are also required to maintain safety certification.</p>
+                </div>
+                <a href="/scenario_select" class="btn btn-game-start py-2 px-4 fs-6">
+                    Start Training
+                </a>
+             </div>
+        </div>
+
+        <!-- Modals Section (Placed outside the table for valid HTML) -->
+        {% for student in students %}
+        <div class="modal fade" id="studentModal{{ loop.index }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content bg-black border border-secondary text-light">
+                    <div class="modal-header border-secondary">
+                        <div>
+                            <h5 class="modal-title fw-bold text-uppercase">{{ student.name }}</h5>
+                            <small class="text-muted">{{ student.email }}</small>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h6 class="text-uppercase text-muted small mb-3 border-bottom border-secondary pb-2">Training History</h6>
+                        
+                        {% if student.scenarios and student.scenarios|length > 0 %}
+                        <div class="table-responsive">
+                            <table class="table table-sm table-dark table-striped bg-transparent">
+                                <thead>
+                                    <tr class="text-muted small">
+                                        <th>Module</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th class="text-end">Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for scenario in student.scenarios %}
+                                    <tr>
+                                        <td class="text-uppercase small">{{ scenario.title }}</td>
+                                        <td class="small">{{ scenario.date }}</td>
+                                        <td>
+                                            {% if scenario.completed %}
+                                                <span class="badge bg-success" style="font-size: 0.6rem;">COMPLETED</span>
+                                            {% else %}
+                                                <span class="badge bg-warning text-dark" style="font-size: 0.6rem;">IN PROGRESS</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-end fw-bold {{ 'text-success' if scenario.score >= 80 else 'text-warning' }}">{{ scenario.score }}%</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                            <p class="text-center text-muted py-3">No activity recorded yet.</p>
+                        {% endif %}
+                    </div>
+                    <div class="modal-footer border-secondary">
+                        <button type="button" class="btn btn-outline-light btn-sm" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+</section>
+
+<style>
+    .clickable-row {
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+    .clickable-row:hover {
+        background-color: rgba(0, 255, 136, 0.05) !important;
+    }
+</style>
+{% endblock %}

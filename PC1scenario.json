@@ -20,98 +20,31 @@
             "label": "Inspect Alone",
             "description": "Investigate the spill by yourself",
             "iconUrl": "/static/assets/decisions/magnifying_glass.svg",
-            "nextNode": "inspect_alone_outcome"
+            "nextNode": "inspect_alone_outcome",
+            "isIncorrect": true
           },
           {
             "id": "call_supervisor",
             "label": "Alert Supervisor",
             "description": "Call your supervisor for guidance",
             "iconUrl": "/static/assets/decisions/phone.svg",
-            "nextNode": "call_supervisor_outcome"
+            "nextNode": "call_supervisor_outcome",
+            "isIncorrect": false
           },
           {
             "id": "evacuate",
             "label": "Evacuate Lab",
             "description": "Pull the alarm and evacuate everyone",
             "iconUrl": "/static/assets/decisions/exit_sign.svg",
-            "nextNode": "evacuate_outcome"
+            "nextNode": "evacuate_outcome",
+            "isIncorrect": true
           }
         ]
       },
       {
         "id": "inspect_alone_outcome",
         "videoUrl": "/static/videos/lab_spill_inspect_alone.mp4",
-        "pauseAt": 9.2,
-        "decisions": [
-          {
-            "id": "use_paper",
-            "label": "Use Paper Towels",
-            "description": "Clean with available paper towels",
-            "nextNode": "paper_towel_outcome"
-          },
-          {
-            "id": "use_spill_kit",
-            "label": "Use Spill Kit",
-            "description": "Find the chemical spill kit",
-            "nextNode": "spill_kit_outcome"
-          },
-          {
-            "id": "leave_spill",
-            "label": "Leave and Report",
-            "description": "Exit and report to supervisor",
-            "nextNode": "leave_spill_outcome"
-          }
-        ]
-      },
-      {
-        "id": "paper_towel_outcome",
-        "videoUrl": "/static/videos/lab_spill_paper_towel.mp4",
-        "nextNode": "conclusion_fail"
-      },
-      {
-        "id": "spill_kit_outcome",
-        "videoUrl": "/static/videos/lab_spill_kit.mp4",
-        "pauseAt": 7.8,
-        "decisions": [
-          {
-            "id": "no_ppe",
-            "label": "Clean Immediately",
-            "description": "Start cleaning without changing PPE",
-            "nextNode": "no_ppe_outcome"
-          },
-          {
-            "id": "wear_ppe",
-            "label": "Wear Proper PPE",
-            "description": "Put on gloves, goggles, and lab coat",
-            "nextNode": "wear_ppe_outcome"
-          },
-          {
-            "id": "check_sds",
-            "label": "Check SDS First",
-            "description": "Check Safety Data Sheet before proceeding",
-            "nextNode": "check_sds_outcome"
-          }
-        ]
-      },
-      {
-        "id": "no_ppe_outcome",
-        "videoUrl": "/static/videos/lab_spill_no_ppe.mp4",
-        "nextNode": "conclusion_fail"
-      },
-      {
-        "id": "wear_ppe_outcome",
-        "videoUrl": "/static/videos/lab_spill_ppe.mp4",
-        "nextNode": "conclusion_partial"
-      },
-      {
-        "id": "check_sds_outcome",
-        "videoUrl": "/static/videos/lab_spill_sds.mp4",
-        "nextNode": "conclusion_success"
-      },
-      {
-        "id": "leave_spill_outcome",
-        "videoUrl": "/static/videos/lab_spill_leave.mp4",
-        "nextNode": "conclusion_partial"
+        "nodes": []
       },
       {
         "id": "call_supervisor_outcome",
@@ -122,76 +55,40 @@
             "id": "wait_supervisor",
             "label": "Wait for Supervisor",
             "description": "Don't touch anything until supervisor arrives",
-            "nextNode": "wait_supervisor_outcome"
+            "nextNode": "wait_supervisor_outcome",
+            "isIncorrect": true
           },
           {
             "id": "follow_protocol",
             "label": "Follow Protocol",
             "description": "Check protocol and begin containment",
-            "nextNode": "follow_protocol_outcome"
+            "nextNode": "follow_protocol_outcome",
+            "isIncorrect": false
           },
           {
             "id": "call_emergency",
             "label": "Call Emergency Services",
             "description": "Call campus emergency response team",
-            "nextNode": "call_emergency_outcome"
+            "nextNode": "call_emergency_outcome",
+            "isIncorrect": false
           }
         ]
-      },
-      {
-        "id": "wait_supervisor_outcome",
-        "videoUrl": "/static/videos/lab_spill_wait.mp4",
-        "nextNode": "conclusion_partial"
-      },
-      {
-        "id": "follow_protocol_outcome",
-        "videoUrl": "/static/videos/lab_spill_protocol.mp4",
-        "nextNode": "conclusion_success"
-      },
-      {
-        "id": "call_emergency_outcome",
-        "videoUrl": "/static/videos/lab_spill_emergency.mp4",
-        "nextNode": "conclusion_success"
       },
       {
         "id": "evacuate_outcome",
-        "videoUrl": "/static/videos/lab_spill_evacuate.mp4",
-        "pauseAt": 8.3,
-        "decisions": [
-          {
-            "id": "evacuate_immediate",
-            "label": "Immediate Evacuation",
-            "description": "Leave everything and exit immediately",
-            "nextNode": "evacuate_immediate_outcome"
-          },
-          {
-            "id": "secure_materials",
-            "label": "Secure Materials First",
-            "description": "Quickly secure hazardous materials, then evacuate",
-            "nextNode": "secure_materials_outcome"
-          },
-          {
-            "id": "help_others",
-            "label": "Help Others",
-            "description": "Ensure everyone evacuates safely",
-            "nextNode": "help_others_outcome"
-          }
-        ]
+        "videoUrl": "/static/videos/lab_spill_evacuate.mp4"
       },
       {
-        "id": "evacuate_immediate_outcome",
-        "videoUrl": "/static/videos/lab_spill_immediate_evac.mp4",
-        "nextNode": "conclusion_partial"
+        "id": "wait_supervisor_outcome",
+        "videoUrl": "/static/videos/lab_spill_wait.mp4"
       },
       {
-        "id": "secure_materials_outcome",
-        "videoUrl": "/static/videos/lab_spill_secure.mp4",
-        "nextNode": "conclusion_success"
+        "id": "follow_protocol_outcome",
+        "videoUrl": "/static/videos/lab_spill_protocol.mp4"
       },
       {
-        "id": "help_others_outcome",
-        "videoUrl": "/static/videos/lab_spill_help_others.mp4",
-        "nextNode": "conclusion_success"
+        "id": "call_emergency_outcome",
+        "videoUrl": "/static/videos/lab_spill_emergency.mp4"
       },
       {
         "id": "conclusion_success",
@@ -282,21 +179,24 @@
             "label": "Use Available Tools",
             "description": "Proceed with the repair using slightly damaged tools",
             "iconUrl": "/static/assets/decisions/tools.svg",
-            "nextNode": "damaged_tools_outcome"
+            "nextNode": "damaged_tools_outcome",
+            "isIncorrect": true
           },
           {
             "id": "report_hazard",
             "label": "Report Hazard",
             "description": "Report the electrical hazard to supervisor",
             "iconUrl": "/static/assets/decisions/clipboard.svg",
-            "nextNode": "report_hazard_outcome"
+            "nextNode": "report_hazard_outcome",
+            "isIncorrect": false
           },
           {
             "id": "find_new_tools",
             "label": "Find Proper Tools",
             "description": "Delay the work to obtain proper tools first",
             "iconUrl": "/static/assets/decisions/toolbox.svg",
-            "nextNode": "proper_tools_outcome"
+            "nextNode": "proper_tools_outcome",
+            "isIncorrect": false
           }
         ]
       },
@@ -384,21 +284,24 @@
             "label": "Continue Working",
             "description": "Continue the fieldwork despite weather warnings",
             "iconUrl": "/static/assets/decisions/field_notes.svg",
-            "nextNode": "continue_work_outcome"
+            "nextNode": "continue_work_outcome",
+            "isIncorrect": true
           },
           {
             "id": "seek_shelter",
             "label": "Seek Shelter",
             "description": "Find immediate shelter from the approaching storm",
             "iconUrl": "/static/assets/decisions/shelter.svg",
-            "nextNode": "seek_shelter_outcome"
+            "nextNode": "seek_shelter_outcome",
+            "isIncorrect": false
           },
           {
             "id": "return_campus",
             "label": "Return to Campus",
             "description": "Pack up and return to campus immediately",
             "iconUrl": "/static/assets/decisions/campus.svg",
-            "nextNode": "return_campus_outcome"
+            "nextNode": "return_campus_outcome",
+            "isIncorrect": false
           }
         ]
       },
@@ -412,21 +315,24 @@
             "label": "Use Metal Equipment",
             "description": "Continue using metal equipment for measurements",
             "iconUrl": "/static/assets/decisions/metal_tools.svg",
-            "nextNode": "metal_equipment_outcome"
+            "nextNode": "metal_equipment_outcome",
+            "isIncorrect": true
           },
           {
             "id": "switch_equipment",
             "label": "Switch Equipment",
             "description": "Switch to non-conductive equipment",
             "iconUrl": "/static/assets/decisions/plastic_tools.svg",
-            "nextNode": "switch_equipment_outcome"
+            "nextNode": "switch_equipment_outcome",
+            "isIncorrect": false
           },
           {
             "id": "delay_measurements",
             "label": "Delay Measurements",
             "description": "Put away equipment until storm passes",
             "iconUrl": "/static/assets/decisions/clock.svg",
-            "nextNode": "delay_measurements_outcome"
+            "nextNode": "delay_measurements_outcome",
+            "isIncorrect": false
           }
         ]
       },
@@ -455,21 +361,24 @@
             "label": "Shelter Under Tree",
             "description": "Take cover under a large tree",
             "iconUrl": "/static/assets/decisions/tree.svg",
-            "nextNode": "under_tree_outcome"
+            "nextNode": "under_tree_outcome",
+            "isIncorrect": true
           },
           {
             "id": "in_vehicle",
             "label": "Return to Vehicle",
             "description": "Go back to the research vehicle",
             "iconUrl": "/static/assets/decisions/vehicle.svg",
-            "nextNode": "in_vehicle_outcome"
+            "nextNode": "in_vehicle_outcome",
+            "isIncorrect": false
           },
           {
             "id": "nearby_building",
             "label": "Find Building",
             "description": "Locate the nearest campus building",
             "iconUrl": "/static/assets/decisions/building.svg",
-            "nextNode": "nearby_building_outcome"
+            "nextNode": "nearby_building_outcome",
+            "isIncorrect": false
           }
         ]
       },
@@ -498,21 +407,24 @@
             "label": "Return Silently",
             "description": "Return without notifying team members",
             "iconUrl": "/static/assets/decisions/quiet.svg",
-            "nextNode": "notify_no_one_outcome"
+            "nextNode": "notify_no_one_outcome",
+            "isIncorrect": true
           },
           {
             "id": "notify_supervisor",
             "label": "Notify Supervisor",
             "description": "Contact supervisor about your decision",
             "iconUrl": "/static/assets/decisions/phone.svg",
-            "nextNode": "notify_supervisor_outcome"
+            "nextNode": "notify_supervisor_outcome",
+            "isIncorrect": false
           },
           {
             "id": "group_decision",
             "label": "Group Decision",
             "description": "Gather the team for a group decision",
             "iconUrl": "/static/assets/decisions/group.svg",
-            "nextNode": "group_decision_outcome"
+            "nextNode": "group_decision_outcome",
+            "isIncorrect": false
           }
         ]
       },

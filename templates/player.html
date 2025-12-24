@@ -14,6 +14,14 @@
             <h4 class="mb-0 text-uppercase fw-bold  ls-1">
                 {{ scenario.title }}
             </h4>
+            
+            <!-- NEW: Life Points Display -->
+            <div class="ms-4 d-flex align-items-center gap-1" id="lives-container">
+                <i class="bi bi-heart-fill text-danger life-point"></i>
+                <i class="bi bi-heart-fill text-danger life-point"></i>
+                <i class="bi bi-heart-fill text-danger life-point"></i>
+            </div>
+
             <div class="ms-auto d-flex align-items-center gap-3">
                 <div class="text-muted small text-uppercase d-none d-md-block">
                     <i class="bi bi-clock me-1"></i> <span id="timer-display">00:00</span>
@@ -53,6 +61,17 @@
 
                     <div class="d-grid gap-3 col-10 col-md-6" id="decision-choices">
                         <!-- Choices injected via JS -->
+                    </div>
+                </div>
+                
+                <!-- Feedback Overlay (For Life Loss) -->
+                <div id="feedback-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-none flex-column align-items-center justify-content-center" 
+                     style="background: rgba(50, 0, 0, 0.8); z-index: 110;">
+                    <div class="text-center">
+                        <i class="bi bi-x-circle-fill text-danger display-1 mb-3"></i>
+                        <h2 class="text-uppercase fw-bold text-danger">Protocol Violation</h2>
+                        <p class="text-white lead">Safety compromised. Life point deducted.</p>
+                        <button id="retry-btn" class="btn btn-outline-light mt-3">RETRY SEQUENCE</button>
                     </div>
                 </div>
 
@@ -168,6 +187,12 @@
         0% { text-shadow: 0 0 10px rgba(241, 196, 15, 0.5); }
         50% { text-shadow: 0 0 20px rgba(241, 196, 15, 0.8); transform: scale(1.05); }
         100% { text-shadow: 0 0 10px rgba(241, 196, 15, 0.5); }
+    }
+    
+    .life-lost {
+        color: #555 !important;
+        transform: scale(0.8);
+        transition: all 0.3s ease;
     }
 </style>
 {% endblock %}

@@ -84,6 +84,17 @@
                     <span class="sidebar-text">STATS</span>
                 </a>
             </li>
+            
+            <!-- FACULTY NAVIGATION (Conditional) -->
+            {% if session.get('user_role') == 'faculty' %}
+            <li class="nav-item">
+                <a href="/faculty" class="nav-link text-warning" data-preview="faculty">
+                    <i class="bi bi-person-video3"></i>
+                    <span class="sidebar-text">FACULTY</span>
+                </a>
+            </li>
+            {% endif %}
+
             <!-- NEW PROFILE NAVIGATION -->
             <li class="nav-item">
                 <a href="/profile" class="nav-link" data-preview="profile">
@@ -199,6 +210,14 @@
                 </div>
             </div>
         </div>
+        
+        <!-- NEW PREVIEW PANEL FOR FACULTY -->
+        <div id="preview-faculty" class="preview-panel">
+            <i class="bi bi-person-video3 preview-icon-large text-warning"></i>
+            <h2 class="preview-title">Faculty Ops</h2>
+            <p class="preview-desc">Instructor Dashboard: Monitor student progress and manage course data.</p>
+        </div>
+
         <!-- NEW PREVIEW PANEL FOR PROFILE -->
         <div id="preview-profile" class="preview-panel">
             <i class="bi bi-person-badge-fill preview-icon-large text-primary"></i>

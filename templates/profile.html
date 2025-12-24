@@ -63,11 +63,15 @@
                             </div>
                             <div class="d-flex justify-content-between">
                                 <span class="text-muted small text-uppercase">Role</span>
-                                <span class=" small text-uppercase">Student</span>
+                                <span class=" small text-uppercase">{{ role }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mt-2 pt-2 border-top border-secondary">
+                                <span class="text-muted small text-uppercase">Modules Completed</span>
+                                <span class="text-white small fw-bold">{{ completed_count }}</span>
                             </div>
                         </div>
 
-                        <button class="btn btn-outline-light w-100 text-uppercase fw-bold" style="font-size: 0.85rem;">
+                        <button class="btn btn-outline-light w-100 text-uppercase fw-bold" style="font-size: 0.85rem;" disabled title="Edit feature coming soon">
                             <i class="bi bi-pencil-square me-2"></i> Edit Details
                         </button>
                     </div>
@@ -84,8 +88,16 @@
                             <i class="bi bi-award-fill" style="font-size: 4rem; color: var(--safezard-caution-yellow);"></i>
                         </div>
                         <div class="flex-grow-1 text-center text-md-start">
-                            <h4 class=" text-uppercase fw-bold mb-1">Clearance Level 1</h4>
-                            <p class="text-muted small mb-0">Complete more training modules to increase your safety clearance and access advanced simulations.</p>
+                            <h4 class=" text-uppercase fw-bold mb-1">Clearance Level {{ clearance_level }}</h4>
+                            <p class="text-muted small mb-0">
+                                {% if clearance_level == 1 %}
+                                    Beginner Clearance. Complete 3 modules to reach Level 2.
+                                {% elif clearance_level == 2 %}
+                                    Intermediate Clearance. Complete 6 modules to reach Level 3.
+                                {% else %}
+                                    Advanced Clearance. You have access to all advanced simulations.
+                                {% endif %}
+                            </p>
                         </div>
                         <div class="ms-md-4 mt-3 mt-md-0">
                              <a href="/scenario_select" class="btn btn-success text-uppercase fw-bold px-4 py-2" 
@@ -96,7 +108,7 @@
                     </div>
                     <!-- Progress Bar Decorative -->
                     <div class="progress" style="height: 4px; background-color: rgba(255,255,255,0.1); border-radius: 0;">
-                        <div class="progress-bar" role="progressbar" style="width: 35%; background-color: var(--safezard-caution-yellow);" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100"></div>
+                        <div class="progress-bar" role="progressbar" style="width: {{ level_progress }}%; background-color: var(--safezard-caution-yellow);" aria-valuenow="{{ level_progress }}" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </div>
 
@@ -109,7 +121,8 @@
                     </div>
                     <div class="card-body p-0">
                         <div class="list-group list-group-flush">
-                            <a href="#" class="list-group-item list-group-item-action bg-transparent border-secondary  py-3 d-flex align-items-center">
+                            <!-- Change Email Action -->
+                            <a href="#" class="list-group-item list-group-item-action bg-transparent border-secondary py-3 d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#changeEmailModal">
                                 <div class="me-3 text-muted"><i class="bi bi-envelope fs-5"></i></div>
                                 <div>
                                     <h6 class="mb-0 small text-uppercase fw-bold">Change Email Address</h6>
@@ -119,7 +132,9 @@
                                 </div>
                                 <i class="bi bi-chevron-right ms-auto text-muted small"></i>
                             </a>
-                            <a href="#" class="list-group-item list-group-item-action bg-transparent border-secondary  py-3 d-flex align-items-center">
+
+                            <!-- Reset Password Action -->
+                            <a href="#" class="list-group-item list-group-item-action bg-transparent border-secondary py-3 d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#resetPasswordModal">
                                 <div class="me-3 text-muted"><i class="bi bi-key fs-5"></i></div>
                                 <div>
                                     <h6 class="mb-0 small text-uppercase fw-bold">Reset Password</h6>
@@ -127,6 +142,7 @@
                                 </div>
                                 <i class="bi bi-chevron-right ms-auto text-muted small"></i>
                             </a>
+
                             <a href="#" class="list-group-item list-group-item-action bg-transparent border-secondary  py-3 d-flex align-items-center">
                                 <div class="me-3 text-muted"><i class="bi bi-bell fs-5"></i></div>
                                 <div>
@@ -152,4 +168,215 @@
         </div>
     </div>
 </section>
+
+<!-- Modals for Actions -->
+
+<!-- Change Email Modal -->
+<div class="modal fade" id="changeEmailModal" tabindex="-1" aria-labelledby="changeEmailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-black border border-secondary text-light">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title fw-bold text-uppercase" id="changeEmailModalLabel">Update Email</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="emailForm">
+                    <div class="mb-3">
+                        <label for="newEmail" class="form-label text-muted small text-uppercase">New Email Address</label>
+                        <input type="email" class="form-control bg-dark text-light border-secondary" id="newEmail" required placeholder="name@example.com">
+                    </div>
+                    <div id="emailMsg" class="alert d-none small"></div>
+                </form>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-outline-light btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success btn-sm" id="saveEmailBtn">Send Confirmation</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reset Password Modal -->
+<div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-black border border-secondary text-light">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title fw-bold text-uppercase" id="resetPasswordModalLabel">Security Update</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul class="nav nav-tabs border-secondary mb-3" id="pwdTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active text-light bg-transparent" id="reset-link-tab" data-bs-toggle="tab" data-bs-target="#reset-link" type="button" role="tab">Send Link</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link text-light bg-transparent" id="new-pwd-tab" data-bs-toggle="tab" data-bs-target="#new-pwd" type="button" role="tab">Set New Password</button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content" id="pwdTabContent">
+                    <div class="tab-pane fade show active" id="reset-link" role="tabpanel">
+                         <p class="small text-muted">We will send a password reset link to your registered email address.</p>
+                         <div id="resetMsg" class="alert d-none small"></div>
+                         <button type="button" class="btn btn-primary w-100 mt-2" id="sendResetLinkBtn">Send Reset Link</button>
+                    </div>
+                    <div class="tab-pane fade" id="new-pwd" role="tabpanel">
+                        <form id="pwdForm">
+                            <div class="mb-3">
+                                <label for="newPassword" class="form-label text-muted small text-uppercase">New Password</label>
+                                <input type="password" class="form-control bg-dark text-light border-secondary" id="newPassword" required minlength="6">
+                            </div>
+                             <div class="mb-3">
+                                <label for="confirmPassword" class="form-label text-muted small text-uppercase">Confirm Password</label>
+                                <input type="password" class="form-control bg-dark text-light border-secondary" id="confirmPassword" required minlength="6">
+                            </div>
+                            <div id="pwdMsg" class="alert d-none small"></div>
+                            <button type="button" class="btn btn-warning w-100 mt-2" id="savePwdBtn">Update Password</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JS for Modals -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- Email Update Logic ---
+        const saveEmailBtn = document.getElementById('saveEmailBtn');
+        const emailMsg = document.getElementById('emailMsg');
+        
+        saveEmailBtn.addEventListener('click', async () => {
+            const newEmail = document.getElementById('newEmail').value;
+            if(!newEmail) return;
+
+            saveEmailBtn.disabled = true;
+            saveEmailBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Sending...';
+            
+            try {
+                const res = await fetch('/api/update_email', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ email: newEmail })
+                });
+                const data = await res.json();
+                
+                emailMsg.classList.remove('d-none', 'alert-success', 'alert-danger');
+                if (data.success) {
+                    emailMsg.classList.add('alert-success');
+                    emailMsg.textContent = data.message;
+                    setTimeout(() => {
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('changeEmailModal'));
+                        modal.hide();
+                        location.reload();
+                    }, 3000);
+                } else {
+                    emailMsg.classList.add('alert-danger');
+                    emailMsg.textContent = data.message || 'Error updating email.';
+                    saveEmailBtn.disabled = false;
+                    saveEmailBtn.textContent = 'Send Confirmation';
+                }
+            } catch (err) {
+                console.error(err);
+                emailMsg.classList.remove('d-none');
+                emailMsg.classList.add('alert-danger');
+                emailMsg.textContent = 'System error occurred.';
+                saveEmailBtn.disabled = false;
+                saveEmailBtn.textContent = 'Send Confirmation';
+            }
+        });
+
+        // --- Password Reset Logic (Link) ---
+        const sendResetLinkBtn = document.getElementById('sendResetLinkBtn');
+        const resetMsg = document.getElementById('resetMsg');
+
+        sendResetLinkBtn.addEventListener('click', async () => {
+            sendResetLinkBtn.disabled = true;
+            sendResetLinkBtn.textContent = 'Sending...';
+
+            try {
+                // Call API without password -> triggers email link flow
+                const res = await fetch('/api/reset_password', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({}) 
+                });
+                const data = await res.json();
+
+                resetMsg.classList.remove('d-none', 'alert-success', 'alert-danger');
+                if(data.success) {
+                    resetMsg.classList.add('alert-success');
+                    resetMsg.textContent = data.message;
+                } else {
+                    resetMsg.classList.add('alert-danger');
+                    resetMsg.textContent = data.message;
+                    sendResetLinkBtn.disabled = false;
+                    sendResetLinkBtn.textContent = 'Send Reset Link';
+                }
+            } catch (err) {
+                resetMsg.classList.remove('d-none', 'alert-success');
+                resetMsg.classList.add('alert-danger');
+                resetMsg.textContent = 'System error.';
+                sendResetLinkBtn.disabled = false;
+                sendResetLinkBtn.textContent = 'Send Reset Link';
+            }
+        });
+
+        // --- Password Update Logic (Direct) ---
+        const savePwdBtn = document.getElementById('savePwdBtn');
+        const pwdMsg = document.getElementById('pwdMsg');
+
+        savePwdBtn.addEventListener('click', async () => {
+            const p1 = document.getElementById('newPassword').value;
+            const p2 = document.getElementById('confirmPassword').value;
+
+            if (p1 !== p2) {
+                pwdMsg.classList.remove('d-none');
+                pwdMsg.classList.add('alert-danger');
+                pwdMsg.textContent = "Passwords do not match.";
+                return;
+            }
+            if (p1.length < 6) {
+                pwdMsg.classList.remove('d-none');
+                pwdMsg.classList.add('alert-danger');
+                pwdMsg.textContent = "Password too short.";
+                return;
+            }
+
+            savePwdBtn.disabled = true;
+            savePwdBtn.textContent = "Updating...";
+
+            try {
+                const res = await fetch('/api/reset_password', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ password: p1 }) 
+                });
+                const data = await res.json();
+
+                pwdMsg.classList.remove('d-none', 'alert-success', 'alert-danger');
+                if(data.success) {
+                    pwdMsg.classList.add('alert-success');
+                    pwdMsg.textContent = "Password updated successfully.";
+                    setTimeout(() => {
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('resetPasswordModal'));
+                        modal.hide();
+                    }, 2000);
+                } else {
+                    pwdMsg.classList.add('alert-danger');
+                    pwdMsg.textContent = data.message;
+                    savePwdBtn.disabled = false;
+                    savePwdBtn.textContent = "Update Password";
+                }
+            } catch (err) {
+                pwdMsg.classList.remove('d-none');
+                pwdMsg.classList.add('alert-danger');
+                pwdMsg.textContent = "System error.";
+                savePwdBtn.disabled = false;
+                savePwdBtn.textContent = "Update Password";
+            }
+        });
+    });
+</script>
 {% endblock %}

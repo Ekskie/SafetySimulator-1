@@ -15,13 +15,13 @@
         "pauseAt": 15.0,
         "decisions": [
           {
-            "id": "ignore", "label": "IGNORE & KEEP WORKING", "nextNode": "s1A_DP2"
+            "id": "ignore", "label": "IGNORE & KEEP WORKING", "nextNode": "s1A_DP2", "isIncorrect": true
           },
           {
-            "id": "cloth", "label": "GRAB CLOTH & CLEAN", "nextNode": "s1B_DP2"
+            "id": "cloth", "label": "GRAB CLOTH & CLEAN", "nextNode": "s1B_DP2", "isIncorrect": true
           },
           {
-            "id": "stop", "label": "STOP, GET OUT", "nextNode": "s1C_DP2"
+            "id": "stop", "label": "STOP, GET OUT", "nextNode": "s1C_DP2", "isIncorrect": false
           }
         ]
       },
@@ -31,10 +31,10 @@
         "pauseAt": 10.0,
         "decisions": [
           { 
-            "id": "unplug", "label": "UNPLUG", "nextNode": "s1a1" 
+            "id": "unplug", "label": "UNPLUG", "nextNode": "s1a1", "isIncorrect": true 
           },
           { 
-            "id": "s1a2", "label": "PANIC & RUN AWAY", "nextNode": "s1a2"
+            "id": "s1a2", "label": "PANIC & RUN AWAY", "nextNode": "s1a2", "isIncorrect": true
           }
         ]
       },
@@ -52,10 +52,10 @@
         "pauseAt": 7.0,
         "decisions": [
           { 
-            "id": "wipe", "label": "WIPE", "nextNode": "s1b1" 
+            "id": "wipe", "label": "WIPE", "nextNode": "s1b1", "isIncorrect": true 
           },
           { 
-            "id": "unplug", "label": "UNPLUG", "nextNode": "s1b2" 
+            "id": "unplug", "label": "UNPLUG", "nextNode": "s1b2", "isIncorrect": true 
           }
         ]
       },
@@ -73,10 +73,10 @@
         "pauseAt": 5.0,
         "decisions": [
           { 
-            "id": "s1c1", "label": "SUPERVISOR", "nextNode": "s1c1" 
+            "id": "s1c1", "label": "SUPERVISOR", "nextNode": "s1c1", "isIncorrect": false 
           },
           { 
-            "id": "s1c2", "label": "CLASSMATE", "nextNode": "s1c2" 
+            "id": "s1c2", "label": "CLASSMATE", "nextNode": "s1c2", "isIncorrect": true 
           }
         ]
       },
@@ -144,12 +144,6 @@
       ]
     }
   },
-  
-
-
-
-
-
   {
     "id": "Chemical Spill in the Laboratory",
     "workplace": "laboratory",
@@ -166,13 +160,13 @@
         "pauseAt": 17.0,
         "decisions": [
           {
-            "id": "towel", "label": "TRY TO CLEAN WITH TOWEL", "nextNode": "s3A_DP2"
+            "id": "towel", "label": "TRY TO CLEAN WITH TOWEL", "nextNode": "s3A_DP2", "isIncorrect": true
           },
           {
-            "id": "window", "label": "OPEN WINDOW & LEAVE", "nextNode": "s3B_DP2"
+            "id": "window", "label": "OPEN WINDOW & LEAVE", "nextNode": "s3B_DP2", "isIncorrect": true
           },
           {
-            "id": "sp", "label": "STEP AWAY & ALERT THE SUPERVISOR", "nextNode": "s3C_DP2"
+            "id": "sp", "label": "STEP AWAY & ALERT THE SUPERVISOR", "nextNode": "s3C_DP2", "isIncorrect": false
           }
         ]
       },
@@ -182,10 +176,10 @@
         "pauseAt": 8.0,
         "decisions": [
           { 
-            "id": "sink", "label": "RUN TO THE SINK", "nextNode": "s3a1" 
+            "id": "sink", "label": "RUN TO THE SINK", "nextNode": "s3a1", "isIncorrect": false 
           },
           { 
-            "id": "moreTowels", "label": "KEEP CLEANING, MORE TOWELS", "nextNode": "s3a2"
+            "id": "moreTowels", "label": "KEEP CLEANING, MORE TOWELS", "nextNode": "s3a2", "isIncorrect": true
           }
         ]
       },
@@ -203,13 +197,13 @@
         "pauseAt": 8.0,
         "decisions": [
           { 
-            "id": "home", "label": "GO HOME, HOPE IT AIRS OUT", "nextNode": "s3b1" 
+            "id": "home", "label": "GO HOME, HOPE IT AIRS OUT", "nextNode": "s3b1", "isIncorrect": true 
           },
           { 
-            "id": "warn", "label": "WARN THE OTHERS", "nextNode": "s3b2" 
+            "id": "warn", "label": "WARN THE OTHERS", "nextNode": "s3b2", "isIncorrect": true 
           },
           { 
-            "id": "call", "label": "CALL FOR SAFETY", "nextNode": "s3b3" 
+            "id": "call", "label": "CALL FOR SAFETY", "nextNode": "s3b3", "isIncorrect": false 
           }
         ]
       },
@@ -231,10 +225,10 @@
         "pauseAt": 4.0,
         "decisions": [
           { 
-            "id": "s1c1", "label": "SECURE AREA", "nextNode": "s3c1" 
+            "id": "s1c1", "label": "SECURE AREA", "nextNode": "s3c1", "isIncorrect": false 
           },
           { 
-            "id": "s1c2", "label": "INFORM OTHERS", "nextNode": "s3c2" 
+            "id": "s1c2", "label": "INFORM OTHERS", "nextNode": "s3c2", "isIncorrect": true 
           }
         ]
       },
@@ -302,11 +296,6 @@
       ]
     }
   },
-
-
-
-
-
   {
     "id": "Improper Handling of Agricultural Chemicals",
     "workplace": "laboratory",
@@ -323,13 +312,13 @@
         "pauseAt": 8.0,
         "decisions": [
           {
-            "id": "openmix", "label": "OPEN AND MIX WITH BARE HANDS", "nextNode": "s7A_DP2"
+            "id": "openmix", "label": "OPEN AND MIX WITH BARE HANDS", "nextNode": "s7A_DP2", "isIncorrect": true
           },
           {
-            "id": "gloves", "label": "PUT ON GLOVES, BUT SKIP THE LABELS", "nextNode": "s7B_DP2"
+            "id": "gloves", "label": "PUT ON GLOVES, BUT SKIP THE LABELS", "nextNode": "s7B_DP2", "isIncorrect": true
           },
           {
-            "id": "label", "label": "READ THE LABEL/S, EQUIP PROPER GEAR", "nextNode": "s7C_DP2"
+            "id": "label", "label": "READ THE LABEL/S, EQUIP PROPER GEAR", "nextNode": "s7C_DP2", "isIncorrect": false
           }
         ]
       },
@@ -339,10 +328,10 @@
         "pauseAt": 7.0,
         "decisions": [
           { 
-            "id": "sink", "label": "RUN TO THE SINK", "nextNode": "s7a1" 
+            "id": "sink", "label": "RUN TO THE SINK", "nextNode": "s7a1", "isIncorrect": false 
           },
           { 
-            "id": "wipeitoff", "label": "JUST WIPE IT OFF, KEEP WORKING", "nextNode": "s7a2"
+            "id": "wipeitoff", "label": "JUST WIPE IT OFF, KEEP WORKING", "nextNode": "s7a2", "isIncorrect": true
           }
         ]
       },
@@ -360,10 +349,10 @@
         "pauseAt": 12.0,
         "decisions": [
           { 
-            "id": "WATER", "label": "ADD WATER TO STOP THE REACTION", "nextNode": "s7b1" 
+            "id": "WATER", "label": "ADD WATER TO STOP THE REACTION", "nextNode": "s7b1", "isIncorrect": true 
           },
           { 
-            "id": "bavar", "label": "BACK AWAY, VENTIALTE THE AREA, REPORT", "nextNode": "s7b2" 
+            "id": "bavar", "label": "BACK AWAY, VENTIALTE THE AREA, REPORT", "nextNode": "s7b2", "isIncorrect": false 
           }
         ]
       },
@@ -381,10 +370,10 @@
         "pauseAt": 8.0,
         "decisions": [
           { 
-            "id": "outside", "label": "PREP OUTSIDE", "nextNode": "s7c1" 
+            "id": "outside", "label": "PREP OUTSIDE", "nextNode": "s7c1", "isIncorrect": false 
           },
           { 
-            "id": "inside", "label": "STAY INSIDE TO SAVE TIME", "nextNode": "s7c2" 
+            "id": "inside", "label": "STAY INSIDE TO SAVE TIME", "nextNode": "s7c2", "isIncorrect": true 
           }
         ]
       },
@@ -452,11 +441,6 @@
       ]
     }
   },
-
-
-
-
-
   {
     "id": "Grease Fire in the Food Lab",
     "workplace": "laboratory",
@@ -473,13 +457,13 @@
         "pauseAt": 16.0,
         "decisions": [
           {
-            "id": "throw", "label": "PANIC & THROW WATER", "nextNode": "s5A_DP2"
+            "id": "throw", "label": "PANIC & THROW WATER", "nextNode": "s5A_DP2", "isIncorrect": true
           },
           {
-            "id": "swat", "label": "USE CLOTH TO SWAT THE FIRE", "nextNode": "s5B_DP2"
+            "id": "swat", "label": "USE CLOTH TO SWAT THE FIRE", "nextNode": "s5B_DP2", "isIncorrect": true
           },
           {
-            "id": "stove", "label": "TURN OFF STOVE & COVER WITH LID", "nextNode": "s5C_DP2"
+            "id": "stove", "label": "TURN OFF STOVE & COVER WITH LID", "nextNode": "s5C_DP2", "isIncorrect": false
           }
         ]
       },
@@ -489,10 +473,10 @@
         "pauseAt": 4.0,
         "decisions": [
           { 
-            "id": "alarm", "label": "PULL THE FIRE ALARM", "nextNode": "s5a1" 
+            "id": "alarm", "label": "PULL THE FIRE ALARM", "nextNode": "s5a1", "isIncorrect": false 
           },
           { 
-            "id": "blanket", "label": "THROW A BLANKET", "nextNode": "s5a2"
+            "id": "blanket", "label": "THROW A BLANKET", "nextNode": "s5a2", "isIncorrect": true
           }
         ]
       },
@@ -510,10 +494,10 @@
         "pauseAt": 7.0,
         "decisions": [
           { 
-            "id": "floor", "label": "DROP IT ON THE FLOOR", "nextNode": "s5b1" 
+            "id": "floor", "label": "DROP IT ON THE FLOOR", "nextNode": "s5b1", "isIncorrect": true 
           },
           { 
-            "id": "firesink", "label": "THROW IT INTO THE SINK", "nextNode": "s5b2" 
+            "id": "firesink", "label": "THROW IT INTO THE SINK", "nextNode": "s5b2", "isIncorrect": true 
           }
         ]
       },
@@ -531,10 +515,10 @@
         "pauseAt": 7.0,
         "decisions": [
           { 
-            "id": "leaveit", "label": "LEAVE IT ON", "nextNode": "s5c1" 
+            "id": "leaveit", "label": "LEAVE IT ON", "nextNode": "s5c1", "isIncorrect": true 
           },
           { 
-            "id": "remove", "label": "REMOVE", "nextNode": "s5c2" 
+            "id": "remove", "label": "REMOVE", "nextNode": "s5c2", "isIncorrect": false 
           }
         ]
       },

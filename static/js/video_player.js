@@ -14,6 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const decisionPrompt = document.getElementById('decision-prompt');
     const decisionChoices = document.getElementById('decision-choices');
     const loadingOverlay = document.getElementById('loading-overlay');
+    
+    // Feedback Overlays
+    const feedbackOverlay = document.getElementById('feedback-overlay');
+    const retryBtn = document.getElementById('retry-btn');
+    const lifePoints = document.querySelectorAll('.life-point');
 
     // 2. Data from Template
     if (typeof SCENARIO_DATA === 'undefined') {
@@ -21,18 +26,22 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    // --- GAME STATE ---
+    let lives = 3;
+    let currentNode = null;
+    let previousNodeId = null; // To handle looping back
+    let nodesMap = {};
+    let isDecisionActive = false;
+    let hasPausedForCurrentNode = false;
+    let activeDecisionData = null; // Store choice data for feedback logic
+    
     // --- NODE SYSTEM SETUP (Graph Based) ---
     const isNodeBased = SCENARIO_DATA.nodes && SCENARIO_DATA.nodes.length > 0;
-    let currentNode = null;
-    let nodesMap = {};
     
     if (isNodeBased) {
         // Build a map for O(1) lookups
         SCENARIO_DATA.nodes.forEach(n => nodesMap[n.id] = n);
     }
-
-    let isDecisionActive = false;
-    let hasPausedForCurrentNode = false;
 
     // 3. Initialize
     if (isNodeBased && SCENARIO_DATA.startNode) {
@@ -84,11 +93,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         console.log("Loading Node:", nodeId);
+        
+        // Store previous node only if it was a "setup" node (one with decisions)
+        // This allows us to loop back to the QUESTION, not just the previous video snippet
+        if (currentNode && currentNode.decisions && currentNode.decisions.length > 0) {
+            previousNodeId = currentNode.id; 
+        }
+
         currentNode = node;
         hasPausedForCurrentNode = false; // Reset pause trigger
 
         // Update Video Source
-        // Note: JSON provides absolute path like "/static/videos/..."
         video.src = node.videoUrl;
         
         if (autoPlay) {
@@ -113,10 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 triggerDecision(currentNode.decisions);
             }
         } 
-        // Fallback for non-node based (Legacy linear)
-        else if (!isNodeBased) {
-            // (Legacy code would go here if needed)
-        }
     });
 
     function triggerDecision(decisions) {
@@ -126,11 +137,11 @@ document.addEventListener('DOMContentLoaded', () => {
         
         video.pause();
         isDecisionActive = true;
-        hasPausedForCurrentNode = true; // Prevent re-triggering for this node
+        hasPausedForCurrentNode = true;
         updatePlayIcon();
 
         // Setup Overlay
-        decisionPrompt.textContent = "Select Protocol"; // Or generic text
+        decisionPrompt.textContent = "Select Protocol"; 
         decisionChoices.innerHTML = '';
 
         decisions.forEach(opt => {
@@ -139,17 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.innerHTML = `<i class="bi bi-caret-right-fill me-2"></i> ${opt.label}`;
             
             btn.addEventListener('click', () => {
-                // Hide Overlay
-                decisionOverlay.classList.remove('d-flex');
-                decisionOverlay.classList.add('d-none');
-                isDecisionActive = false;
-                
-                // Navigate to Next Node
-                if (opt.nextNode) {
-                    loadNode(opt.nextNode, true);
-                } else {
-                    console.log("No next node defined for this choice.");
-                }
+                handleChoice(opt);
             });
             decisionChoices.appendChild(btn);
         });
@@ -159,27 +160,95 @@ document.addEventListener('DOMContentLoaded', () => {
         decisionOverlay.classList.add('d-flex');
     }
 
+    function handleChoice(opt) {
+        // Hide Decision Overlay
+        decisionOverlay.classList.remove('d-flex');
+        decisionOverlay.classList.add('d-none');
+        isDecisionActive = false;
+        
+        // Store choice to check correctness after video plays (or immediately if needed)
+        // Note: For immediate feedback loops, we process flags here.
+        activeDecisionData = opt;
+
+        if (opt.nextNode) {
+            loadNode(opt.nextNode, true);
+        } else {
+            console.log("No next node defined for this choice.");
+        }
+    }
+
+    // 7. End of Node / Feedback Handling
+    video.addEventListener('ended', () => {
+        if (!isNodeBased) return;
+
+        // Check if the node we just finished was a "Wrong Answer Consequence"
+        if (activeDecisionData && activeDecisionData.isIncorrect) {
+            handleFailure();
+            activeDecisionData = null; // Reset
+            return;
+        }
+
+        // Standard Navigation (Success path or Neutral path)
+        if (!currentNode.decisions || currentNode.decisions.length === 0) {
+            // Leaf node = End of Scenario
+            console.log("Scenario Complete. Redirecting to Quiz.");
+            window.location.href = `/quiz/${SCENARIO_DATA.id}`;
+        } else {
+            // This node just flows into another decision? 
+            // Usually nodes with decisions pause. If it played to end without pausing, 
+            // it might mean 'pauseAt' was missing or > duration.
+            // Do nothing, just wait.
+        }
+    });
+
+    function handleFailure() {
+        lives--;
+        updateLivesUI();
+
+        if (lives > 0) {
+            // Show Feedback Overlay
+            feedbackOverlay.classList.remove('d-none');
+            feedbackOverlay.classList.add('d-flex');
+        } else {
+            // Game Over Logic
+            alert("CRITICAL FAILURE: 3 Strikes. Simulation Failed.");
+            window.location.href = `/quiz/${SCENARIO_DATA.id}`; // Or a game over page
+        }
+    }
+
+    // Retry Button Logic
+    if (retryBtn) {
+        retryBtn.addEventListener('click', () => {
+            feedbackOverlay.classList.add('d-none');
+            feedbackOverlay.classList.remove('d-flex');
+            
+            // Loop back to the previous Decision Node (Context Scene)
+            if (previousNodeId) {
+                console.log("Retrying node:", previousNodeId);
+                loadNode(previousNodeId, true);
+            } else {
+                // Fallback to start if tracking lost
+                loadNode(SCENARIO_DATA.startNode, true);
+            }
+        });
+    }
+
+    function updateLivesUI() {
+        // Update hearts from right to left
+        // lives = 2 -> index 2 (3rd heart) becomes lost
+        // lives = 1 -> index 1 (2nd heart) becomes lost
+        
+        // If lives=2, we have lost 1 heart. The heart at index 2 (last one) should dim.
+        if (lives < 3) lifePoints[2].classList.add('life-lost');
+        if (lives < 2) lifePoints[1].classList.add('life-lost');
+        if (lives < 1) lifePoints[0].classList.add('life-lost');
+    }
+
     function formatTime(seconds) {
         const m = Math.floor(seconds / 60);
         const s = Math.floor(seconds % 60);
         return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     }
-
-    // 7. End of Node Handling
-    video.addEventListener('ended', () => {
-        if (isNodeBased) {
-            // If the video ends and there were no decisions to make,
-            // it means we reached a leaf node (conclusion).
-            // Redirect to Quiz.
-            if (!currentNode.decisions || currentNode.decisions.length === 0) {
-                console.log("Scenario Complete. Redirecting to Quiz.");
-                window.location.href = `/quiz/${SCENARIO_DATA.id}`;
-            }
-        } else {
-            // Legacy Linear Fallback
-            window.location.href = `/quiz/${SCENARIO_DATA.id}`;
-        }
-    });
 
     // Fullscreen
     fullscreenBtn.addEventListener('click', () => {
