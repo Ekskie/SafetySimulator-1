@@ -22,6 +22,79 @@ def library():
 def analytics():
     return render_template("analytics.html")
 
+@student_bp.route("/leaderboard")
+@login_required
+def leaderboard():
+    try:
+        # 1. Fetch Profiles (for names)
+        # We assume your 'profile' table links to auth via 'id' or 'user_id'
+        # and has a name field like 'full_name', 'username', or 'name'
+        profiles_res = supabase.table('profiles').select('*').execute()
+        profiles = profiles_res.data if profiles_res.data else []
+        
+        # 2. Fetch Progress (for scores)
+        progress_res = supabase.table('user_progress').select('*').eq('completed', True).execute()
+        progress_data = progress_res.data if progress_res.data else []
+        
+        # 3. Calculate Total Score per User
+        user_scores = {}
+        for item in progress_data:
+            uid = item.get('user_id')
+            score = item.get('score', 0)
+            if uid in user_scores:
+                user_scores[uid] += score
+            else:
+                user_scores[uid] = score
+                
+        # 4. Merge Data for Template
+        leaderboard_data = []
+        for p in profiles:
+            # Handle different possible column names for ID and Name
+            uid = p.get('id') or p.get('user_id')
+            name = p.get('full_name') or p.get('username') or p.get('name') or 'Unknown User'
+            role = p.get('role', 'student').lower()
+            total_points = user_scores.get(uid, 0)
+            
+            # Dynamic Badge Logic (Since we don't store badges in DB)
+            badges = []
+            if total_points >= 1000:
+                badges.append("Safety Champion")
+            if total_points >= 500:
+                badges.append("Expert")
+            elif total_points >= 100:
+                badges.append("Novice")
+                
+            leaderboard_data.append({
+                'id': uid,
+                'name': name,
+                'role': role, # Default, or fetch from profile if available
+                'points': total_points,
+                'badges': badges
+            })
+            
+        # 5. Sort by Points (Descending)
+        leaderboard_data.sort(key=lambda x: x['points'], reverse=True)
+        top_users = leaderboard_data[:50]
+        
+        # 6. Get Current User Stats
+        current_user_stats = next((u for u in leaderboard_data if u['id'] == current_user.id), None)
+        
+        if not current_user_stats:
+            # Fallback if user hasn't played yet or isn't in profile table
+            current_user_stats = {
+                'id': current_user.id,
+                'name': 'You',
+                'role': session.get('user_role', 'student'),
+                'points': 0,
+                'badges': []
+            }
+
+        return render_template('leaderboard.html', top_users=top_users, current_user=current_user_stats)
+    except Exception as e:
+        print(f"Leaderboard error: {e}")
+        flash("Unable to load leaderboard at this time.", "error")
+        return redirect(url_for('general.index'))
+
 @student_bp.route("/profile")
 @login_required
 def profile():

@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .leaderboard-container {
+        max-width: 900px;
+        margin: 40px auto;
+    }
+
+    .gamification-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 12px 12px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .user-stats-card {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        backdrop-filter: blur(5px);
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        opacity: 0.9;
+    }
+
+    .leaderboard-body {
+        background: white;
+        border-radius: 0 0 12px 12px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    .ranking-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .ranking-table th {
+        text-align: left;
+        padding: 15px;
+        color: #718096;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .ranking-table td {
+        padding: 15px;
+        border-bottom: 1px solid #edf2f7;
+        vertical-align: middle;
+    }
+
+    .rank-cell {
+        font-weight: bold;
+        color: #718096;
+        width: 50px;
+        text-align: center;
+    }
+
+    .rank-1 { color: #ecc94b; font-size: 1.2rem; } /* Gold */
+    .rank-2 { color: #a0aec0; font-size: 1.1rem; } /* Silver */
+    .rank-3 { color: #ed8936; font-size: 1.1rem; } /* Bronze */
+
+    .badge-icon {
+        display: inline-block;
+        background: #ebf8ff;
+        color: #3182ce;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        margin-right: 5px;
+        border: 1px solid #bee3f8;
+    }
+
+    .current-user-row {
+        background-color: #f7fafc;
+        border-left: 4px solid #764ba2;
+    }
+</style>
+
+<div class="leaderboard-container">
+    <!-- Header with User Stats -->
+    <div class="gamification-header">
+        <div>
+            <h1 style="margin: 0;">Leaderboard</h1>
+            <p style="margin: 5px 0 0 0; opacity: 0.9;">See who's leading the safety squad!</p>
+        </div>
+        <div style="display: flex; gap: 20px;">
+            <div class="user-stats-card">
+                <div class="stat-number">{{ current_user.points }}</div>
+                <div class="stat-label">My Points</div>
+            </div>
+            <div class="user-stats-card">
+                <div class="stat-number">{{ current_user.badges|length }}</div>
+                <div class="stat-label">Badges</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Table -->
+    <div class="leaderboard-body">
+        <table class="ranking-table">
+            <thead>
+                <tr>
+                    <th style="text-align: center;">Rank</th>
+                    <th>Student</th>
+                    <th>Badges</th>
+                    <th style="text-align: right;">Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in top_users %}
+                <tr class="{% if user.id == current_user.id %}current-user-row{% endif %}">
+                    <td class="rank-cell">
+                        {% if loop.index == 1 %}
+                            <i class="fas fa-crown rank-1"></i>
+                        {% elif loop.index == 2 %}
+                            <i class="fas fa-medal rank-2"></i>
+                        {% elif loop.index == 3 %}
+                            <i class="fas fa-medal rank-3"></i>
+                        {% else %}
+                            {{ loop.index }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div style="font-weight: 600; color: #2d3748;">{{ user.name }}</div>
+                        <div style="font-size: 0.8rem; color: #a0aec0;">{{ user.role|capitalize }}</div>
+                    </td>
+                    <td>
+                        {% for badge in user.badges %}
+                            <span class="badge-icon"><i class="fas fa-star"></i> {{ badge }}</span>
+                        {% else %}
+                            <span style="color: #cbd5e0; font-size: 0.8rem;">No badges yet</span>
+                        {% endfor %}
+                    </td>
+                    <td style="text-align: right; font-weight: bold; color: #4a5568;">
+                        {{ user.points }} XP
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

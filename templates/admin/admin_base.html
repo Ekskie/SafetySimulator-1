@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal - Safety Simulator</title>
+    
+    <!-- Admin Specific CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    
+    <!-- Font Awesome for Icons (Optional, using CDN for standard icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="admin-body">
+
+    <!-- SIDEBAR NAVIGATION -->
+    <nav class="admin-sidebar">
+        <div class="admin-header">
+            <a href="{{ url_for('admin.dashboard') }}" class="admin-logo">
+                <i class="fas fa-shield-alt"></i> SafetyAdmin
+            </a>
+        </div>
+
+        <div class="admin-nav">
+            <div class="nav-category">Main</div>
+            <a href="{{ url_for('admin.dashboard') }}" class="nav-item {% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            
+            <div class="nav-category">Content</div>
+            <!-- This is the new link for the future Scenario Builder -->
+            <a href="{{ url_for('admin.scenario_builder') }}" class="nav-item {% if request.endpoint == 'admin.scenario_builder' %}active{% endif %}">
+                <i class="fas fa-hammer"></i> Scenario Builder
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-book"></i> Library Manager
+            </a>
+
+            <div class="nav-category">People</div>
+            <a href="#" class="nav-item">
+                <i class="fas fa-chalkboard-teacher"></i> Faculty
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-user-graduate"></i> Students
+            </a>
+
+            <div class="nav-category">System</div>
+            <a href="#" class="nav-item">
+                <i class="fas fa-chart-line"></i> Analytics
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-cogs"></i> Settings
+            </a>
+        </div>
+
+        <div class="admin-footer">
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <span>{{ session.get('user', {}).get('name', 'Admin') }}</span>
+            </div>
+            <a href="{{ url_for('auth.logout') }}" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+            <div style="margin-top: 10px; text-align: center;">
+                <a href="/" style="color: #6c757d; font-size: 0.8rem; text-decoration: none;">&larr; Back to Site</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="admin-main">
+        <div class="admin-page-header">
+            <div class="admin-page-title">
+                <h1>{% block title %}Dashboard{% endblock %}</h1>
+                <div class="admin-breadcrumbs">Admin Portal / {% block breadcrumb %}Home{% endblock %}</div>
+            </div>
+        </div>
+
+        <!-- Flash Messages -->
+        <div class="admin-flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Page Content -->
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/theme-toggle.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
