@@ -6,7 +6,44 @@ from functools import wraps
 from extensions import supabase
 
 def load_json_data(filename):
-    """Helper to load JSON data from the root path."""
+    """
+    Helper to load data. 
+    If filename is 'scenarios.json', it fetches live data from Supabase.
+    Otherwise, it falls back to loading from the local file system.
+    """
+    if filename == 'scenarios.json':
+        try:
+            # Fetch all rows from the 'scenarios' table
+            response = supabase.table('scenarios').select('*').execute()
+            data = response.data
+            
+            # Map Database columns (snake_case) to Application keys (camelCase)
+            formatted_data = []
+            for row in data:
+                scenario = {
+                    "id": row.get('id'),
+                    "title": row.get('title'),
+                    "description": row.get('description'),
+                    "workplace": row.get('workplace'),
+                    "subcategory": row.get('subcategory'), # Added subcategory
+                    "hazards": row.get('hazards'),         # Added hazards for filtering
+                    "difficulty": row.get('difficulty'),
+                    "duration": row.get('duration'),
+                    "completions": row.get('completions'),
+                    "avgScore": row.get('avg_score'),   
+                    "startNode": row.get('start_node'), 
+                    "nodes": row.get('nodes'),          
+                    "quiz": row.get('quiz')             
+                }
+                formatted_data.append(scenario)
+            
+            return formatted_data
+
+        except Exception as e:
+            print(f"Error fetching scenarios from Supabase: {e}")
+            return []
+
+    # Default behavior for other files
     try:
         file_path = os.path.join(current_app.root_path, filename)
         with open(file_path, 'r', encoding='utf-8') as f:

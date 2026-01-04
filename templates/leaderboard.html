@@ -1,160 +1,213 @@
 {% extends "base.html" %}
 
+{% block title %}SafeZard - Global Rankings{% endblock %}
+
 {% block content %}
 <style>
-    .leaderboard-container {
-        max-width: 900px;
-        margin: 40px auto;
+    /* Scoped styles for Leaderboard to keep main CSS clean */
+    .leaderboard-wrapper {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 1000px;
+        padding: 2rem;
+        margin: 0 auto;
     }
 
-    .gamification-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 40px;
-        border-radius: 12px 12px 0 0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    /* Header Card */
+    .rankings-header {
+        background: var(--safezard-panel-glass);
+        border: 1px solid var(--safezard-border);
+        border-bottom: 2px solid var(--safezard-green);
+        backdrop-filter: blur(10px);
+        padding: 3rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
     }
 
-    .user-stats-card {
-        background: rgba(255, 255, 255, 0.2);
-        padding: 20px;
-        border-radius: 8px;
+    .rankings-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, rgba(0,255,136,0.05) 0%, transparent 100%);
+        pointer-events: none;
+    }
+
+    .user-stat-box {
+        background: rgba(0,0,0,0.3);
+        border: 1px solid var(--safezard-border);
+        padding: 1.5rem;
+        min-width: 150px;
         text-align: center;
-        backdrop-filter: blur(5px);
+        transition: transform 0.3s ease;
+    }
+    .user-stat-box:hover {
+        border-color: var(--safezard-green);
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,255,136,0.1);
     }
 
-    .stat-number {
-        font-size: 2rem;
-        font-weight: bold;
+    /* Table Styling */
+    .rankings-body {
+        background: var(--safezard-panel-glass);
+        border: 1px solid var(--safezard-border);
+        backdrop-filter: blur(10px);
     }
 
-    .stat-label {
-        font-size: 0.8rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        opacity: 0.9;
-    }
-
-    .leaderboard-body {
-        background: white;
-        border-radius: 0 0 12px 12px;
-        padding: 20px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    }
-
-    .ranking-table {
+    .table-custom {
         width: 100%;
         border-collapse: collapse;
+        color: var(--safezard-text);
     }
 
-    .ranking-table th {
-        text-align: left;
-        padding: 15px;
-        color: #718096;
-        font-size: 0.85rem;
+    .table-custom th {
         text-transform: uppercase;
-        border-bottom: 2px solid #e2e8f0;
+        font-size: 0.8rem;
+        letter-spacing: 2px;
+        color: var(--safezard-text-muted);
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--safezard-border);
+        font-weight: 600;
     }
 
-    .ranking-table td {
-        padding: 15px;
-        border-bottom: 1px solid #edf2f7;
+    .table-custom td {
+        padding: 1.5rem;
         vertical-align: middle;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
     }
 
-    .rank-cell {
-        font-weight: bold;
-        color: #718096;
-        width: 50px;
+    .table-custom tr:last-child td {
+        border-bottom: none;
+    }
+
+    .table-custom tr:hover td {
+        background-color: var(--safezard-hover-bg);
+    }
+
+    /* Rank Colors */
+    .rank-icon {
+        font-size: 1.5rem;
+        width: 40px;
         text-align: center;
-    }
-
-    .rank-1 { color: #ecc94b; font-size: 1.2rem; } /* Gold */
-    .rank-2 { color: #a0aec0; font-size: 1.1rem; } /* Silver */
-    .rank-3 { color: #ed8936; font-size: 1.1rem; } /* Bronze */
-
-    .badge-icon {
         display: inline-block;
-        background: #ebf8ff;
-        color: #3182ce;
-        padding: 4px 8px;
-        border-radius: 12px;
-        font-size: 0.75rem;
+    }
+    .rank-1 { color: #f1c40f; text-shadow: 0 0 10px rgba(241, 196, 15, 0.5); }
+    .rank-2 { color: #bdc3c7; text-shadow: 0 0 10px rgba(189, 195, 199, 0.5); }
+    .rank-3 { color: #e67e22; text-shadow: 0 0 10px rgba(230, 126, 34, 0.5); }
+    .rank-norm { color: var(--safezard-text-muted); font-family: monospace; }
+
+    /* Badges */
+    .badge-pill {
+        background: rgba(0, 255, 136, 0.1);
+        border: 1px solid var(--safezard-green);
+        color: var(--safezard-green);
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
         margin-right: 5px;
-        border: 1px solid #bee3f8;
+        display: inline-block;
+        margin-bottom: 4px;
     }
 
+    /* Active User Row */
     .current-user-row {
-        background-color: #f7fafc;
-        border-left: 4px solid #764ba2;
+        background-color: rgba(0, 255, 136, 0.05) !important;
+        border-left: 3px solid var(--safezard-green);
+    }
+    
+    .current-user-row td {
+        color: white;
     }
 </style>
 
-<div class="leaderboard-container">
-    <!-- Header with User Stats -->
-    <div class="gamification-header">
-        <div>
-            <h1 style="margin: 0;">Leaderboard</h1>
-            <p style="margin: 5px 0 0 0; opacity: 0.9;">See who's leading the safety squad!</p>
-        </div>
-        <div style="display: flex; gap: 20px;">
-            <div class="user-stats-card">
-                <div class="stat-number">{{ current_user.points }}</div>
-                <div class="stat-label">My Points</div>
+<section class="hero-section" style="height: auto; min-height: 100vh; display: block; overflow-y: auto;">
+    <div class="hero-bg-pattern" style="position: fixed;"></div>
+    
+    <div class="leaderboard-wrapper">
+        <div class="rankings-header d-flex flex-column flex-md-row justify-content-between align-items-center gap-4">
+            <div class="text-center text-md-start">
+                <h1 class="display-4 fw-bold text-uppercase mb-0" style="letter-spacing: 4px; color: var(--safezard-text);">
+                    Global Rankings
+                </h1>
+                <p class="text-muted text-uppercase mt-2 mb-0" style="letter-spacing: 2px;">
+                    <i class="bi bi-shield-check me-2"></i>Operational Excellence & Safety Protocols
+                </p>
             </div>
-            <div class="user-stats-card">
-                <div class="stat-number">{{ current_user.badges|length }}</div>
-                <div class="stat-label">Badges</div>
+            
+            <div class="d-flex gap-3">
+                <div class="user-stat-box">
+                    <div class="display-6 fw-bold text-success">{{ user_stats.points }}</div>
+                    <div class="small text-muted text-uppercase mt-1">My Score</div>
+                </div>
+                <div class="user-stat-box">
+                    <div class="display-6 fw-bold text-warning">{{ user_stats.badges|length }}</div>
+                    <div class="small text-muted text-uppercase mt-1">Badges</div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Main Table -->
-    <div class="leaderboard-body">
-        <table class="ranking-table">
-            <thead>
-                <tr>
-                    <th style="text-align: center;">Rank</th>
-                    <th>Student</th>
-                    <th>Badges</th>
-                    <th style="text-align: right;">Points</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in top_users %}
-                <tr class="{% if user.id == current_user.id %}current-user-row{% endif %}">
-                    <td class="rank-cell">
-                        {% if loop.index == 1 %}
-                            <i class="fas fa-crown rank-1"></i>
-                        {% elif loop.index == 2 %}
-                            <i class="fas fa-medal rank-2"></i>
-                        {% elif loop.index == 3 %}
-                            <i class="fas fa-medal rank-3"></i>
-                        {% else %}
-                            {{ loop.index }}
-                        {% endif %}
-                    </td>
-                    <td>
-                        <div style="font-weight: 600; color: #2d3748;">{{ user.name }}</div>
-                        <div style="font-size: 0.8rem; color: #a0aec0;">{{ user.role|capitalize }}</div>
-                    </td>
-                    <td>
-                        {% for badge in user.badges %}
-                            <span class="badge-icon"><i class="fas fa-star"></i> {{ badge }}</span>
-                        {% else %}
-                            <span style="color: #cbd5e0; font-size: 0.8rem;">No badges yet</span>
-                        {% endfor %}
-                    </td>
-                    <td style="text-align: right; font-weight: bold; color: #4a5568;">
-                        {{ user.points }} XP
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="rankings-body">
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th style="width: 100px; text-align: center;">Rank</th>
+                        <th>Operator</th>
+                        <th class="d-none d-md-table-cell">Achievements</th>
+                        <th style="text-align: right;">XP Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in top_users %}
+                    <tr class="{% if user.id|string == current_user.id|string %}current-user-row{% endif %}">
+                        <td style="text-align: center;">
+                            {% if loop.index == 1 %}
+                                <div class="rank-icon rank-1"><i class="bi bi-trophy-fill"></i></div>
+                            {% elif loop.index == 2 %}
+                                <div class="rank-icon rank-2"><i class="bi bi-award-fill"></i></div>
+                            {% elif loop.index == 3 %}
+                                <div class="rank-icon rank-3"><i class="bi bi-award-fill"></i></div>
+                            {% else %}
+                                <span class="rank-norm">#{{ "%02d" % loop.index }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="fw-bold fs-5">{{ user.name }}</div>
+                            <div class="small text-muted text-uppercase" style="letter-spacing: 1px; font-size: 0.7rem;">
+                                {{ user.role|default('Cadet') }}
+                            </div>
+                            <div class="d-md-none mt-2">
+                                <span class="badge-pill">{{ user.badges|length }} Badges</span>
+                            </div>
+                        </td>
+                        <td class="d-none d-md-table-cell">
+                            {% for badge in user.badges %}
+                                <span class="badge-pill" title="{{ badge }}">
+                                    <i class="bi bi-star-fill me-1"></i> {{ badge }}
+                                </span>
+                            {% else %}
+                                <span class="text-muted small fst-italic">No certifications yet</span>
+                            {% endfor %}
+                        </td>
+                        <td style="text-align: right;">
+                            <span class="fs-4 fw-bold" style="color: var(--safezard-green); font-family: monospace;">
+                                {{ user.points }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="text-center mt-4">
+            <p class="text-muted small text-uppercase opacity-50">— End of Top Operations —</p>
+        </div>
     </div>
-</div>
+</section>
 {% endblock %}

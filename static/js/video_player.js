@@ -13,7 +13,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const decisionOverlay = document.getElementById('decision-overlay');
     const decisionPrompt = document.getElementById('decision-prompt');
     const decisionChoices = document.getElementById('decision-choices');
+    
     const loadingOverlay = document.getElementById('loading-overlay');
+    const loadingContent = document.getElementById('loading-content');
+    const errorContent = document.getElementById('error-content');
     
     // Feedback Overlays
     const feedbackOverlay = document.getElementById('feedback-overlay');
@@ -26,36 +29,50 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    // --- LINK PROCESSING (Google Drive Support) ---
+    processGDriveLinks(SCENARIO_DATA);
+
     // --- GAME STATE ---
     let lives = 3;
     let currentNode = null;
-    let previousNodeId = null; // To handle looping back
+    let previousNodeId = null; 
     let nodesMap = {};
     let isDecisionActive = false;
     let hasPausedForCurrentNode = false;
-    let activeDecisionData = null; // Store choice data for feedback logic
+    let activeDecisionData = null; 
     
-    // --- NODE SYSTEM SETUP (Graph Based) ---
+    // --- NODE SYSTEM SETUP ---
     const isNodeBased = SCENARIO_DATA.nodes && SCENARIO_DATA.nodes.length > 0;
     
     if (isNodeBased) {
-        // Build a map for O(1) lookups
         SCENARIO_DATA.nodes.forEach(n => nodesMap[n.id] = n);
     }
 
     // 3. Initialize
     if (isNodeBased && SCENARIO_DATA.startNode) {
-        // Pre-load the first node but don't play yet
         loadNode(SCENARIO_DATA.startNode, false);
     }
 
+    // Event: Video Ready to Play
     video.addEventListener('canplay', () => {
         loadingOverlay.classList.add('d-none');
+        if (!video.paused) updatePlayIcon();
+    });
+
+    // Event: Video Error Handling
+    video.addEventListener('error', (e) => {
+        console.error("Video Error Event:", video.error);
+        if (video.error) {
+            console.error("Source not supported/403 Forbidden. Proxy might be failing.");
+            showErrorUI();
+        }
     });
 
     startBtn.addEventListener('click', () => {
         startOverlay.classList.add('d-none');
-        video.play().catch(e => console.log("Play failed:", e));
+        video.play().catch(e => {
+            console.log("Play failed on start click:", e);
+        });
         updatePlayIcon();
     });
 
@@ -84,6 +101,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function showErrorUI() {
+        loadingOverlay.classList.remove('d-none');
+        loadingContent.classList.add('d-none');
+        errorContent.classList.remove('d-none');
+    }
+
     // 5. Node Loading Logic
     function loadNode(nodeId, autoPlay = true) {
         const node = nodesMap[nodeId];
@@ -94,36 +117,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log("Loading Node:", nodeId);
         
-        // Store previous node only if it was a "setup" node (one with decisions)
-        // This allows us to loop back to the QUESTION, not just the previous video snippet
         if (currentNode && currentNode.decisions && currentNode.decisions.length > 0) {
             previousNodeId = currentNode.id; 
         }
 
         currentNode = node;
-        hasPausedForCurrentNode = false; // Reset pause trigger
+        hasPausedForCurrentNode = false; 
 
-        // Update Video Source
+        // Update Video Source - Using Proxy, so direct assignment is safe
+        console.log("Setting Video Source to:", node.videoUrl);
         video.src = node.videoUrl;
-        
+        video.load(); 
+
         if (autoPlay) {
-            video.play();
-            updatePlayIcon();
+            const playPromise = video.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => updatePlayIcon())
+                .catch(e => console.log("Autoplay waiting for interaction...", e));
+            }
         }
     }
 
     // 6. Progress & Decision Checking
     video.addEventListener('timeupdate', () => {
-        // Update UI
         if (video.duration) {
             const percent = (video.currentTime / video.duration) * 100;
             progressBar.style.width = `${percent}%`;
             timerDisplay.textContent = formatTime(video.currentTime);
         }
 
-        // --- BRANCHING LOGIC ---
         if (isNodeBased && currentNode && currentNode.pauseAt) {
-            // Check if we reached the pause point (with small buffer)
             if (video.currentTime >= currentNode.pauseAt && !isDecisionActive && !hasPausedForCurrentNode) {
                 triggerDecision(currentNode.decisions);
             }
@@ -132,15 +155,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function triggerDecision(decisions) {
         if (!decisions || decisions.length === 0) return;
-
-        console.log("Triggering Decision Point");
         
         video.pause();
         isDecisionActive = true;
         hasPausedForCurrentNode = true;
         updatePlayIcon();
 
-        // Setup Overlay
         decisionPrompt.textContent = "Select Protocol"; 
         decisionChoices.innerHTML = '';
 
@@ -155,25 +175,19 @@ document.addEventListener('DOMContentLoaded', () => {
             decisionChoices.appendChild(btn);
         });
 
-        // Show Overlay
         decisionOverlay.classList.remove('d-none');
         decisionOverlay.classList.add('d-flex');
     }
 
     function handleChoice(opt) {
-        // Hide Decision Overlay
         decisionOverlay.classList.remove('d-flex');
         decisionOverlay.classList.add('d-none');
         isDecisionActive = false;
         
-        // Store choice to check correctness after video plays (or immediately if needed)
-        // Note: For immediate feedback loops, we process flags here.
         activeDecisionData = opt;
 
         if (opt.nextNode) {
             loadNode(opt.nextNode, true);
-        } else {
-            console.log("No next node defined for this choice.");
         }
     }
 
@@ -181,23 +195,15 @@ document.addEventListener('DOMContentLoaded', () => {
     video.addEventListener('ended', () => {
         if (!isNodeBased) return;
 
-        // Check if the node we just finished was a "Wrong Answer Consequence"
         if (activeDecisionData && activeDecisionData.isIncorrect) {
             handleFailure();
-            activeDecisionData = null; // Reset
+            activeDecisionData = null; 
             return;
         }
 
-        // Standard Navigation (Success path or Neutral path)
         if (!currentNode.decisions || currentNode.decisions.length === 0) {
-            // Leaf node = End of Scenario
             console.log("Scenario Complete. Redirecting to Quiz.");
             window.location.href = `/quiz/${SCENARIO_DATA.id}`;
-        } else {
-            // This node just flows into another decision? 
-            // Usually nodes with decisions pause. If it played to end without pausing, 
-            // it might mean 'pauseAt' was missing or > duration.
-            // Do nothing, just wait.
         }
     });
 
@@ -206,42 +212,31 @@ document.addEventListener('DOMContentLoaded', () => {
         updateLivesUI();
 
         if (lives > 0) {
-            // Show Feedback Overlay
             feedbackOverlay.classList.remove('d-none');
             feedbackOverlay.classList.add('d-flex');
         } else {
-            // Game Over Logic
             alert("CRITICAL FAILURE: 3 Strikes. Simulation Failed.");
-            window.location.href = `/quiz/${SCENARIO_DATA.id}`; // Or a game over page
+            window.location.href = `/quiz/${SCENARIO_DATA.id}`;
         }
     }
 
-    // Retry Button Logic
     if (retryBtn) {
         retryBtn.addEventListener('click', () => {
             feedbackOverlay.classList.add('d-none');
             feedbackOverlay.classList.remove('d-flex');
             
-            // Loop back to the previous Decision Node (Context Scene)
             if (previousNodeId) {
-                console.log("Retrying node:", previousNodeId);
                 loadNode(previousNodeId, true);
             } else {
-                // Fallback to start if tracking lost
                 loadNode(SCENARIO_DATA.startNode, true);
             }
         });
     }
 
     function updateLivesUI() {
-        // Update hearts from right to left
-        // lives = 2 -> index 2 (3rd heart) becomes lost
-        // lives = 1 -> index 1 (2nd heart) becomes lost
-        
-        // If lives=2, we have lost 1 heart. The heart at index 2 (last one) should dim.
-        if (lives < 3) lifePoints[2].classList.add('life-lost');
-        if (lives < 2) lifePoints[1].classList.add('life-lost');
-        if (lives < 1) lifePoints[0].classList.add('life-lost');
+        if (lives < 3 && lifePoints[2]) lifePoints[2].classList.add('life-lost');
+        if (lives < 2 && lifePoints[1]) lifePoints[1].classList.add('life-lost');
+        if (lives < 1 && lifePoints[0]) lifePoints[0].classList.add('life-lost');
     }
 
     function formatTime(seconds) {
@@ -250,8 +245,27 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     }
 
-    // Fullscreen
     fullscreenBtn.addEventListener('click', () => {
         if (video.requestFullscreen) video.requestFullscreen();
     });
+
+    /**
+     * Helper to convert Google Drive links to local PROXY links.
+     */
+    function processGDriveLinks(data) {
+        if (!data || !data.nodes) return;
+
+        data.nodes.forEach(node => {
+            if (node.videoUrl && node.videoUrl.includes('drive.google.com')) {
+                const match = node.videoUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) {
+                    const originalUrl = node.videoUrl;
+                    // UPDATED: Point to local Flask proxy instead of GDrive directly
+                    // Adjust prefix if your blueprint has a url_prefix (e.g., /student/proxy/...)
+                    node.videoUrl = `/proxy/${match[1]}`;
+                    console.log(`[GDrive Proxy] Converted: ${originalUrl} -> ${node.videoUrl}`);
+                }
+            }
+        });
+    }
 });
