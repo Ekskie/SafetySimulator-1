@@ -37,8 +37,9 @@
             
             <!-- Video Container -->
             <div class="col-12 h-100 position-relative" id="video-container">
-                <!-- Video Element -->
-                <!-- Added crossorigin="anonymous" to help with external links -->
+                
+                <!-- VIDEO TAG RESTORED -->
+                <!-- playsinline and crossOrigin are important for compatibility -->
                 <video id="scenario-video" class="w-100 h-100 object-fit-cover" playsinline crossorigin="anonymous">
                     Your browser does not support the video tag.
                 </video>
@@ -66,7 +67,7 @@
                 
                 <!-- Feedback Overlay -->
                 <div id="feedback-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-none flex-column align-items-center justify-content-center" 
-                     style="background: rgba(50, 0, 0, 0.8); z-index: 110;">
+                     style="background: rgba(50, 0, 0, 0.9); z-index: 110;">
                     <div class="text-center">
                         <i class="bi bi-x-circle-fill text-danger display-1 mb-3"></i>
                         <h2 class="text-uppercase fw-bold text-danger">Protocol Violation</h2>
@@ -75,32 +76,15 @@
                     </div>
                 </div>
 
-                <!-- Loading / Error Overlay -->
-                <div id="loading-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center bg-black" style="z-index: 50;">
-                    <div class="text-center" id="loading-content">
-                        <div class="spinner-border text-success mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
-                        <div class="text-success small text-uppercase ls-2">Initializing System...</div>
-                    </div>
-                    <!-- Error Message Container (Hidden by default) -->
-                    <div id="error-content" class="text-center d-none p-4">
-                        <i class="bi bi-cloud-slash text-danger display-4 mb-3"></i>
-                        <h5 class="text-danger fw-bold">Video Stream Failed</h5>
-                        <p class="text-muted small mb-3" style="max-width: 400px;">
-                            Unable to load video from source. If using Google Drive, the file may be too large for direct streaming (quota limit) or permissions are restricted.
-                        </p>
-                        <a href="#" onclick="location.reload()" class="btn btn-sm btn-outline-light">Retry Connection</a>
-                    </div>
-                </div>
-
                 <!-- Start Screen Overlay -->
-                <div id="start-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center bg-black bg-opacity-75" style="z-index: 60; backdrop-filter: blur(10px);">
+                <div id="start-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center bg-black" style="z-index: 60;">
                     <div class="card bg-transparent border border-success p-5 text-center" style="max-width: 500px; box-shadow: 0 0 30px rgba(0, 255, 136, 0.1);">
                         <h3 class="text-uppercase fw-bold mb-3 ls-1">Mission Ready</h3>
                         <p class="text-muted mb-4">
-                            Review objectives. Identify hazards immediately. Time is critical.
+                            Review objectives. Identify hazards immediately.
                         </p>
                         <button id="start-btn" class="btn btn-game-start">
-                            Execute
+                            INITIALIZE FEED
                         </button>
                     </div>
                 </div>
@@ -108,7 +92,7 @@
             </div>
         </div>
 
-        <!-- Playback Controls / Status Bar -->
+        <!-- Playback Controls (Restored) -->
         <div class="border border-top-0 border-secondary p-2 d-flex align-items-center">
             <button id="play-pause-btn" class="btn btn-link text-decoration-none me-3">
                 <i class="bi bi-play-fill fs-4" id="play-icon"></i>

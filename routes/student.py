@@ -1,6 +1,5 @@
-from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for, session, Response, stream_with_context
+from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for, session
 from flask_login import login_required, current_user
-import requests
 from extensions import supabase
 from utils import load_json_data
 
@@ -162,9 +161,6 @@ def player(scenario_id):
     # We cast IDs to strings to ensure matching works ('1' vs 1)
     scenario = next((s for s in all_scenarios if str(s['id']) == str(scenario_id)), None)
 
-    # REMOVED: Legacy fallback to PC1scenario.json. 
-    # The DB is now the single source of truth.
-
     if not scenario:
         flash("Scenario not found.", "error")
         return redirect(url_for('student.scenario_select'))
@@ -177,55 +173,10 @@ def quiz(scenario_id):
     all_scenarios = load_json_data('scenarios.json')
     scenario = next((s for s in all_scenarios if str(s['id']) == str(scenario_id)), None)
 
-    # REMOVED: Legacy fallback to PC1scenario.json.
-
     if not scenario:
         return redirect(url_for('student.scenario_select'))
         
     return render_template("quiz.html", scenario=scenario)
-
-# --- Proxy Route for GDrive ---
-@student_bp.route("/proxy/<file_id>")
-@login_required
-def proxy_stream(file_id):
-    """
-    Proxies the Google Drive stream to the client.
-    Handles the 'Virus Scan' confirmation for large files.
-    """
-    def get_confirm_token(response):
-        for key, value in response.cookies.items():
-            if key.startswith('download_warning'):
-                return value
-        return None
-
-    def save_response_content(response):
-        # Generator to stream content chunk by chunk
-        # This prevents loading the entire video into RAM
-        for chunk in response.iter_content(chunk_size=32 * 1024):
-            if chunk:
-                yield chunk
-
-    URL = "https://docs.google.com/uc?export=download"
-    session_req = requests.Session()
-
-    # 1. Initial request
-    response = session_req.get(URL, params={'id': file_id}, stream=True)
-
-    # 2. Check for "Virus Scan" warning token
-    token = get_confirm_token(response)
-
-    if token:
-        # 3. If warning exists, re-request with confirmation token
-        params = {'id': file_id, 'confirm': token}
-        response = session_req.get(URL, params=params, stream=True)
-
-    # 4. Stream the response back to the browser
-    # We copy the content type so the browser knows it's a video
-    return Response(
-        stream_with_context(save_response_content(response)),
-        content_type=response.headers.get('Content-Type', 'video/mp4'),
-        direct_passthrough=True
-    )
 
 # --- Student APIs ---
 
