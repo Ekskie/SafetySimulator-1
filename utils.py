@@ -5,6 +5,16 @@ from flask_login import current_user
 from functools import wraps
 from extensions import supabase
 
+def get_base_path():
+    """
+    Helper to get the base path safely, working on both Vercel and Local.
+    """
+    try:
+        return current_app.root_path
+    except RuntimeError:
+        # Fallback if accessed outside of application context
+        return os.path.dirname(os.path.abspath(__file__))
+
 def load_json_data(filename):
     """
     Helper to load data. 
@@ -25,15 +35,17 @@ def load_json_data(filename):
                     "title": row.get('title'),
                     "description": row.get('description'),
                     "workplace": row.get('workplace'),
-                    "subcategory": row.get('subcategory'), # Added subcategory
-                    "hazards": row.get('hazards'),         # Added hazards for filtering
+                    "subcategory": row.get('subcategory'),
+                    "hazards": row.get('hazards'),
                     "difficulty": row.get('difficulty'),
                     "duration": row.get('duration'),
                     "completions": row.get('completions'),
                     "avgScore": row.get('avg_score'),   
                     "startNode": row.get('start_node'), 
                     "nodes": row.get('nodes'),          
-                    "quiz": row.get('quiz')             
+                    "quiz": row.get('quiz'),
+                    # Keep content_file for backward compatibility if needed
+                    "content_file": row.get('content_file')
                 }
                 formatted_data.append(scenario)
             
@@ -43,13 +55,42 @@ def load_json_data(filename):
             print(f"Error fetching scenarios from Supabase: {e}")
             return []
 
-    # Default behavior for other files
+    # Default behavior for other files (fallback to disk)
     try:
-        file_path = os.path.join(current_app.root_path, filename)
+        file_path = os.path.join(get_base_path(), filename)
+        if not os.path.exists(file_path):
+            return None
         with open(file_path, 'r', encoding='utf-8') as f:
             return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         return []
+
+def get_scenario_by_id(scenario_id):
+    """
+    Helper to find a specific scenario from the list.
+    Now fetches from Supabase via load_json_data.
+    """
+    scenarios = load_json_data('scenarios.json')
+    str_id = str(scenario_id)
+    
+    for scenario in scenarios:
+        if str(scenario.get('id')) == str_id:
+            return scenario
+            
+    return None
+
+def load_scenario_content(content_identifier):
+    """
+    Helper to load specific scenario content.
+    If the data is already in Supabase (inside the 'nodes' column), 
+    we don't need to load an external file.
+    """
+    # If the identifier looks like a filename, try to load it
+    if str(content_identifier).endswith('.json'):
+        return load_json_data(content_identifier)
+    
+    # Otherwise, it might be the content object itself or we might need to fetch it
+    return None
 
 def role_required(required_role):
     """

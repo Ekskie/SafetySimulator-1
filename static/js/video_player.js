@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isDecisionActive = false;
     let hasPausedForCurrentNode = false;
     let isVideoReady = false; // New flag to prevent stale time checks
+    let isFailureSequence = false; // New flag to track if we are watching a failure consequence
 
     // --- NODE SYSTEM SETUP ---
     const isNodeBased = SCENARIO_DATA.nodes && SCENARIO_DATA.nodes.length > 0;
@@ -110,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const pauseAtTime = parseFloat(currentNode.pauseAt);
             
             // Using a small buffer (0.5s) to ensure we catch the moment
-            if (video.currentTime >= pauseAtTime && !isDecisionActive && !hasPausedForCurrentNode) {
+            if (video.currentTime >= pauseAtTime && !isDecisionActive && !hasPausedForCurrentNode && !isFailureSequence) {
                 triggerDecision(currentNode.decisions);
             }
         }
@@ -119,6 +120,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Fallback for End of Video ---
     video.addEventListener('ended', () => {
         if (!isVideoReady) return;
+
+        // If this was a failure consequence video, show the feedback overlay now
+        if (isFailureSequence) {
+            isFailureSequence = false;
+            showFeedbackOverlay();
+            return;
+        }
 
         if (!isDecisionActive && !hasPausedForCurrentNode) {
             // If the node has decisions, show them now
@@ -166,11 +174,32 @@ document.addEventListener('DOMContentLoaded', () => {
         isDecisionActive = false;
         
         if (opt.isIncorrect) {
-            handleFailure();
+            // 1. Deduct Life immediately
+            lives--;
+            updateLivesUI();
+
+            // 2. Check for Critical Failure (Game Over)
+            if (lives <= 0) {
+                 alert("CRITICAL FAILURE: 3 Strikes. Simulation Failed.");
+                 window.location.href = `/quiz/${SCENARIO_DATA.id}`;
+                 return;
+            }
+
+            // 3. Handle Consequence
+            if (opt.nextNode) {
+                // Play consequence video first, then show feedback (via 'ended' event)
+                isFailureSequence = true;
+                loadNode(opt.nextNode, true);
+            } else {
+                // No video? Show feedback immediately
+                showFeedbackOverlay();
+            }
+
         } else if (opt.nextNode) {
+            // Correct choice with next node
             loadNode(opt.nextNode, true);
         } else {
-            // End of scenario
+            // End of scenario (Success)
             window.location.href = `/quiz/${SCENARIO_DATA.id}`;
         }
     }
@@ -218,18 +247,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 9. Failure Logic
-    function handleFailure() {
-        lives--;
-        updateLivesUI();
-
-        if (lives > 0) {
-            feedbackOverlay.classList.remove('d-none');
-            feedbackOverlay.classList.add('d-flex');
-        } else {
-            alert("CRITICAL FAILURE: 3 Strikes. Simulation Failed.");
-            window.location.href = `/quiz/${SCENARIO_DATA.id}`;
-        }
+    // 9. Failure Logic Helpers
+    function showFeedbackOverlay() {
+        feedbackOverlay.classList.remove('d-none');
+        feedbackOverlay.classList.add('d-flex');
     }
 
     if (retryBtn) {
@@ -237,9 +258,8 @@ document.addEventListener('DOMContentLoaded', () => {
             feedbackOverlay.classList.add('d-none');
             feedbackOverlay.classList.remove('d-flex');
             
-            if (previousNodeId) {
-                loadNode(previousNodeId, true);
-            } else {
+            // RESET TO BEGINNING (Start of Scenario)
+            if (SCENARIO_DATA.startNode) {
                 loadNode(SCENARIO_DATA.startNode, true);
             }
         });
