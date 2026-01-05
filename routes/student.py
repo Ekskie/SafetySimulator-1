@@ -1,14 +1,14 @@
 from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for, session
 from flask_login import login_required, current_user
 from extensions import supabase
-from utils import load_json_data
+from utils import load_json_data, get_scenario_by_id
 
 student_bp = Blueprint('student', __name__)
 
 @student_bp.route("/scenario_select")
 @login_required
 def scenario_select():
-    # This now fetches from Supabase via utils.py
+    # Fetch all scenarios using the centralized utility
     scenarios = load_json_data('scenarios.json')
     return render_template("scenario_select.html", scenarios=scenarios)
 
@@ -31,6 +31,7 @@ def leaderboard():
         try:
             profiles_res = supabase.table('profiles').select('*').execute()
         except:
+            # Fallback for table naming variations
             profiles_res = supabase.table('profile').select('*').execute()
             
         profiles = profiles_res.data if profiles_res.data else []
@@ -59,7 +60,7 @@ def leaderboard():
             else:
                 raw_name = p.get('full_name') or p.get('email') or "Unknown Cadet"
             
-            if '@' in raw_name:
+            if raw_name and '@' in raw_name:
                 name = raw_name.split('@')[0]
             else:
                 name = raw_name
@@ -154,15 +155,14 @@ def profile():
 @student_bp.route("/player/<scenario_id>")
 @login_required
 def player(scenario_id):
-    # Load all scenarios from DB (via utils.py)
-    all_scenarios = load_json_data('scenarios.json')
-    
-    # Find the matching scenario
-    # We cast IDs to strings to ensure matching works ('1' vs 1)
-    scenario = next((s for s in all_scenarios if str(s['id']) == str(scenario_id)), None)
+    # Use the helper function from utils.py to get the specific scenario
+    # This handles both Supabase fetching and ID string conversion
+    scenario = get_scenario_by_id(scenario_id)
 
     if not scenario:
-        flash("Scenario not found.", "error")
+        # Debugging: print to Vercel logs to see what's happening
+        print(f"Player Route: Scenario ID {scenario_id} not found.")
+        flash("Scenario not found or could not be loaded.", "error")
         return redirect(url_for('student.scenario_select'))
 
     return render_template("player.html", scenario=scenario)
@@ -170,8 +170,8 @@ def player(scenario_id):
 @student_bp.route("/quiz/<scenario_id>")
 @login_required
 def quiz(scenario_id):
-    all_scenarios = load_json_data('scenarios.json')
-    scenario = next((s for s in all_scenarios if str(s['id']) == str(scenario_id)), None)
+    # Use the helper function for consistency
+    scenario = get_scenario_by_id(scenario_id)
 
     if not scenario:
         return redirect(url_for('student.scenario_select'))
