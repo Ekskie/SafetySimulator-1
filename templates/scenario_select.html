@@ -94,29 +94,62 @@
 {% block extra_js %}
 <script>
     // --- Data Definitions ---
-    const scenarioContentData = {
-        "laboratory": {
-            "title": "Laboratory Sector",
-            "items": {
-                "computer_lab": { "name": "Computer Lab", "icon": "bi bi-pc-display", "hazards": ["Water Leak", "Octopus Wiring"] },
-                "agriculture_lab": { "name": "Agriculture Lab", "icon": "bi bi-tree", "hazards": ["Improper Handling of Agricultural Chemicals", "Exposure to Biological Hazards"] },
-                "chemical_lab": { "name": "Chemical Lab", "icon": "bi bi-radioactive", "hazards": ["Chemical Spill", "Unlabeled Chemical Container"] },
-                "culinary_lab": { "name": "Culinary Lab", "icon": "bi bi-fire", "hazards": ["Grease Fire", "Cross-Contamination and Bacterial Risk"] }
-            }
-        },
-        "facility": {
-            "title": "Facility Sector",
-            "items": {
-                "gymnasium": { "name": "Gymnasium", "icon": "bi bi-dribbble", "hazards": ["Slips and falls on wet or sweaty floors", "Equipment malfunction", "Impact injuries"] },
-                "campus_offices": { "name": "Campus Offices", "icon": "bi bi-briefcase", "hazards": ["Ergonomic strain", "Tripping hazards", "Fire hazards"] },
-                "library": { "name": "Library", "icon": "bi bi-book", "hazards": ["Falling objects", "Tripping hazards", "Electrical hazards"] },
-                "clinic": { "name": "Clinic", "icon": "bi bi-hospital", "hazards": ["Infectious diseases", "Needlestick injuries", "Chemical exposure"] }
-            }
-        }
-    };
-
     // Scenarios from Backend
     const allScenariosData = {{ scenarios | tojson | safe }};
+
+    // --- FIX: Dynamic Data Generation ---
+    // Instead of hardcoding categories, we build them from the database content.
+    function buildScenarioContentData(scenarios) {
+        const data = {
+            "laboratory": { "title": "Laboratory Sector", "items": {} },
+            "facility": { "title": "Facility Sector", "items": {} }
+        };
+
+        scenarios.forEach(s => {
+            const env = s.workplace || "laboratory"; // Default to lab if missing
+            const sub = s.subcategory || "general";
+            
+            // Ensure environment exists (handle typos or new environments)
+            if (!data[env]) {
+                data[env] = { "title": env.toUpperCase() + " Sector", "items": {} };
+            }
+
+            // Ensure subcategory exists
+            if (!data[env].items[sub]) {
+                data[env].items[sub] = {
+                    "name": sub.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()), // "computer_lab" -> "Computer Lab"
+                    "icon": getIconForSubcategory(sub),
+                    "hazards": []
+                };
+            }
+
+            // Add hazards
+            if (s.hazards && Array.isArray(s.hazards)) {
+                s.hazards.forEach(h => {
+                    if (!data[env].items[sub].hazards.includes(h)) {
+                        data[env].items[sub].hazards.push(h);
+                    }
+                });
+            }
+        });
+        return data;
+    }
+
+    function getIconForSubcategory(sub) {
+        const map = {
+            "computer_lab": "bi bi-pc-display",
+            "agriculture_lab": "bi bi-tree",
+            "chemical_lab": "bi bi-radioactive",
+            "culinary_lab": "bi bi-fire",
+            "gymnasium": "bi bi-dribbble",
+            "campus_offices": "bi bi-briefcase",
+            "library": "bi bi-book",
+            "clinic": "bi bi-hospital"
+        };
+        return map[sub] || "bi bi-box-seam"; // Default icon
+    }
+
+    const scenarioContentData = buildScenarioContentData(allScenariosData);
     
     // --- State ---
     let currentEnvironment = 'laboratory';
@@ -165,7 +198,7 @@
                     dom.dbStatus.textContent = "Synced (No Data Found)";
                     dom.dbStatus.classList.remove('text-muted', 'text-success');
                     dom.dbStatus.classList.add('text-warning');
-                    console.warn("Database returned 0 records. Check RLS policies or Service Key.");
+                    // console.warn("Database returned 0 records. Check RLS policies or Service Key.");
                 }
                 
                 // Initial Render AFTER data is loaded
@@ -190,8 +223,11 @@
         // We still render the slider so the user can see the modules,
         // but no progress data will be shown (badges will be missing).
         // userProgressData remains empty.
-        renderSlider('subcategories', scenarioContentData['laboratory'].items);
-        startAutoRotate();
+        // Check if data exists for default env before rendering
+        if (scenarioContentData['laboratory']) {
+            renderSlider('subcategories', scenarioContentData['laboratory'].items);
+            startAutoRotate();
+        }
     }
 
     function getScenarioProgress(scenarioId) {
@@ -204,7 +240,12 @@
             btn.addEventListener('change', (e) => {
                 currentEnvironment = e.target.value;
                 currentSubcategory = ''; // Reset sub
-                renderSlider('subcategories', scenarioContentData[currentEnvironment].items);
+                // Check if env exists in data
+                if (scenarioContentData[currentEnvironment]) {
+                    renderSlider('subcategories', scenarioContentData[currentEnvironment].items);
+                } else {
+                    dom.sliderContainer.innerHTML = '<div class="text-muted p-4">No modules available for this sector.</div>';
+                }
             });
         });
 
@@ -225,6 +266,11 @@
         dom.sliderContainer.innerHTML = '';
         let items = [];
 
+        if (!data || Object.keys(data).length === 0) {
+            dom.sliderContainer.innerHTML = '<div class="text-muted p-4">No modules found.</div>';
+            return;
+        }
+
         if (type === 'subcategories') {
             dom.title.innerHTML = `<i class="bi bi-grid-3x3-gap-fill me-2 text-success"></i> ${scenarioContentData[currentEnvironment].title} Modules`;
             items = Object.keys(data).map(key => ({
@@ -234,7 +280,7 @@
                 type: 'subcategory'
             }));
         } else if (type === 'hazards') {
-            dom.title.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-2 text-warning"></i> ${currentSubcategory.replace('_', ' ')} Hazards`;
+            dom.title.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-2 text-warning"></i> ${currentSubcategory.replace(/_/g, ' ').toUpperCase()} Hazards`;
             items = data.map(hazard => ({
                 name: hazard,
                 type: 'hazard'
@@ -266,20 +312,18 @@
                 // Hazard Card (The playable item)
                 // Find matching scenario
                 const scenario = allScenariosData.find(s => 
-                    s.workplace === currentEnvironment && 
-                    // Simplified matching: check if hazard string exists in scenario hazards
+                    (s.workplace === currentEnvironment || (!s.workplace && currentEnvironment === 'laboratory')) && 
+                    // Match logic: check if hazard string exists in scenario hazards
                     (s.hazards && s.hazards.includes(item.name))
                 );
 
                 let statusBadge = '';
                 let btnText = 'Start Simulation';
                 let btnClass = '';
+                let isLocked = !scenario; // Lock if no matching scenario found
                 
                 if (scenario) {
                     const progress = getScenarioProgress(scenario.id);
-                    // DEBUG: Log progress to help identify ID mismatches
-                    if (progress) console.log(`Found progress for ${scenario.id}:`, progress);
-
                     if (progress && progress.completed) {
                         statusBadge = '<div class="badge bg-success mb-2">COMPLETED</div>';
                         btnText = 'Replay Mission';
@@ -307,7 +351,7 @@
                     card.innerHTML = `
                         <div class="subcategory-icon border-secondary text-secondary"><i class="bi bi-lock-fill"></i></div>
                         <h5 class="text-muted">${item.name}</h5>
-                        <div class="mt-auto text-muted small">LOCKED / NO DATA</div>
+                        <div class="mt-auto text-muted small">LOCKED / COMING SOON</div>
                     `;
                 }
             }
