@@ -1,0 +1,390 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Student Registry{% endblock %}
+{% block breadcrumb %}Students{% endblock %}
+
+{% block content %}
+<style>
+    /* Student Page Specific Styles */
+    .student-toolbar {
+        background: white;
+        padding: 20px 24px;
+        border-radius: 12px 12px 0 0;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .toolbar-left {
+        display: flex;
+        gap: 12px;
+        flex: 1;
+        max-width: 700px;
+    }
+
+    .modern-input-group {
+        position: relative;
+        flex-grow: 1;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+    }
+
+    .modern-input {
+        width: 100%;
+        padding: 10px 16px 10px 40px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        outline: none;
+        transition: all 0.2s;
+    }
+    .modern-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .modern-select {
+        padding: 10px 36px 10px 16px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background: white;
+        font-size: 0.95rem;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 0.5rem center;
+        background-repeat: no-repeat;
+        background-size: 1.5em;
+    }
+
+    /* Student Table Styling */
+    .student-table-container {
+        background: white;
+        border-radius: 0 0 12px 12px;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        border-top: none;
+        overflow: hidden;
+    }
+
+    .student-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .student-table th {
+        background: #f9fafb;
+        padding: 14px 24px;
+        text-align: left;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .student-table td {
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--border-color);
+        vertical-align: middle;
+        color: var(--text-main);
+    }
+
+    .student-table tr:hover td {
+        background-color: #f8fafc;
+    }
+
+    /* Profile Cell */
+    .profile-cell {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #e0e7ff;
+        color: #4338ca;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 1rem;
+        text-transform: uppercase;
+    }
+
+    .student-info h4 {
+        margin: 0;
+        font-size: 0.95rem;
+        color: var(--text-main);
+        font-weight: 600;
+    }
+
+    .student-info span {
+        display: block;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-top: 2px;
+    }
+
+    /* Badges */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .status-active { background: #dcfce7; color: #15803d; }
+    .status-inactive { background: #f3f4f6; color: #6b7280; }
+    .status-banned { background: #fee2e2; color: #b91c1c; }
+
+    .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: currentColor;
+    }
+
+    /* Progress Bar */
+    .progress-wrapper {
+        width: 100px;
+        background: #f3f4f6;
+        height: 6px;
+        border-radius: 3px;
+        overflow: hidden;
+        margin-top: 6px;
+    }
+    .progress-fill {
+        height: 100%;
+        background: var(--primary);
+        border-radius: 3px;
+    }
+
+    /* Action Menu */
+    .action-btn {
+        background: transparent;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .action-btn:hover {
+        background: #f3f4f6;
+        color: var(--text-main);
+    }
+    .action-btn.danger:hover {
+        background: #fee2e2;
+        color: #dc2626;
+        border-color: #fca5a5;
+    }
+
+    /* Modal for Edit (Simple css-only toggle logic for demo, usually JS) */
+    .modal-backdrop {
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+    .modal-content {
+        background: white;
+        padding: 24px;
+        border-radius: 12px;
+        width: 400px;
+        max-width: 90%;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<div style="display: flex; flex-direction: column;">
+    <!-- Toolbar -->
+    <div class="student-toolbar">
+        <div class="toolbar-left">
+            <div class="modern-input-group">
+                <i class="fas fa-search input-icon"></i>
+                <input type="text" id="studentSearch" class="modern-input" placeholder="Search by name or email..." onkeyup="filterStudents()">
+            </div>
+            <select id="statusFilter" class="modern-select" onchange="filterStudents()">
+                <option value="">All Statuses</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="banned">Suspended</option>
+            </select>
+        </div>
+        
+        <div style="display: flex; gap: 12px;">
+            <button class="btn btn-secondary" onclick="exportData()">
+                <i class="fas fa-download"></i> Export CSV
+            </button>
+            <button class="btn btn-primary" onclick="showInviteModal()">
+                <i class="fas fa-user-plus"></i> Invite Student
+            </button>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="student-table-container">
+        <div class="table-responsive">
+            <table class="student-table">
+                <thead>
+                    <tr>
+                        <th style="width: 35%;">Student Profile</th>
+                        <th style="width: 15%;">Join Date</th>
+                        <th style="width: 20%;">Progress</th>
+                        <th style="width: 15%;">Status</th>
+                        <th style="width: 15%; text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="studentTableBody">
+                    {% for student in students %}
+                    <tr class="student-row" 
+                        data-name="{{ student.name|lower }}" 
+                        data-email="{{ student.email|lower }}" 
+                        data-status="{{ student.status }}">
+                        
+                        <td>
+                            <div class="profile-cell">
+                                <div class="avatar-circle">
+                                    {% if student.avatar_url %}
+                                        <img src="{{ student.avatar_url }}" alt="" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
+                                    {% else %}
+                                        {{ student.name[0] }}
+                                    {% endif %}
+                                </div>
+                                <div class="student-info">
+                                    <h4>{{ student.name }}</h4>
+                                    <span>{{ student.email }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        
+                        <td style="color: var(--text-muted); font-size: 0.9rem;">
+                            {{ student.joined_date.strftime('%b %d, %Y') if student.joined_date else 'N/A' }}
+                        </td>
+                        
+                        <td>
+                            <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-main);">
+                                {{ student.completed_scenarios }} / {{ total_scenarios|default('10') }} Modules
+                            </div>
+                            <div class="progress-wrapper">
+                                <div class="progress-fill" style="width: {{ (student.completed_scenarios / (total_scenarios|default(10, true)) * 100)|round }}%;"></div>
+                            </div>
+                        </td>
+                        
+                        <td>
+                            <span class="status-badge status-{{ student.status }}">
+                                <div class="status-dot"></div>
+                                {{ student.status|capitalize }}
+                            </span>
+                        </td>
+                        
+                        <td>
+                            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                                <a href="#" class="action-btn" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="#" class="action-btn" title="Edit User">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+                                {% if student.status != 'banned' %}
+                                <form action="{{ url_for('admin.ban_student', student_id=student.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Suspend this student?');">
+                                    <button type="submit" class="action-btn danger" title="Suspend User">
+                                        <i class="fas fa-ban"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 60px;">
+                            <div style="opacity: 0.5; font-size: 2rem; margin-bottom: 10px;">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <p>No students found in the registry.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Empty Filter State -->
+        <div id="noResults" style="display: none; text-align: center; padding: 40px; color: var(--text-muted);">
+            <i class="fas fa-search" style="font-size: 1.5rem; margin-bottom: 10px; opacity: 0.5;"></i>
+            <p>No students match your search.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Simple JS for Client-side Search -->
+<script>
+    function filterStudents() {
+        const searchInput = document.getElementById('studentSearch').value.toLowerCase();
+        const statusFilter = document.getElementById('statusFilter').value;
+        const rows = document.querySelectorAll('.student-row');
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            const name = row.getAttribute('data-name');
+            const email = row.getAttribute('data-email');
+            const status = row.getAttribute('data-status');
+
+            const matchesSearch = name.includes(searchInput) || email.includes(searchInput);
+            const matchesStatus = statusFilter === "" || status === statusFilter;
+
+            if (matchesSearch && matchesStatus) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        const noResults = document.getElementById('noResults');
+        const table = document.querySelector('.student-table');
+        
+        if (visibleCount === 0 && rows.length > 0) {
+            noResults.style.display = 'block';
+            table.style.display = 'none';
+        } else {
+            noResults.style.display = 'none';
+            table.style.display = 'table';
+        }
+    }
+
+    function exportData() {
+        alert('This would download a CSV of the current student view.');
+    }
+
+    function showInviteModal() {
+        alert('This would open a modal to send an invitation email.');
+    }
+</script>
+{% endblock %}

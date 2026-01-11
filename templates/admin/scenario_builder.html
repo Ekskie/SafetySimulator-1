@@ -9,333 +9,680 @@
 <!-- Mermaid JS for Flowchart Visualization -->
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
 
+<!-- Google Fonts for a modern look (Inter) -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-    .builder-container {
-        display: flex;
-        height: calc(100vh - 180px);
-        gap: 20px;
+    :root {
+        --primary: #4f46e5;       /* Indigo 600 */
+        --primary-hover: #4338ca; /* Indigo 700 */
+        --bg-app: #f3f4f6;        /* Gray 100 */
+        --bg-panel: #ffffff;
+        --border-color: #e5e7eb;  /* Gray 200 */
+        --text-main: #1f2937;     /* Gray 800 */
+        --text-muted: #6b7280;    /* Gray 500 */
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --radius: 10px;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
     }
 
-    /* Sidebar List */
-    .node-list-panel {
-        width: 320px;
-        background: white;
-        border-radius: 8px;
+    /* Base Overrides */
+    body {
+        font-family: 'Inter', sans-serif;
+        color: var(--text-main);
+        background-color: var(--bg-app);
+    }
+
+    /* Layout Containers */
+    .builder-wrapper {
         display: flex;
         flex-direction: column;
-        border: 1px solid #e2e8f0;
-        overflow: hidden;
+        gap: 20px;
+        height: calc(100vh - 140px); /* Adjusted for typical admin headers */
+        padding: 0 20px 20px 20px;
     }
 
-    .panel-header {
-        padding: 15px;
-        background: #f8f9fa;
-        border-bottom: 1px solid #e2e8f0;
+    .toolbar {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-weight: bold;
-        color: #2d3748;
+        background: var(--bg-panel);
+        padding: 16px 24px;
+        border-radius: var(--radius);
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow);
+    }
+
+    .builder-container {
+        display: flex;
+        flex-grow: 1;
+        gap: 20px;
+        overflow: hidden; /* Prevent body scroll, keep internal scroll */
+    }
+
+    /* Sidebar: Node List */
+    .node-list-panel {
+        width: 340px;
+        background: var(--bg-panel);
+        border-radius: var(--radius);
+        border: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+    }
+
+    .panel-header {
+        padding: 16px 20px;
+        background: #f9fafb; /* Gray 50 */
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+        color: var(--text-main);
     }
 
     .node-list {
         flex-grow: 1;
         overflow-y: auto;
-        padding: 10px;
+        padding: 12px;
+    }
+
+    /* Scrollbar styling */
+    .node-list::-webkit-scrollbar, .panel-content::-webkit-scrollbar {
+        width: 6px;
+    }
+    .node-list::-webkit-scrollbar-thumb, .panel-content::-webkit-scrollbar-thumb {
+        background-color: #d1d5db;
+        border-radius: 4px;
     }
 
     .node-item {
-        padding: 12px;
+        padding: 14px 16px;
         margin-bottom: 8px;
-        background: #f8fafc;
-        border-radius: 6px;
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
         cursor: pointer;
-        border: 1px solid #e2e8f0;
-        transition: all 0.2s;
+        transition: all 0.2s ease;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        position: relative;
     }
 
     .node-item:hover {
-        background: #e2e8f0;
-        border-color: #cbd5e0;
+        background: #f9fafb;
+        border-color: #d1d5db;
+        transform: translateY(-1px);
     }
 
     .node-item.active {
-        background: #ebf8ff;
-        border-color: #3498db;
-        color: #2c5282;
-        box-shadow: 0 2px 4px rgba(52, 152, 219, 0.1);
+        background: #eff6ff; /* Blue 50 */
+        border-color: var(--primary);
+        box-shadow: 0 0 0 1px var(--primary);
+    }
+    
+    .node-item.active::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: var(--primary);
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
     }
 
     /* Main Content Area */
     .main-panel {
         flex-grow: 1;
-        background: white;
-        border-radius: 8px;
-        border: 1px solid #e2e8f0;
+        background: var(--bg-panel);
+        border-radius: var(--radius);
+        border: 1px solid var(--border-color);
         display: flex;
         flex-direction: column;
         overflow: hidden;
+        box-shadow: var(--shadow);
     }
 
-    /* Tabs for Editor Views */
+    /* Tabs */
     .view-tabs {
         display: flex;
-        border-bottom: 1px solid #e2e8f0;
-        background: #f8f9fa;
+        border-bottom: 1px solid var(--border-color);
+        background: #f9fafb;
+        padding: 0 10px;
     }
     
     .view-tab {
-        padding: 15px 25px;
+        padding: 14px 20px;
         cursor: pointer;
-        font-weight: 600;
-        color: #718096;
-        border-right: 1px solid #e2e8f0;
+        font-weight: 500;
+        color: var(--text-muted);
+        border-bottom: 2px solid transparent;
         transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.95rem;
     }
     
     .view-tab:hover {
-        background: #e2e8f0;
-        color: #2d3748;
+        color: var(--text-main);
+        background: rgba(0,0,0,0.02);
     }
     
     .view-tab.active {
-        background: white;
-        color: #3498db;
-        border-bottom: 2px solid #3498db;
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+        background: transparent;
     }
 
     .panel-content {
-        padding: 25px;
+        padding: 30px;
         overflow-y: auto;
         flex-grow: 1;
         display: none;
-        height: 100%; /* Important for graph */
+        height: 100%;
+        background: #fff;
     }
     .panel-content.active { display: block; }
 
     /* Form Styles */
-    .form-group { margin-bottom: 20px; }
-    .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #4a5568; font-size: 0.9rem; }
-    .form-control { width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 0.95rem; }
+    .form-group { margin-bottom: 24px; }
+    .form-group label { 
+        display: block; 
+        margin-bottom: 8px; 
+        font-weight: 600; 
+        color: #374151; /* Gray 700 */
+        font-size: 0.9rem; 
+    }
+    
+    .form-control { 
+        width: 100%; 
+        padding: 10px 14px; 
+        border: 1px solid #d1d5db; 
+        border-radius: 8px; 
+        font-size: 0.95rem; 
+        transition: border-color 0.15s, box-shadow 0.15s;
+        font-family: inherit;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
     
     /* Video Upload */
-    .video-upload-area { border: 2px dashed #cbd5e0; padding: 20px; border-radius: 6px; background: #f7fafc; text-align: center; margin-top: 10px; }
-    .video-preview { margin-top: 10px; max-width: 100%; border-radius: 6px; background: #000; max-height: 200px; }
+    .video-upload-area { 
+        border: 2px dashed #d1d5db; 
+        padding: 30px; 
+        border-radius: 12px; 
+        background: #f9fafb; 
+        text-align: center; 
+        margin-top: 12px;
+        transition: border-color 0.2s;
+    }
+    
+    .video-upload-area:hover {
+        border-color: var(--primary);
+        background: #eff6ff;
+    }
+
+    .video-preview { 
+        margin-top: 16px; 
+        width: 100%; 
+        border-radius: 8px; 
+        background: #000; 
+        max-height: 300px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
 
     /* Decisions */
-    .decisions-container { border: 1px solid #e2e8f0; border-radius: 6px; padding: 15px; background: #f8fafc; }
-    .decision-item { background: white; border: 1px solid #cbd5e0; padding: 15px; border-radius: 6px; margin-bottom: 15px; display: grid; grid-template-columns: 2fr 1fr 100px 50px; gap: 15px; align-items: end; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+    .decisions-container { 
+        border: 1px solid var(--border-color); 
+        border-radius: 12px; 
+        padding: 20px; 
+        background: #f9fafb; 
+    }
+    
+    .decision-item { 
+        background: white; 
+        border: 1px solid var(--border-color); 
+        padding: 16px; 
+        border-radius: 8px; 
+        margin-bottom: 16px; 
+        display: grid; 
+        grid-template-columns: 2fr 1fr 120px 50px; 
+        gap: 16px; 
+        align-items: end; 
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05); 
+    }
+
+    .decision-item:last-child { margin-bottom: 0; }
+
+    /* Quiz Styles */
+    .question-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .question-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .question-title { font-weight: 600; font-size: 1rem; color: var(--text-main); }
+
+    .option-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .option-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px;
+        border-radius: 8px;
+        background: #f9fafb;
+        border: 1px solid transparent;
+        transition: all 0.2s;
+    }
+
+    .option-item.correct {
+        background: #ecfdf5;
+        border-color: #a7f3d0;
+    }
+
+    .option-radio {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--success);
+        cursor: pointer;
+    }
 
     /* Buttons */
-    .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: background 0.2s; display: inline-flex; align-items: center; gap: 8px; }
-    .btn-primary { background: #3498db; color: white; }
-    .btn-success { background: #2ecc71; color: white; }
-    .btn-danger { background: #e74c3c; color: white; }
-    .btn-warning { background: #f39c12; color: white; }
-    .btn-secondary { background: #718096; color: white; }
-    .btn-sm { padding: 4px 10px; font-size: 0.8rem; }
+    .btn { 
+        padding: 9px 18px; 
+        border-radius: 6px; 
+        border: none; 
+        cursor: pointer; 
+        font-size: 0.9rem; 
+        font-weight: 500; 
+        transition: all 0.2s; 
+        display: inline-flex; 
+        align-items: center; 
+        gap: 8px; 
+        line-height: 1.25;
+    }
+    .btn:active { transform: translateY(1px); }
+    
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { background: #059669; }
+    
+    .btn-danger { background: white; color: var(--danger); border: 1px solid var(--danger); }
+    .btn-danger:hover { background: #fef2f2; }
+    
+    .btn-warning { background: var(--warning); color: white; }
+    .btn-warning:hover { background: #d97706; }
+    
+    .btn-secondary { background: white; color: var(--text-main); border: 1px solid #d1d5db; }
+    .btn-secondary:hover { background: #f3f4f6; border-color: #9ca3af; }
+    
+    .btn-sm { padding: 6px 12px; font-size: 0.85rem; }
 
-    .toolbar { margin-bottom: 20px; display: flex; gap: 15px; justify-content: space-between; background: white; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; align-items: center; }
-    .status-badge { font-size: 0.8rem; padding: 2px 6px; border-radius: 4px; background: #edf2f7; color: #718096; }
-    .status-badge.video-ok { background: #c6f6d5; color: #22543d; }
+    /* Badges */
+    .status-badge { 
+        font-size: 0.75rem; 
+        padding: 4px 8px; 
+        border-radius: 9999px; 
+        background: #f3f4f6; 
+        color: var(--text-muted);
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .status-badge.video-ok { background: #d1fae5; color: #065f46; }
 
     /* Mermaid Graph */
     #mermaidGraph {
         width: 100%;
-        min-height: 400px; /* Ensure height */
+        min-height: 500px;
         display: flex;
         justify-content: center;
         align-items: center;
-        background: #f8fafc;
+        background-color: #ffffff;
+        background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+        background-size: 20px 20px;
         border-radius: 8px;
+        border: 1px solid var(--border-color);
     }
     
     /* Load Scenario Modal Overlay */
     .modal-overlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.5); z-index: 1000;
+        background: rgba(0,0,0,0.6); z-index: 1000;
         display: none; justify-content: center; align-items: center;
+        backdrop-filter: blur(2px);
     }
+    
     .modal-content {
-        background: white; padding: 25px; border-radius: 8px; width: 500px;
-        max-height: 80vh; overflow-y: auto;
+        background: white; 
+        padding: 0; 
+        border-radius: 12px; 
+        width: 550px;
+        max-height: 80vh; 
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     }
+
+    .modal-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f9fafb;
+    }
+
+    .modal-body {
+        padding: 20px;
+        overflow-y: auto;
+    }
+
     .scenario-list-item {
-        padding: 10px; border-bottom: 1px solid #eee; cursor: pointer;
-        display: flex; justify-content: space-between; align-items: center;
+        padding: 16px; 
+        border: 1px solid var(--border-color);
+        margin-bottom: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center;
+        transition: all 0.2s;
     }
-    .scenario-list-item:hover { background: #f8fafc; }
+    .scenario-list-item:hover { 
+        background: #f9fafb; 
+        border-color: var(--primary);
+    }
+
+    /* Checkbox Wrapper */
+    .checkbox-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .checkbox-wrapper input[type="checkbox"] {
+        appearance: none;
+        background-color: #fff;
+        margin: 0;
+        font: inherit;
+        color: currentColor;
+        width: 20px;
+        height: 20px;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+        display: grid;
+        place-content: center;
+        cursor: pointer;
+    }
+    .checkbox-wrapper input[type="checkbox"]::before {
+        content: "";
+        width: 10px;
+        height: 10px;
+        transform: scale(0);
+        transition: 120ms transform ease-in-out;
+        box-shadow: inset 1em 1em white;
+        transform-origin: center;
+        clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+        background-color: white; 
+    }
+    .checkbox-wrapper input[type="checkbox"]:checked {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+    .checkbox-wrapper input[type="checkbox"]:checked::before {
+        transform: scale(1);
+    }
 </style>
 
-<div class="toolbar">
-    <div style="display:flex; gap: 10px; align-items:center;">
-        <h3 style="margin:0; color:#2d3748;">Scenario Editor</h3>
-        <button class="btn btn-secondary btn-sm" onclick="openLoadModal()">
-            <i class="fas fa-folder-open"></i> Load Existing
-        </button>
-    </div>
-    <div style="display:flex; gap: 10px;">
-        <input type="text" id="filenameInput" class="form-control" placeholder="Unique ID (e.g. water_leak)" style="width: 200px;" value="new_scenario">
-        <button class="btn btn-success" onclick="saveScenario()">
-            <i class="fas fa-save"></i> Save Changes
-        </button>
-    </div>
-</div>
-
-<div class="builder-container">
-    <!-- Sidebar: Node List -->
-    <div class="node-list-panel">
-        <div class="panel-header">
-            <span>Scenes</span>
-            <button class="btn btn-primary btn-sm" onclick="addNode()">
-                <i class="fas fa-plus"></i> Add Node
+<div class="builder-wrapper">
+    <div class="toolbar">
+        <div style="display:flex; gap: 16px; align-items:center;">
+            <div style="display:flex; align-items:center; gap: 10px;">
+                <div style="width: 40px; height: 40px; background: var(--primary); border-radius: 8px; display:flex; align-items:center; justify-content:center; color:white;">
+                    <i class="fas fa-sitemap fa-lg"></i>
+                </div>
+                <div>
+                    <h3 style="margin:0; font-size:1.1rem; color: var(--text-main);">Scenario Editor</h3>
+                    <span style="font-size:0.8rem; color:var(--text-muted);">Build interactive safety simulations</span>
+                </div>
+            </div>
+        </div>
+        
+        <div style="display:flex; gap: 12px; align-items: center;">
+             <button class="btn btn-secondary btn-sm" onclick="openLoadModal()">
+                <i class="fas fa-folder-open"></i> Load
+            </button>
+            <div style="height: 24px; width: 1px; background: var(--border-color); margin: 0 4px;"></div>
+            <input type="text" id="filenameInput" class="form-control" placeholder="Unique ID (e.g. water_leak)" style="width: 240px;" value="new_scenario">
+            <button class="btn btn-success" onclick="saveScenario()">
+                <i class="fas fa-save"></i> Save Changes
             </button>
         </div>
-        <div class="node-list" id="nodeList">
-            <!-- Node items injected by JS -->
-        </div>
     </div>
 
-    <!-- Main Panel -->
-    <div class="main-panel">
-        <!-- View Tabs -->
-        <div class="view-tabs">
-            <div class="view-tab active" data-tab="nodes" onclick="switchTab('nodes')">
-                <i class="fas fa-edit"></i> Edit Node
+    <div class="builder-container">
+        <!-- Sidebar: Node List -->
+        <div class="node-list-panel">
+            <div class="panel-header">
+                <span>Scenes</span>
+                <button class="btn btn-primary btn-sm" onclick="addNode()">
+                    <i class="fas fa-plus"></i> Add
+                </button>
             </div>
-            <div class="view-tab" data-tab="visualizer" onclick="switchTab('visualizer')">
-                <i class="fas fa-project-diagram"></i> Flow Graph
-            </div>
-            <div class="view-tab" data-tab="settings" onclick="switchTab('settings')">
-                <i class="fas fa-cog"></i> Global Settings
+            <div class="node-list" id="nodeList">
+                <!-- Node items injected by JS -->
             </div>
         </div>
 
-        <!-- Tab 1: Node Editor -->
-        <div class="panel-content active" id="nodesPanel">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #e2e8f0;">
-                <div>
-                    <h2 style="margin:0; color:#2d3748;">Edit Node Details</h2>
-                    <small style="color:#718096;" id="currentNodeLabel">Select a node from the left sidebar</small>
+        <!-- Main Panel -->
+        <div class="main-panel">
+            <!-- View Tabs -->
+            <div class="view-tabs">
+                <div class="view-tab active" data-tab="nodes" onclick="switchTab('nodes')">
+                    <i class="fas fa-pen-to-square"></i> Edit Node
                 </div>
-                <button class="btn btn-danger btn-sm" onclick="deleteCurrentNode()">
-                    <i class="fas fa-trash"></i> Delete
-                </button>
+                <div class="view-tab" data-tab="quiz" onclick="switchTab('quiz')">
+                    <i class="fas fa-question-circle"></i> Quiz Builder
+                </div>
+                <div class="view-tab" data-tab="visualizer" onclick="switchTab('visualizer')">
+                    <i class="fas fa-diagram-project"></i> Flow Graph
+                </div>
+                <div class="view-tab" data-tab="settings" onclick="switchTab('settings')">
+                    <i class="fas fa-sliders"></i> Settings
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>Node ID (Must be unique)</label>
-                <input type="text" id="nodeId" class="form-control" onchange="updateNodeId()" placeholder="e.g., s1set">
-            </div>
-
-            <!-- Video Section -->
-            <div class="form-group">
-                <label>Video Source</label>
-                <input type="text" id="nodeVideoUrl" class="form-control" oninput="updateCurrentNode('videoUrl', this.value)" placeholder="https://.../videos/file.mp4">
-                
-                <div class="video-upload-area">
-                    <p style="margin-bottom: 10px; color:#718096;">Upload to Supabase Storage ('videos' bucket)</p>
-                    <div style="display:flex; gap:10px; justify-content:center;">
-                        <input type="file" id="videoFileInput" accept="video/*" style="display:none" onchange="handleFileSelect(this)">
-                        <button class="btn btn-warning btn-sm" onclick="document.getElementById('videoFileInput').click()">
-                            <i class="fas fa-upload"></i> Select Video
-                        </button>
-                        <span id="uploadStatus" style="align-self:center; font-size:0.9rem; color:#718096;"></span>
+            <!-- Tab 1: Node Editor -->
+            <div class="panel-content active" id="nodesPanel">
+                <div style="display: flex; justify-content: space-between; align-items:center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color);">
+                    <div>
+                        <h2 style="margin:0; font-size: 1.5rem; font-weight: 700; color: var(--text-main);">Edit Node Details</h2>
+                        <span style="color:var(--text-muted); font-size: 0.9rem;" id="currentNodeLabel">Select a node from the left sidebar to begin editing</span>
                     </div>
-                    <video id="videoPreview" class="video-preview" controls style="display:none;"></video>
+                    <button class="btn btn-danger btn-sm" onclick="deleteCurrentNode()">
+                        <i class="fas fa-trash-alt"></i> Delete Node
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label>Node ID <span style="font-weight:400; color:var(--text-muted)">(Must be unique)</span></label>
+                    <div style="position: relative;">
+                        <input type="text" id="nodeId" class="form-control" onchange="updateNodeId()" placeholder="e.g., s1set" style="padding-left: 40px; font-family: monospace; font-weight: 600;">
+                        <i class="fas fa-fingerprint" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                    </div>
+                </div>
+
+                <!-- Video Section -->
+                <div class="form-group">
+                    <label>Video Source</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="nodeVideoUrl" class="form-control" oninput="updateCurrentNode('videoUrl', this.value)" placeholder="https://.../videos/file.mp4">
+                    </div>
+                    
+                    <div class="video-upload-area">
+                        <i class="fas fa-cloud-upload-alt fa-3x" style="color: #cbd5e0; margin-bottom: 15px;"></i>
+                        <p style="margin-bottom: 15px; color:var(--text-main); font-weight: 500;">Upload to Supabase Storage</p>
+                        
+                        <div style="display:flex; gap:10px; justify-content:center; align-items: center;">
+                            <input type="file" id="videoFileInput" accept="video/*" style="display:none" onchange="handleFileSelect(this)">
+                            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('videoFileInput').click()">
+                                <i class="fas fa-file-video"></i> Select File
+                            </button>
+                            <span id="uploadStatus" style="font-size:0.9rem; color:var(--text-muted);"></span>
+                        </div>
+                        <video id="videoPreview" class="video-preview" controls style="display:none;"></video>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Pause At (Seconds)</label>
+                    <input type="number" id="nodePauseAt" class="form-control" style="width: 150px;" oninput="updateCurrentNode('pauseAt', this.value)" placeholder="0.0">
+                    <small style="color: var(--text-muted); margin-top: 4px; display: block;">Video will pause here to show decisions.</small>
+                </div>
+
+                <div style="margin: 30px 0; height: 1px; background: var(--border-color);"></div>
+
+                <!-- Decisions Section -->
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <label style="margin:0; font-size:1.1rem;">Decisions / Outcomes</label>
+                        <button class="btn btn-primary btn-sm" onclick="addDecision()">
+                            <i class="fas fa-plus"></i> Add Option
+                        </button>
+                    </div>
+                    
+                    <div id="decisionsList" class="decisions-container">
+                        <!-- Decisions injected by JS -->
+                    </div>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>Pause At (Seconds)</label>
-                <input type="number" id="nodePauseAt" class="form-control" style="width: 150px;" oninput="updateCurrentNode('pauseAt', this.value)">
-            </div>
-
-            <hr style="margin: 30px 0; border:0; border-top: 1px solid #e2e8f0;">
-
-            <!-- Decisions Section -->
-            <div class="form-group">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <label style="margin:0; font-size:1.1rem;">Decisions / Outcomes</label>
-                    <button class="btn btn-primary btn-sm" onclick="addDecision()">
-                        <i class="fas fa-plus"></i> Add Option
+            <!-- Tab 2: Quiz Builder -->
+            <div class="panel-content" id="quizPanel">
+                <div style="display: flex; justify-content: space-between; align-items:center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color);">
+                    <div>
+                        <h2 style="margin:0; font-size: 1.5rem; font-weight: 700; color: var(--text-main);">Quiz Editor</h2>
+                        <span style="color:var(--text-muted); font-size: 0.9rem;">Create the end-of-scenario assessment</span>
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="addQuizQuestion()">
+                        <i class="fas fa-plus"></i> Add Question
                     </button>
                 </div>
                 
-                <div id="decisionsList" class="decisions-container">
-                    <!-- Decisions injected by JS -->
+                <div id="quizQuestionsList">
+                    <!-- Questions injected here -->
+                </div>
+                
+                <div id="emptyQuizState" style="text-align: center; padding: 40px; color: var(--text-muted); display: none;">
+                    <i class="fas fa-clipboard-list" style="font-size: 3rem; margin-bottom: 16px; opacity: 0.3;"></i>
+                    <p>No questions added yet. Click "Add Question" to begin.</p>
                 </div>
             </div>
-        </div>
 
-        <!-- Tab 2: Visualizer -->
-        <div class="panel-content" id="visualizerPanel">
-            <h2 style="margin-top:0; color:#2d3748; margin-bottom:20px;">Scenario Flowchart</h2>
-            <div id="mermaidGraph"></div>
-            <div style="text-align:center; margin-top:20px;">
-                <button class="btn btn-secondary btn-sm" onclick="renderGraph()">
-                    <i class="fas fa-sync"></i> Refresh Graph
-                </button>
-            </div>
-        </div>
-
-        <!-- Tab 3: Settings -->
-        <div class="panel-content" id="settingsPanel">
-            <h2 style="margin-top:0; color:#2d3748; margin-bottom:20px;">Scenario Settings</h2>
-            
-            <div class="form-group">
-                <label>Display Title</label>
-                <input type="text" id="metaTitle" class="form-control" oninput="updateMetadata('title', this.value)" placeholder="e.g., Chemical Spill Response">
+            <!-- Tab 3: Visualizer -->
+            <div class="panel-content" id="visualizerPanel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="margin:0; color:var(--text-main);">Scenario Flowchart</h2>
+                    <button class="btn btn-secondary btn-sm" onclick="renderGraph()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+                <div id="mermaidGraph"></div>
             </div>
 
-            <div class="form-group">
-                <label>Description</label>
-                <textarea id="metaDesc" class="form-control" oninput="updateMetadata('description', this.value)" placeholder="Brief description..."></textarea>
-            </div>
-
-            <div class="row" style="display:flex; gap:20px;">
-                <div class="col" style="flex:1">
+            <!-- Tab 4: Settings -->
+            <div class="panel-content" id="settingsPanel">
+                <h2 style="margin-top:0; color:var(--text-main); margin-bottom:25px; font-weight: 700;">Global Settings</h2>
+                
+                <div style="max-width: 800px;">
                     <div class="form-group">
-                        <label>Workplace / Sector</label>
-                        <select id="metaWorkplace" class="form-control" onchange="updateMetadata('workplace', this.value)">
-                            <option value="laboratory">Laboratory</option>
-                            <option value="facility">Facility</option>
-                        </select>
+                        <label>Display Title</label>
+                        <input type="text" id="metaTitle" class="form-control" oninput="updateMetadata('title', this.value)" placeholder="e.g., Chemical Spill Response">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="metaDesc" class="form-control" oninput="updateMetadata('description', this.value)" rows="4" placeholder="Brief description of the scenario objectives..."></textarea>
+                    </div>
+
+                    <div class="row" style="display:flex; gap:20px;">
+                        <div class="col" style="flex:1">
+                            <div class="form-group">
+                                <label>Workplace / Sector</label>
+                                <select id="metaWorkplace" class="form-control" onchange="updateMetadata('workplace', this.value)">
+                                    <option value="laboratory">Laboratory</option>
+                                    <option value="facility">Facility</option>
+                                    <option value="office">Office Environment</option>
+                                    <option value="outdoor">Outdoor Site</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col" style="flex:1">
+                            <div class="form-group">
+                                <label>Subcategory</label>
+                                <select id="metaSubcategory" class="form-control" onchange="updateMetadata('subcategory', this.value)">
+                                    <option value="general">General</option>
+                                    <option value="computer_lab">Computer Lab</option>
+                                    <option value="agriculture_lab">Agriculture Lab</option>
+                                    <option value="chemical_lab">Chemical Lab</option>
+                                    <option value="culinary_lab">Culinary Lab</option>
+                                    <option value="gymnasium">Gymnasium</option>
+                                    <option value="campus_offices">Campus Offices</option>
+                                    <option value="library">Library</option>
+                                    <option value="clinic">Clinic</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" style="display:flex; gap:20px;">
+                        <div class="col" style="flex:2">
+                            <div class="form-group">
+                                <label>Hazards (Comma separated)</label>
+                                <input type="text" id="metaHazards" class="form-control" oninput="updateMetadata('hazards', this.value)" placeholder="e.g. Fire, Spill, Electrical">
+                            </div>
+                        </div>
+                        <div class="col" style="flex:1">
+                            <div class="form-group">
+                                <label>Difficulty</label>
+                                <select id="metaDifficulty" class="form-control" onchange="updateMetadata('difficulty', this.value)">
+                                    <option value="Easy">Easy</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Hard">Hard</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="col" style="flex:1">
-                    <div class="form-group">
-                        <label>Subcategory</label>
-                        <select id="metaSubcategory" class="form-control" onchange="updateMetadata('subcategory', this.value)">
-                            <option value="general">General</option>
-                            <option value="computer_lab">Computer Lab</option>
-                            <option value="agriculture_lab">Agriculture Lab</option>
-                            <option value="chemical_lab">Chemical Lab</option>
-                            <option value="culinary_lab">Culinary Lab</option>
-                            <option value="gymnasium">Gymnasium</option>
-                            <option value="campus_offices">Campus Offices</option>
-                            <option value="library">Library</option>
-                            <option value="clinic">Clinic</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Hazards (Comma separated)</label>
-                <input type="text" id="metaHazards" class="form-control" oninput="updateMetadata('hazards', this.value)" placeholder="e.g. Fire, Spill, Electrical">
-            </div>
-
-            <div class="form-group">
-                <label>Difficulty</label>
-                <select id="metaDifficulty" class="form-control" onchange="updateMetadata('difficulty', this.value)">
-                    <option value="Easy">Easy</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Hard">Hard</option>
-                </select>
             </div>
         </div>
     </div>
@@ -344,12 +691,18 @@
 <!-- Load Scenario Modal -->
 <div class="modal-overlay" id="loadModal">
     <div class="modal-content">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h3 style="margin:0">Load Scenario</h3>
-            <button class="btn btn-secondary btn-sm" onclick="closeLoadModal()">Close</button>
+        <div class="modal-header">
+            <h3 style="margin:0; font-size: 1.1rem; color: var(--text-main);">Load Scenario</h3>
+            <button class="btn btn-secondary btn-sm" onclick="closeLoadModal()" style="border:none; box-shadow:none;">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
-        <div id="scenarioListLoading">Loading...</div>
-        <div id="scenarioListContainer"></div>
+        <div class="modal-body">
+            <div id="scenarioListLoading" style="text-align:center; padding: 20px; color: var(--text-muted);">
+                <i class="fas fa-circle-notch fa-spin"></i> Loading scenarios...
+            </div>
+            <div id="scenarioListContainer"></div>
+        </div>
     </div>
 </div>
 
@@ -374,17 +727,25 @@
         "nodes": [
             { "id": "s1set", "videoUrl": "", "pauseAt": null, "decisions": [] }
         ],
-        "quiz": {} 
+        "quiz": { "questions": [] }
     };
     
     let currentNodeId = null;
 
     // --- INITIALIZATION ---
     document.addEventListener('DOMContentLoaded', () => {
-        mermaid.initialize({ startOnLoad: false });
-        if (scenarioData.nodes.length > 0) {
+        mermaid.initialize({ startOnLoad: false, theme: 'neutral' });
+        
+        // Check for 'load' query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const loadId = urlParams.get('load');
+        
+        if (loadId) {
+            loadScenario(loadId);
+        } else if (scenarioData.nodes.length > 0) {
             selectNode(scenarioData.nodes[0].id);
         }
+        
         renderNodeList();
         loadMetadataValues();
     });
@@ -410,15 +771,126 @@
         
         // 4. Specific logic for Visualizer
         if(tabName === 'visualizer') {
-            // Render graph AFTER the panel is visible to fix dimensions
             setTimeout(renderGraph, 50); 
         }
+        // 5. Specific logic for Quiz
+        if(tabName === 'quiz') {
+            renderQuizEditor();
+        }
+    }
+
+    // --- QUIZ EDITOR LOGIC ---
+    function renderQuizEditor() {
+        const container = document.getElementById('quizQuestionsList');
+        const emptyState = document.getElementById('emptyQuizState');
+        container.innerHTML = '';
+
+        // Ensure quiz structure exists
+        if (!scenarioData.quiz) scenarioData.quiz = { questions: [] };
+        if (!scenarioData.quiz.questions) scenarioData.quiz.questions = [];
+
+        const questions = scenarioData.quiz.questions;
+
+        if (questions.length === 0) {
+            emptyState.style.display = 'block';
+            return;
+        } else {
+            emptyState.style.display = 'none';
+        }
+
+        questions.forEach((q, qIndex) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            
+            // Generate Options HTML
+            let optionsHtml = '';
+            (q.options || []).forEach((opt, oIndex) => {
+                optionsHtml += `
+                    <div class="option-item ${q.correctOption == oIndex ? 'correct' : ''}">
+                        <input type="radio" name="correct_${qIndex}" class="option-radio" 
+                            ${q.correctOption == oIndex ? 'checked' : ''} 
+                            onchange="setCorrectOption(${qIndex}, ${oIndex})" title="Mark as correct answer">
+                        <input type="text" class="form-control" style="border:none; background:transparent;" 
+                            value="${opt}" placeholder="Option text..." 
+                            oninput="updateOption(${qIndex}, ${oIndex}, this.value)">
+                        <button class="btn btn-danger btn-sm" onclick="removeOption(${qIndex}, ${oIndex})" style="background:transparent; color:#ef4444; border:none; box-shadow:none;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            });
+
+            card.innerHTML = `
+                <div class="question-header">
+                    <span class="question-title">Question ${qIndex + 1}</span>
+                    <button class="btn btn-danger btn-sm" onclick="removeQuestion(${qIndex})">
+                        <i class="fas fa-trash"></i> Remove
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label>Question Text</label>
+                    <textarea class="form-control" rows="2" 
+                        oninput="updateQuestion(${qIndex}, 'text', this.value)" 
+                        placeholder="Enter the question here...">${q.text || ''}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Options (Select radio button for correct answer)</label>
+                    <div class="option-list">
+                        ${optionsHtml}
+                    </div>
+                    <button class="btn btn-secondary btn-sm" style="margin-top:10px; width:100%; border-style:dashed;" onclick="addOption(${qIndex})">
+                        <i class="fas fa-plus"></i> Add Option
+                    </button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function addQuizQuestion() {
+        if (!scenarioData.quiz) scenarioData.quiz = { questions: [] };
+        if (!scenarioData.quiz.questions) scenarioData.quiz.questions = [];
+        scenarioData.quiz.questions.push({ text: "", options: ["", ""], correctOption: 0 });
+        renderQuizEditor();
+    }
+
+    function removeQuestion(index) {
+        if(!confirm("Remove this question?")) return;
+        scenarioData.quiz.questions.splice(index, 1);
+        renderQuizEditor();
+    }
+
+    function updateQuestion(index, field, value) {
+        scenarioData.quiz.questions[index][field] = value;
+    }
+
+    function addOption(qIndex) {
+        scenarioData.quiz.questions[qIndex].options.push("");
+        renderQuizEditor();
+    }
+
+    function updateOption(qIndex, oIndex, value) {
+        scenarioData.quiz.questions[qIndex].options[oIndex] = value;
+    }
+
+    function removeOption(qIndex, oIndex) {
+        const q = scenarioData.quiz.questions[qIndex];
+        if(q.options.length <= 2) return alert("A question must have at least 2 options.");
+        q.options.splice(oIndex, 1);
+        if(q.correctOption >= q.options.length) q.correctOption = 0; // Reset if out of bounds
+        renderQuizEditor();
+    }
+
+    function setCorrectOption(qIndex, oIndex) {
+        scenarioData.quiz.questions[qIndex].correctOption = oIndex;
+        // Re-render to update the green styling
+        renderQuizEditor();
     }
 
     // --- GRAPH VISUALIZER (Mermaid) ---
     async function renderGraph() {
         const graphContainer = document.getElementById('mermaidGraph');
-        graphContainer.innerHTML = '<div style="color:#718096">Rendering...</div>';
+        graphContainer.innerHTML = '<div style="color:#718096"><i class="fas fa-spinner fa-spin"></i> Rendering graph...</div>';
         
         // Build Mermaid Definition
         let graphDef = 'graph TD\n';
@@ -442,6 +914,9 @@
                 graphDef += `${safeId}(${label})\n`;
             }
             
+            // Styling the nodes
+            graphDef += `style ${safeId} fill:#fff,stroke:#4f46e5,stroke-width:2px,rx:5,ry:5\n`;
+            
             if(node.decisions && node.decisions.length > 0) {
                 node.decisions.forEach(dec => {
                     if(dec.nextNode) {
@@ -450,10 +925,10 @@
                         
                         if (dec.isIncorrect) {
                             graphDef += `${safeId} -- "${edgeLabel}" --> ${targetSafeId}\n`;
-                            graphDef += `linkStyle ${linkCounter} stroke:#e74c3c,stroke-width:2px;\n`;
+                            graphDef += `linkStyle ${linkCounter} stroke:#ef4444,stroke-width:2px;\n`;
                         } else {
                             graphDef += `${safeId} -- "${edgeLabel}" --> ${targetSafeId}\n`;
-                            graphDef += `linkStyle ${linkCounter} stroke:#2ecc71,stroke-width:2px;\n`;
+                            graphDef += `linkStyle ${linkCounter} stroke:#10b981,stroke-width:2px;\n`;
                         }
                         linkCounter++; // Increment index only when a link is added
                     }
@@ -509,19 +984,23 @@
             data.forEach(s => {
                 const div = document.createElement('div');
                 div.className = 'scenario-list-item';
+                div.onclick = () => loadScenario(s.id);
                 div.innerHTML = `
-                    <div>
-                        <strong>${s.title}</strong>
-                        <div style="font-size:0.8rem; color:#666">${s.id} | ${s.workplace || 'General'}</div>
+                    <div style="flex-grow:1;">
+                        <div style="font-weight:600; color:var(--text-main);">${s.title}</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">
+                            <i class="fas fa-tag"></i> ${s.id} &nbsp;|&nbsp; 
+                            <i class="fas fa-building"></i> ${s.workplace || 'General'}
+                        </div>
                     </div>
-                    <button class="btn btn-primary btn-sm" onclick="loadScenario('${s.id}')">Load</button>
+                    <i class="fas fa-chevron-right" style="color:#d1d5db;"></i>
                 `;
                 container.appendChild(div);
             });
 
         } catch(e) {
             console.error(e);
-            loader.innerText = "Error fetching list.";
+            loader.innerHTML = `<span style="color:var(--danger)">Error fetching list.</span>`;
         }
     }
 
@@ -537,6 +1016,18 @@
 
             if(error) throw error;
 
+            // SAFELY PARSE JSON STRINGS IF NECESSARY
+            // If 'nodes' or 'quiz' come back as strings (like in your example export), parse them.
+            let parsedNodes = data.nodes;
+            if (typeof parsedNodes === 'string') {
+                try { parsedNodes = JSON.parse(parsedNodes); } catch(e) { console.error("Error parsing nodes JSON", e); parsedNodes = []; }
+            }
+
+            let parsedQuiz = data.quiz;
+            if (typeof parsedQuiz === 'string') {
+                try { parsedQuiz = JSON.parse(parsedQuiz); } catch(e) { console.error("Error parsing quiz JSON", e); parsedQuiz = {}; }
+            }
+
             // Map DB fields back to Editor State
             scenarioData = {
                 title: data.title,
@@ -545,9 +1036,9 @@
                 subcategory: data.subcategory || 'general',
                 difficulty: data.difficulty || 'Medium',
                 hazards: data.hazards || [],
-                start_node: data.start_node || (data.nodes[0] ? data.nodes[0].id : ''),
-                nodes: data.nodes || [],
-                quiz: data.quiz || {}
+                start_node: data.start_node || (parsedNodes[0] ? parsedNodes[0].id : ''),
+                nodes: parsedNodes || [],
+                quiz: parsedQuiz || { questions: [] }
             };
 
             // Update UI
@@ -561,7 +1052,7 @@
             
             closeLoadModal();
             switchTab('nodes'); // Go to editor
-            alert(`Loaded "${data.title}" successfully!`);
+            // alert(`Loaded "${data.title}" successfully!`); // Optional interaction
 
         } catch(e) {
             console.error(e);
@@ -596,7 +1087,7 @@
 
         try {
             statusSpan.innerText = "Uploading...";
-            statusSpan.style.color = "#3498db";
+            statusSpan.style.color = "var(--primary)";
 
             const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
             const { data, error } = await supabaseClient.storage.from('videos').upload(fileName, file);
@@ -607,8 +1098,8 @@
             
             document.getElementById('nodeVideoUrl').value = publicUrl;
             updateCurrentNode('videoUrl', publicUrl);
-            statusSpan.innerText = "Done!";
-            statusSpan.style.color = "#2ecc71";
+            statusSpan.innerHTML = '<i class="fas fa-check-circle"></i> Done!';
+            statusSpan.style.color = "var(--success)";
             
             const preview = document.getElementById('videoPreview');
             preview.src = publicUrl;
@@ -632,17 +1123,15 @@
             div.onclick = () => { selectNode(node.id); };
             div.innerHTML = `
                 <div style="display:flex; flex-direction:column;">
-                    <strong style="font-size:1rem;">${node.id}</strong>
-                    <div style="display:flex; gap:5px; margin-top:4px;">
-                        <span class="status-badge ${hasVideo ? 'video-ok' : ''}">
-                            <i class="fas fa-video"></i>
-                        </span>
+                    <strong style="font-size:0.95rem; color:var(--text-main);">${node.id}</strong>
+                    <div style="display:flex; gap:6px; margin-top:6px;">
+                        ${hasVideo ? `<span class="status-badge video-ok"><i class="fas fa-video"></i> Video</span>` : ''}
                         <span class="status-badge">
-                            ${(node.decisions || []).length} Opts
+                           <i class="fas fa-code-branch"></i> ${(node.decisions || []).length}
                         </span>
                     </div>
                 </div>
-                <i class="fas fa-chevron-right" style="color:#cbd5e0"></i>
+                ${node.id === currentNodeId ? '<i class="fas fa-edit" style="color:var(--primary)"></i>' : '<i class="fas fa-chevron-right" style="color:#e5e7eb"></i>'}
             `;
             list.appendChild(div);
         });
@@ -652,7 +1141,7 @@
         const node = scenarioData.nodes.find(n => n.id === currentNodeId);
         if (!node) return;
 
-        document.getElementById('currentNodeLabel').innerText = `Editing: ${node.id}`;
+        document.getElementById('currentNodeLabel').innerHTML = `Currently editing <strong style="color:var(--primary)">${node.id}</strong>`;
         document.getElementById('nodeId').value = node.id;
         document.getElementById('nodeVideoUrl').value = node.videoUrl || '';
         document.getElementById('nodePauseAt').value = node.pauseAt || '';
@@ -675,22 +1164,21 @@
             div.className = 'decision-item';
             div.innerHTML = `
                 <div>
-                    <label style="font-size:0.85rem; color:#718096">Button Label</label>
+                    <label style="font-size:0.85rem; color:var(--text-muted)">Button Label</label>
                     <input type="text" class="form-control" value="${decision.label || ''}" 
-                        oninput="updateDecision(${index}, 'label', this.value)">
+                        oninput="updateDecision(${index}, 'label', this.value)" placeholder="Label...">
                 </div>
                 <div>
-                    <label style="font-size:0.85rem; color:#718096">Next Node ID</label>
+                    <label style="font-size:0.85rem; color:var(--text-muted)">Next Node ID</label>
                     <input type="text" class="form-control" value="${decision.nextNode || ''}" 
-                        oninput="updateDecision(${index}, 'nextNode', this.value)">
+                        oninput="updateDecision(${index}, 'nextNode', this.value)" placeholder="Target ID">
                 </div>
                 <div class="checkbox-wrapper">
-                    <label style="font-size:0.8rem; margin-bottom:5px;">Incorrect?</label>
+                    <label style="font-size:0.8rem; margin-bottom:5px; color:var(--text-muted);">Incorrect?</label>
                     <input type="checkbox" ${decision.isIncorrect ? 'checked' : ''} 
-                        style="width:20px; height:20px;"
                         onchange="updateDecision(${index}, 'isIncorrect', this.checked)">
                 </div>
-                <button class="btn btn-danger btn-sm" onclick="removeDecision(${index})">
+                <button class="btn btn-danger btn-sm" onclick="removeDecision(${index})" title="Remove Option">
                     <i class="fas fa-trash"></i>
                 </button>
             `;
@@ -711,18 +1199,21 @@
     }
 
     function deleteCurrentNode() {
-        if (!confirm("Are you sure?")) return;
+        if (!confirm("Are you sure you want to delete this node? This cannot be undone.")) return;
         scenarioData.nodes = scenarioData.nodes.filter(n => n.id !== currentNodeId);
         currentNodeId = null;
         if (scenarioData.nodes.length > 0) selectNode(scenarioData.nodes[0].id);
-        else document.getElementById('nodesPanel').classList.remove('active');
+        else {
+             document.getElementById('nodesPanel').style.display = 'none';
+             renderNodeList();
+        }
     }
 
     function updateNodeId() {
         const newId = document.getElementById('nodeId').value.trim();
         if (!newId || newId === currentNodeId) return;
         if (scenarioData.nodes.find(n => n.id === newId)) {
-            alert("ID must be unique!");
+            alert("Node ID must be unique!");
             document.getElementById('nodeId').value = currentNodeId;
             return;
         }

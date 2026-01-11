@@ -1,0 +1,285 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}System Analytics{% endblock %}
+{% block breadcrumb %}Analytics{% endblock %}
+
+{% block content %}
+<style>
+    .analytics-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+    
+    @media (max-width: 1024px) {
+        .analytics-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .chart-card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-sm);
+        height: 100%;
+    }
+
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .chart-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-main);
+        margin: 0;
+    }
+
+    .chart-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
+    }
+
+    .kpi-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+
+    @media (max-width: 768px) {
+        .kpi-row {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    .kpi-card {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .kpi-label {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 8px;
+    }
+
+    .kpi-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text-main);
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+    }
+
+    .kpi-trend {
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    .trend-up { color: #10b981; }
+    .trend-down { color: #ef4444; }
+    
+    .table-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+    }
+    
+    .performance-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .performance-table th, .performance-table td {
+        padding: 16px 24px;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .performance-table th {
+        background: #f9fafb;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: var(--text-muted);
+    }
+</style>
+
+<!-- KPI Metrics -->
+<div class="kpi-row">
+    <div class="kpi-card">
+        <div class="kpi-label">Total Attempts</div>
+        <div class="kpi-value">
+            {{ analytics.total_attempts }}
+            <span class="kpi-trend trend-up">
+                <i class="fas fa-arrow-up"></i> 12%
+            </span>
+        </div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">Pass Rate</div>
+        <div class="kpi-value">
+            {{ analytics.pass_rate }}%
+            <span class="kpi-trend trend-up">
+                <i class="fas fa-arrow-up"></i> 2%
+            </span>
+        </div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">Avg Duration</div>
+        <div class="kpi-value">
+            12m
+            <span class="kpi-trend trend-down" style="color: #6b7280;">
+                <i class="fas fa-minus"></i>
+            </span>
+        </div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">Critical Failures</div>
+        <div class="kpi-value">
+            {{ analytics.critical_failures }}
+            <span class="kpi-trend trend-down">
+                <i class="fas fa-arrow-down"></i> 5%
+            </span>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 1 -->
+<div class="analytics-grid">
+    <div class="chart-card">
+        <div class="chart-header">
+            <h3 class="chart-title">Activity Overview (Last 7 Days)</h3>
+        </div>
+        <div class="chart-container">
+            <canvas id="activityChart"></canvas>
+        </div>
+    </div>
+    <div class="chart-card">
+        <div class="chart-header">
+            <h3 class="chart-title">Pass vs Fail Distribution</h3>
+        </div>
+        <div class="chart-container" style="position: relative; width: 60%; margin: 0 auto;">
+            <canvas id="passFailChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Performance Table -->
+<div class="chart-card" style="margin-bottom: 24px;">
+    <div class="chart-header">
+        <h3 class="chart-title">Scenario Performance Breakdown</h3>
+        <button class="btn btn-secondary btn-sm" onclick="alert('Exporting data...')">
+            <i class="fas fa-download"></i> Export Report
+        </button>
+    </div>
+    <div class="table-responsive">
+        <table class="performance-table">
+            <thead>
+                <tr>
+                    <th>Scenario Title</th>
+                    <th>Attempts</th>
+                    <th>Avg Score</th>
+                    <th>Completion Rate</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for scenario in analytics.scenario_performance %}
+                <tr>
+                    <td style="font-weight: 500;">{{ scenario.title }}</td>
+                    <td>{{ scenario.attempts }}</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 60px; height: 6px; background: #f3f4f6; border-radius: 3px; overflow: hidden;">
+                                <div style="width: {{ scenario.avg_score }}%; height: 100%; background: {{ '#10b981' if scenario.avg_score > 70 else '#f59e0b' }};"></div>
+                            </div>
+                            {{ scenario.avg_score }}%
+                        </div>
+                    </td>
+                    <td>{{ scenario.completion_rate }}%</td>
+                    <td>
+                        {% if scenario.avg_score >= 80 %}
+                            <span class="badge badge-success">Excellent</span>
+                        {% elif scenario.avg_score >= 60 %}
+                            <span class="badge badge-warning">Average</span>
+                        {% else %}
+                            <span class="badge badge-danger">Needs Attention</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align: center; color: var(--text-muted);">No performance data available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Activity Line Chart
+    const ctxActivity = document.getElementById('activityChart').getContext('2d');
+    new Chart(ctxActivity, {
+        type: 'line',
+        data: {
+            labels: {{ analytics.chart_dates | tojson }},
+            datasets: [{
+                label: 'Quiz Attempts',
+                data: {{ analytics.chart_attempts | tojson }},
+                borderColor: '#2563eb',
+                backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true, grid: { borderDash: [5, 5] } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // Pass/Fail Doughnut Chart
+    const ctxPassFail = document.getElementById('passFailChart').getContext('2d');
+    new Chart(ctxPassFail, {
+        type: 'doughnut',
+        data: {
+            labels: ['Passed', 'Failed'],
+            datasets: [{
+                data: [{{ analytics.total_passed }}, {{ analytics.total_failed }}],
+                backgroundColor: ['#10b981', '#ef4444'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
+            },
+            cutout: '70%'
+        }
+    });
+</script>
+{% endblock %}

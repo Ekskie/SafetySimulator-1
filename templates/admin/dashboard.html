@@ -1,0 +1,332 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Overview{% endblock %}
+{% block breadcrumb %}Dashboard{% endblock %}
+
+{% block content %}
+<style>
+    /* Dashboard Specific Styles */
+    .dashboard-container {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    /* Stats Grid */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 24px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        border-left: 4px solid transparent;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    .stat-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        letter-spacing: 0.05em;
+        margin: 0;
+    }
+    
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 12px 0;
+        color: var(--text-main);
+        line-height: 1;
+        letter-spacing: -0.025em;
+    }
+    
+    .stat-desc {
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 500;
+    }
+
+    /* Split Layout for Activity and Actions */
+    .split-layout {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 24px;
+        align-items: start; /* Prevent stretching */
+    }
+
+    @media (max-width: 1024px) {
+        .split-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Cards generic */
+    .dashboard-card {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .section-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #fafafa;
+    }
+
+    .section-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-main);
+        margin: 0;
+    }
+
+    .refresh-link {
+        font-size: 0.85rem;
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .refresh-link:hover { text-decoration: underline; }
+
+    /* Activity List */
+    .activity-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .activity-item {
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        transition: background-color 0.1s;
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-item:hover { background-color: #f9fafb; }
+
+    .activity-icon {
+        width: 40px; 
+        height: 40px; 
+        border-radius: 10px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        flex-shrink: 0;
+        font-size: 1rem;
+    }
+
+    .activity-content {
+        flex: 1;
+    }
+
+    .activity-message {
+        font-size: 0.95rem;
+        color: var(--text-main);
+        font-weight: 500;
+        margin-bottom: 4px;
+        line-height: 1.4;
+    }
+
+    .activity-time {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    /* Quick Actions */
+    .actions-content {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .btn-action {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 12px 16px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95rem;
+        border: 1px solid transparent;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+    
+    .btn-action:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .btn-action-primary { background-color: var(--primary); color: white; border-color: var(--primary); }
+    .btn-action-primary:hover { background-color: var(--primary-hover); }
+
+    .btn-action-neutral { background-color: white; color: var(--text-main); border-color: var(--border-color); }
+    .btn-action-neutral:hover { background-color: #f9fafb; border-color: var(--text-muted); }
+
+    .btn-action-success { background-color: var(--success); color: white; border-color: var(--success); }
+    .btn-action-success:hover { background-color: #059669; }
+
+    /* System Tip */
+    .system-tip {
+        margin-top: 8px;
+        padding: 16px;
+        background: #f0fdf4;
+        border-radius: 8px;
+        border: 1px solid #bbf7d0;
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+    }
+</style>
+
+<div class="dashboard-container">
+    <!-- Quick Stats Row -->
+    <div class="dashboard-grid">
+        <!-- Total Students -->
+        <div class="stat-card" style="border-left-color: var(--primary);">
+            <div>
+                <h3 class="stat-label">Total Students</h3>
+                <p class="stat-value">{{ stats.total_students }}</p>
+            </div>
+            <span class="stat-desc" style="color: var(--success);">
+                <i class="fas fa-arrow-up"></i> Active Cadets
+            </span>
+        </div>
+
+        <!-- Active Scenarios -->
+        <div class="stat-card" style="border-left-color: var(--danger);">
+            <div>
+                <h3 class="stat-label">Active Scenarios</h3>
+                <p class="stat-value">{{ stats.active_scenarios }}</p>
+            </div>
+            <span class="stat-desc" style="color: var(--text-muted);">
+                <i class="fas fa-layer-group"></i> Deployed modules
+            </span>
+        </div>
+
+        <!-- Pending Approvals -->
+        <div class="stat-card" style="border-left-color: var(--warning);">
+            <div>
+                <h3 class="stat-label">Pending Approvals</h3>
+                <p class="stat-value">{{ stats.pending_approvals }}</p>
+            </div>
+            <span class="stat-desc" style="color: var(--warning);">
+                <i class="fas fa-clock"></i> Faculty requests
+            </span>
+        </div>
+
+        <!-- Avg Quiz Score -->
+        <div class="stat-card" style="border-left-color: #8b5cf6;">
+            <div>
+                <h3 class="stat-label">Avg Quiz Score</h3>
+                <p class="stat-value">{{ stats.avg_score }}%</p>
+            </div>
+            <span class="stat-desc" style="color: var(--success);">
+                <i class="fas fa-check-circle"></i> Global Average
+            </span>
+        </div>
+    </div>
+
+    <!-- Actions Row -->
+    <div class="split-layout">
+        <!-- Recent Activity -->
+        <div class="dashboard-card">
+            <div class="section-header">
+                <h3 class="section-title">Recent Student Activity</h3>
+                <a href="{{ url_for('admin.dashboard') }}" class="refresh-link">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </a>
+            </div>
+            
+            {% if activity %}
+            <ul class="activity-list">
+                {% for log in activity %}
+                <li class="activity-item">
+                    <div class="activity-icon" style="background: {{ log.bg_color }}15; color: {{ log.color }}; border: 1px solid {{ log.bg_color }}30;">
+                        <i class="{{ log.icon }}"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-message">
+                            {{ log.message | safe }}
+                        </div>
+                        <div class="activity-time">
+                            <i class="far fa-clock"></i> {{ log.time_ago }}
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div style="text-align: center; padding: 60px 20px; color: var(--text-light);">
+                <div style="background: var(--bg-app); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
+                    <i class="fas fa-history" style="font-size: 1.5rem; opacity: 0.6;"></i>
+                </div>
+                <p style="margin: 0; font-weight: 500;">No recent activity found.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="dashboard-card">
+            <div class="section-header">
+                <h3 class="section-title">Quick Actions</h3>
+            </div>
+            <div class="actions-content">
+                <a href="{{ url_for('admin.scenario_builder') }}" class="btn-action btn-action-primary">
+                    <i class="fas fa-plus-circle"></i> Create New Scenario
+                </a>
+                <a href="{{ url_for('admin.library_manager') }}" class="btn-action btn-action-neutral">
+                     <i class="fas fa-book"></i> Manage Library
+                </a>
+                <a href="#" class="btn-action btn-action-success">
+                    <i class="fas fa-user-plus"></i> Invite Faculty Member
+                </a>
+                
+                <div class="system-tip">
+                    <i class="fas fa-lightbulb" style="color: #15803d; margin-top: 2px;"></i>
+                    <div>
+                        <strong style="color: #166534; font-size: 0.9rem; display: block; margin-bottom: 4px;">System Tip</strong>
+                        <p style="margin: 0; font-size: 0.85rem; color: #166534; line-height: 1.4;">
+                            Remember to review pending faculty approvals to ensure they can access the scenario builder.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

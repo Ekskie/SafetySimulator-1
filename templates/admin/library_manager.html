@@ -1,0 +1,337 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Library Manager{% endblock %}
+{% block breadcrumb %}Library{% endblock %}
+
+{% block content %}
+<style>
+    /* Local overrides for Library Manager */
+    .library-toolbar {
+        background: white;
+        padding: 20px 24px;
+        border-radius: 12px 12px 0 0;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .search-group {
+        display: flex;
+        gap: 12px;
+        flex: 1;
+        max-width: 600px;
+    }
+
+    .search-wrapper {
+        position: relative;
+        flex-grow: 1;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        pointer-events: none;
+    }
+
+    .modern-input {
+        padding: 10px 16px 10px 40px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        outline: none;
+    }
+
+    .modern-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .modern-select {
+        padding: 10px 36px 10px 16px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        background-color: white;
+        cursor: pointer;
+        outline: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 0.5rem center;
+        background-repeat: no-repeat;
+        background-size: 1.5em 1.5em;
+    }
+
+    .modern-select:focus {
+        border-color: var(--primary);
+    }
+
+    .library-content {
+        background: white;
+        border-radius: 0 0 12px 12px;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        border-top: none;
+        overflow: hidden;
+    }
+
+    /* Table Styling */
+    .modern-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .modern-table th {
+        background: #f9fafb;
+        padding: 12px 24px;
+        text-align: left;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .modern-table td {
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--border-color);
+        vertical-align: middle;
+        color: var(--text-main);
+    }
+
+    .modern-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .modern-table tr:hover td {
+        background-color: #f9fafb;
+    }
+
+    .cell-title {
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--text-main);
+    }
+
+    .cell-id {
+        font-family: 'SF Mono', 'Roboto Mono', Menlo, monospace;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 4px;
+        background: #f3f4f6;
+        display: inline-block;
+        padding: 2px 6px;
+        border-radius: 4px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .cell-subtext {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    /* Badges */
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        line-height: 1;
+    }
+    .badge-gray { background: #f3f4f6; color: #4b5563; border: 1px solid #e5e7eb; }
+    .badge-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+    .badge-warning { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
+    .badge-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+    /* Action Buttons */
+    .btn-icon {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        border: 1px solid transparent;
+        color: var(--text-muted);
+        transition: all 0.2s;
+        background: white;
+        border-color: var(--border-color);
+    }
+    .btn-icon:hover {
+        background-color: #f3f4f6;
+        color: var(--text-main);
+        border-color: #d1d5db;
+    }
+    .btn-icon.delete:hover {
+        background-color: #fee2e2;
+        color: #ef4444;
+        border-color: #fecaca;
+    }
+
+    .btn-primary-modern {
+        background-color: var(--primary);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.9rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: background-color 0.2s;
+        border: 1px solid transparent;
+    }
+    .btn-primary-modern:hover {
+        background-color: var(--primary-hover);
+        text-decoration: none;
+        color: white;
+    }
+</style>
+
+<div style="display: flex; flex-direction: column;">
+    <!-- Toolbar -->
+    <div class="library-toolbar shadow-sm" style="border: 1px solid var(--border-color); border-bottom: none;">
+        <div class="search-group">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="searchInput" class="modern-input" placeholder="Search scenarios by title or ID..." onkeyup="filterScenarios()">
+            </div>
+            <select id="workplaceFilter" class="modern-select" style="width: 180px;" onchange="filterScenarios()">
+                <option value="">All Workplaces</option>
+                <option value="laboratory">Laboratory</option>
+                <option value="facility">Facility</option>
+                <option value="office">Office</option>
+                <option value="outdoor">Outdoor</option>
+            </select>
+        </div>
+        <a href="{{ url_for('admin.scenario_builder') }}" class="btn-primary-modern">
+            <i class="fas fa-plus"></i> New Scenario
+        </a>
+    </div>
+
+    <!-- Content Table -->
+    <div class="library-content">
+        <div class="table-responsive">
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th style="width: 35%;">Title / ID</th>
+                        <th style="width: 20%;">Context</th>
+                        <th style="width: 25%;">Hazards</th>
+                        <th style="width: 10%;">Difficulty</th>
+                        <th style="width: 10%; text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="scenarioTableBody">
+                    {% for scenario in scenarios %}
+                    <tr class="scenario-row" data-title="{{ scenario.title|lower }}" data-id="{{ scenario.id|lower }}" data-workplace="{{ scenario.workplace }}">
+                        <td>
+                            <div class="cell-title">{{ scenario.title }}</div>
+                            <div class="cell-id">{{ scenario.id }}</div>
+                        </td>
+                        <td>
+                            <div style="font-weight: 500; color: var(--text-main);">{{ scenario.workplace|capitalize }}</div>
+                            <div class="cell-subtext">{{ scenario.subcategory|replace('_', ' ')|capitalize }}</div>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                {% if scenario.hazards %}
+                                    {% for hazard in scenario.hazards %}
+                                        <span class="badge badge-gray">{{ hazard }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    <span style="color: var(--text-light); font-size: 0.85rem; font-style: italic;">None listed</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge badge-{{ 'success' if scenario.difficulty == 'Easy' else 'warning' if scenario.difficulty == 'Medium' else 'danger' }}">
+                                {{ scenario.difficulty }}
+                            </span>
+                        </td>
+                        <td style="text-align: right;">
+                            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                                <a href="{{ url_for('admin.scenario_builder') }}?load={{ scenario.id }}" class="btn-icon" title="Edit in Builder">
+                                    <i class="fas fa-pen" style="font-size: 0.9rem;"></i>
+                                </a>
+                                <form action="{{ url_for('admin.delete_scenario', scenario_id=scenario.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete \u0022{{ scenario.title }}\u0022? This action cannot be undone.');" style="display:inline;">
+                                    <button type="submit" class="btn-icon delete" title="Delete Scenario">
+                                        <i class="fas fa-trash-alt" style="font-size: 0.9rem;"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 60px 20px;">
+                            <div style="background: var(--bg-app); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
+                                <i class="fas fa-folder-open" style="font-size: 1.5rem; opacity: 0.5; color: var(--text-muted);"></i>
+                            </div>
+                            <h3 style="font-size: 1.1rem; color: var(--text-main); margin-bottom: 8px;">No scenarios found</h3>
+                            <p style="color: var(--text-muted); margin-bottom: 24px;">Get started by creating your first safety scenario.</p>
+                            <a href="{{ url_for('admin.scenario_builder') }}" class="btn-primary-modern">Create Scenario</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Empty State for Filter -->
+        <div id="noResults" style="display: none; text-align: center; padding: 60px 20px;">
+            <div style="background: #f3f4f6; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
+                <i class="fas fa-search" style="font-size: 1.2rem; color: var(--text-muted);"></i>
+            </div>
+            <p style="color: var(--text-main); font-weight: 500;">No scenarios match your search.</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Try adjusting your filters or search terms.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function filterScenarios() {
+        const input = document.getElementById('searchInput').value.toLowerCase();
+        const workplace = document.getElementById('workplaceFilter').value;
+        const rows = document.querySelectorAll('.scenario-row');
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            const title = row.getAttribute('data-title');
+            const id = row.getAttribute('data-id');
+            const rowWorkplace = row.getAttribute('data-workplace');
+
+            const matchesSearch = title.includes(input) || id.includes(input);
+            const matchesWorkplace = workplace === "" || rowWorkplace === workplace;
+
+            if (matchesSearch && matchesWorkplace) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        const noResults = document.getElementById('noResults');
+        const table = document.querySelector('.modern-table');
+        
+        if (visibleCount === 0 && rows.length > 0) {
+            noResults.style.display = 'block';
+            table.style.display = 'none';
+        } else {
+            noResults.style.display = 'none';
+            table.style.display = 'table';
+        }
+    }
+</script>
+{% endblock %}
