@@ -176,6 +176,9 @@ def player(scenario_id):
         return redirect(url_for('student.scenario_select'))
     
     print(f"DEBUG: Scenario loaded successfully. Passing to template.")
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
     # Important: Ensure player.html uses {{ scenario | tojson }}
