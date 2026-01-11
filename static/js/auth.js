@@ -72,7 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = document.getElementById('reg-password').value;
         const confirm = document.getElementById('reg-confirm').value;
         
-        // --- NEW: Capture Name Fields ---
         const fname = document.getElementById('reg-fname').value;
         const lname = document.getElementById('reg-lname').value;
 
@@ -89,7 +88,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                // --- NEW: Send full_name in body to match auth.py ---
                 body: JSON.stringify({ 
                     email: email, 
                     password: password,
@@ -99,19 +97,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
 
+            setLoading(false);
+
             if (data.success) {
-                setLoading(false);
-                
                 // Show success message
                 showError(data.message, 'success');
                 
-                // Redirect after a short delay
-                setTimeout(() => {
-                    window.location.href = data.redirect || '/';
-                }, 1000);
+                // If there is a redirect (auto-login), go there
+                if (data.redirect) {
+                    setTimeout(() => {
+                        window.location.href = data.redirect;
+                    }, 1000);
+                } else {
+                    // Otherwise (email verification needed), switch back to login form after a delay
+                    // so they can login once verified.
+                    setTimeout(() => {
+                        if (!isLoginView) {
+                            toggleBtn.click(); // Switch UI to login
+                        }
+                    }, 3000);
+                }
             } else {
                 showError(data.message);
-                setLoading(false);
             }
         } catch (error) {
             showError("System connection error.");
@@ -129,6 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
         alertMsg.textContent = msg;
         alertBox.classList.remove('d-none', 'alert-danger', 'alert-success');
         alertBox.classList.add(`alert-${type}`);
-        alertBox.classList.remove('d-none'); // Ensure it becomes visible
+        alertBox.classList.remove('d-none'); 
     }
 });

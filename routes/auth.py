@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session
-# Added 'current_user' to the imports below
 from flask_login import login_user, logout_user, login_required, current_user
 from models import User
 from extensions import supabase
@@ -80,6 +79,7 @@ def register():
 
     try:
         # 1. Create Auth User
+        # Note: If email confirmation is enabled in Supabase, this will send an email.
         response = supabase.auth.sign_up({
             "email": email,
             "password": password,
@@ -90,8 +90,12 @@ def register():
             }
         })
         
+        # Check if user creation was successful
+        # Note: response.user might be None if confirmation is required immediately depending on client version, 
+        # but usually it returns the user object with 'identities' or confirmation_sent_at.
         if response.user:
             # 2. Sync Profile to Database
+            # We insert the profile immediately so it's ready when they confirm and login.
             try:
                 supabase.table('profiles').upsert({
                     'id': response.user.id,
@@ -102,25 +106,27 @@ def register():
             except Exception as db_err:
                 print(f"Profile creation warning: {db_err}")
 
-            # 3. Auto Login after register
-            user = User(
-                id=response.user.id, 
-                email=email, 
-                role='student',
-                username=full_name
-            )
+            # CHANGED: Do NOT auto-login. 
+            # Return success message telling user to verify email.
+            # We are NOT setting session or calling login_user here.
             
-            login_user(user)
-            
-            session['user_role'] = 'student'
-            session['user'] = {
-                'id': response.user.id,
-                'email': email,
-                'name': full_name,
-                'role': 'student'
-            }
-            
-            return jsonify({'success': True, 'redirect': url_for('general.index')})
+            # If the user is already confirmed (e.g. Supabase setting is off), response.session would exist.
+            # If response.session is None, it means email confirmation is required.
+            if response.session is None:
+                return jsonify({
+                    'success': True, 
+                    'message': 'Registration successful! Please check your email to verify your account before logging in.',
+                    'redirect': None # Client JS should handle this by showing the message, not redirecting immediately
+                })
+            else:
+                # Fallback: If your Supabase project has email auth DISABLED (auto-confirm ON),
+                # then we can auto-login. But since you asked for verification, we assume it's ON.
+                # However, for consistency, let's force them to login even if auto-confirmed.
+                return jsonify({
+                    'success': True, 
+                    'message': 'Registration successful. Please log in.',
+                    'redirect': None 
+                })
             
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)})
