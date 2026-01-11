@@ -163,7 +163,7 @@ def player(scenario_id):
         # Debugging: print to Vercel logs to see what's happening
         print(f"Player Route: Scenario ID {scenario_id} not found.")
         flash("Scenario not found or could not be loaded.", "error")
-        return redirect(url_for('student.scenario_select'))
+        # return redirect(url_for('student.scenario_select'))
 
     return render_template("player.html", scenario=scenario)
 
