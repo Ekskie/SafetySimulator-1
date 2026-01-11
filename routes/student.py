@@ -170,16 +170,9 @@ def player(scenario_id):
         # Debugging: print to Vercel logs to see what's happening
         print(f"ERROR: Scenario ID '{decoded_id}' not found via get_scenario_by_id.")
         flash("Scenario not found or could not be loaded.", "error")
-<<<<<<< Updated upstream
-        # return redirect(url_for('student.scenario_select'))
-=======
         return redirect(url_for('student.scenario_select'))
     
     print(f"DEBUG: Scenario loaded successfully. Passing to template.")
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 
     # Important: Ensure player.html uses {{ scenario | tojson }}
     return render_template("player.html", scenario=scenario)
