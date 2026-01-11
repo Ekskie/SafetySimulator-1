@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, jsonify, flash, redirect,
 from flask_login import login_required, current_user
 from extensions import supabase
 from utils import load_json_data, get_scenario_by_id
+import urllib.parse  # --- FIX 1: Import this to handle URL decoding ---
 
 student_bp = Blueprint('student', __name__)
 
@@ -152,26 +153,39 @@ def profile():
         print(f"Profile Error: {e}")
         return render_template("profile.html", user_email=current_user.email, role="Operator", clearance_level=1, level_progress=0)
 
-@student_bp.route("/player/<scenario_id>")
+# --- FIX 2: Use <path:> to allow slashes and spaces in ID ---
+@student_bp.route("/player/<path:scenario_id>")
 @login_required
 def player(scenario_id):
-    # Use the helper function from utils.py to get the specific scenario
-    # This handles both Supabase fetching and ID string conversion
-    scenario = get_scenario_by_id(scenario_id)
+    # --- FIX 3: Decode the URL (e.g., "Water%20Leak" -> "Water Leak") ---
+    decoded_id = urllib.parse.unquote(scenario_id)
+    
+    # Debug log for Vercel
+    print(f"DEBUG: Player Route. Raw: '{scenario_id}' -> Decoded: '{decoded_id}'")
+
+    # Use the helper function from utils.py with the DECODED ID
+    scenario = get_scenario_by_id(decoded_id)
 
     if not scenario:
         # Debugging: print to Vercel logs to see what's happening
-        print(f"Player Route: Scenario ID {scenario_id} not found.")
+        print(f"ERROR: Scenario ID '{decoded_id}' not found via get_scenario_by_id.")
         flash("Scenario not found or could not be loaded.", "error")
+<<<<<<< Updated upstream
         # return redirect(url_for('student.scenario_select'))
+=======
+        return redirect(url_for('student.scenario_select'))
+    
+    print(f"DEBUG: Scenario loaded successfully. Passing to template.")
+>>>>>>> Stashed changes
 
+    # Important: Ensure player.html uses {{ scenario | tojson }}
     return render_template("player.html", scenario=scenario)
 
-@student_bp.route("/quiz/<scenario_id>")
+@student_bp.route("/quiz/<path:scenario_id>") # Apply similar fix to Quiz route
 @login_required
 def quiz(scenario_id):
-    # Use the helper function for consistency
-    scenario = get_scenario_by_id(scenario_id)
+    decoded_id = urllib.parse.unquote(scenario_id)
+    scenario = get_scenario_by_id(decoded_id)
 
     if not scenario:
         return redirect(url_for('student.scenario_select'))

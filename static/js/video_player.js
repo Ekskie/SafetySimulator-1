@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- NODE SYSTEM SETUP ---
     const isNodeBased = SCENARIO_DATA.nodes && SCENARIO_DATA.nodes.length > 0;
-    
+    console.log("Scenario Loaded:", SCENARIO_DATA.title, "Node-Based:", isNodeBased);
     if (isNodeBased) {
         SCENARIO_DATA.nodes.forEach(n => nodesMap[n.id] = n);
     }
