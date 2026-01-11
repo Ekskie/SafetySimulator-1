@@ -15,12 +15,15 @@ app.secret_key = os.environ.get("SESSION_SECRET", "safezard_secret_key")
 # --- Login Manager ---
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'auth.auth' # Updated to point to blueprint
+login_manager.login_view = 'auth.auth' # Points to the auth blueprint login page
 
 @login_manager.user_loader
 def load_user(user_id):
-    user_email = session.get('user_email')
-    return User(user_id, email=user_email)
+    """
+    Reloads the user object from the user ID stored in the session.
+    We use User.get() to ensure we fetch the latest role and name from Supabase.
+    """
+    return User.get(user_id)
 
 # --- Register Blueprints ---
 from routes.general import general_bp

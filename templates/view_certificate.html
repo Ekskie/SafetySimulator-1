@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Certificate of Completion - {{ student_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Pinyon+Script&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    <!-- FontAwesome for the print button icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #222; /* Dark background for the view page */
+            font-family: 'Lato', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .certificate-container {
+            width: 1123px; /* A4 Landscape width approx */
+            height: 794px; /* A4 Landscape height approx */
+            background: #fff;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            color: #333;
+            overflow: hidden;
+        }
+
+        /* Border Design */
+        .border-pattern {
+            position: absolute;
+            top: 20px; left: 20px; right: 20px; bottom: 20px;
+            border: 2px solid #1a365d; /* Navy Blue */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .border-inner {
+            position: absolute;
+            top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 5px solid #c5a059; /* Gold */
+        }
+
+        .corner-decoration {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: 2px solid #c5a059;
+            z-index: 1;
+        }
+        .top-left { top: 15px; left: 15px; border-right: none; border-bottom: none; }
+        .top-right { top: 15px; right: 15px; border-left: none; border-bottom: none; }
+        .bottom-left { bottom: 15px; left: 15px; border-right: none; border-top: none; }
+        .bottom-right { bottom: 15px; right: 15px; border-left: none; border-top: none; }
+
+        /* Content */
+        .content {
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            padding-top: 60px;
+        }
+
+        .header-logo {
+            margin-bottom: 20px;
+            color: #1a365d;
+            font-size: 3rem;
+        }
+
+        .title {
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem;
+            color: #1a365d;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #c5a059;
+            margin-top: 10px;
+            margin-bottom: 50px;
+        }
+
+        .present-text {
+            font-size: 1.1rem;
+            font-style: italic;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .recipient-name {
+            font-family: 'Pinyon Script', cursive;
+            font-size: 5rem;
+            color: #2d3748;
+            margin: 20px 0;
+            line-height: 1;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+            display: inline-block;
+            min-width: 600px;
+        }
+
+        .description {
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 20px auto;
+            line-height: 1.6;
+            color: #4a5568;
+        }
+
+        .course-name {
+            font-weight: 700;
+            color: #1a365d;
+            font-size: 1.3rem;
+        }
+
+        /* Footer / Signatures */
+        .footer {
+            margin-top: 80px;
+            display: flex;
+            justify-content: center;
+            gap: 150px;
+        }
+
+        .signature-block {
+            text-align: center;
+        }
+
+        .signature-line {
+            width: 250px;
+            border-top: 1px solid #333;
+            margin: 10px auto;
+        }
+
+        .signature-text {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+        }
+
+        .signature-image {
+            font-family: 'Pinyon Script', cursive;
+            font-size: 2rem;
+            color: #1a365d;
+            margin-bottom: -10px;
+        }
+
+        .seal {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px double #c5a059;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #c5a059;
+            font-weight: bold;
+            font-family: 'Cinzel', serif;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            text-align: center;
+            background: rgba(255,255,255,0.8);
+            box-shadow: 0 0 0 10px rgba(197, 160, 89, 0.1);
+        }
+
+        /* Print Settings */
+        @media print {
+            body { 
+                background: none; 
+                -webkit-print-color-adjust: exact;
+                display: block;
+            }
+            .certificate-container {
+                box-shadow: none;
+                margin: 0;
+                width: 100%;
+                height: 100%;
+                page-break-inside: avoid;
+            }
+            .download-btn { display: none !important; }
+            @page {
+                size: landscape;
+                margin: 0;
+            }
+        }
+        
+        .download-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+            font-family: sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 100;
+        }
+        .download-btn:hover { background: #059669; }
+    </style>
+</head>
+<body>
+
+    <button class="download-btn" onclick="window.print()">
+        <i class="fa fa-print" style="margin-right:8px;"></i> Print Certificate
+    </button>
+
+    <div class="certificate-container">
+        <div class="border-pattern">
+            <div class="border-inner"></div>
+            <div class="corner-decoration top-left"></div>
+            <div class="corner-decoration top-right"></div>
+            <div class="corner-decoration bottom-left"></div>
+            <div class="corner-decoration bottom-right"></div>
+            
+            <div class="content">
+                <div class="header-logo">
+                    <!-- Simple Shield Icon -->
+                    <svg width="60" height="60" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z"/>
+                    </svg>
+                </div>
+                
+                <h1 class="title">Certificate</h1>
+                <div class="subtitle">Of Achievement</div>
+
+                <div class="present-text">This certificate is proudly presented to</div>
+
+                <div class="recipient-name">{{ student_name }}</div>
+
+                <p class="description">
+                    For successfully completing all required modules and demonstrating high proficiency in the
+                    <br>
+                    <span class="course-name">SafeZard Laboratory Safety Program</span>
+                </p>
+
+                <div class="seal">
+                    OFFICIAL<br>CERTIFIED<br>2026
+                </div>
+
+                <div class="footer">
+                    <div class="signature-block">
+                        <div class="signature-image">{{ date }}</div>
+                        <div class="signature-line"></div>
+                        <div class="signature-text">Date Issued</div>
+                    </div>
+                    <div class="signature-block">
+                        <div class="signature-image">SafetyAdmin</div>
+                        <div class="signature-line"></div>
+                        <div class="signature-text">Program Director</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

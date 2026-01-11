@@ -81,24 +81,13 @@
                     <span class="sidebar-text">STATS</span>
                 </a>
             </li>
-            
-            {% if session.get('user_role') == 'faculty' %}
+            <!-- NEW CERTIFICATES LINK -->
             <li class="nav-item">
-                <a href="/faculty" class="nav-link text-warning" data-preview="faculty">
-                    <i class="bi bi-person-video3"></i>
-                    <span class="sidebar-text">FACULTY</span>
+                <a href="{{ url_for('student.certificates') }}" class="nav-link" data-preview="certificates">
+                    <i class="bi bi-award-fill"></i>
+                    <span class="sidebar-text">AWARDS</span>
                 </a>
             </li>
-            {% endif %}
-
-            {% if session.get('user_role') == 'admin' %}
-            <li class="nav-item">
-                <a href="/admin" class="nav-link text-danger" data-preview="admin">
-                    <i class="bi bi-speedometer2"></i>
-                    <span class="sidebar-text">ADMIN</span>
-                </a>
-            </li>
-            {% endif %}
 
             <li class="nav-item">
                 <a href="/profile" class="nav-link" data-preview="profile">
@@ -127,6 +116,23 @@
                     <span class="sidebar-text">SWITCH MODE</span>
                 </button>
             </li>
+             {% if session.get('user_role') == 'faculty' %}
+            <li class="nav-item">
+                <a href="/faculty" class="nav-link text-warning" data-preview="faculty">
+                    <i class="bi bi-person-video3"></i>
+                    <span class="sidebar-text">FACULTY</span>
+                </a>
+            </li>
+            {% endif %}
+
+            {% if session.get('user_role') == 'admin' %}
+            <li class="nav-item">
+                <a href="/admin" class="nav-link text-danger" data-preview="admin">
+                    <i class="bi bi-speedometer2"></i>
+                    <span class="sidebar-text">ADMIN</span>
+                </a>
+            </li>
+            {% endif %}
         </ul>
 
         <div class="dropdown border-top mt-auto" style="border-color: var(--safezard-border) !important;">
@@ -139,9 +145,13 @@
                 </div>
                 <span class="sidebar-text-logo-user ms-2 small fw-bold">
                     {% if current_user.is_authenticated %}
-                    {{ current_user.username }}
+                        {% if current_user.username %}
+                            {{ current_user.username }}
+                        {% else %}
+                            Operator
+                        {% endif %}
                     {% else %}
-                    Guest
+                        Guest
                     {% endif %}
                 </span>
             </a>
@@ -161,6 +171,7 @@
         </div>
     </div>
 
+    <!-- PREVIEW PANELS -->
     <div class="preview-container d-none d-md-block">
         <div id="preview-menu" class="preview-panel">
             <i class="bi bi-house-door preview-icon-large"></i>
@@ -171,69 +182,28 @@
             <i class="bi bi-crosshair preview-icon-large"></i>
             <h2 class="preview-title">Start Training</h2>
             <p class="preview-desc">Initiate safety simulation protocols. Select environment and difficulty level.</p>
-            <div class="preview-stats-row">
-                <div class="stat-box">
-                    <i class="bi bi-flask-fill fs-3 mb-2 d-block text-success"></i>
-                    <div class="stat-label">Lab Ops</div>
-                </div>
-                <div class="stat-box">
-                    <i class="bi bi-building-fill fs-3 mb-2 d-block text-warning"></i>
-                    <div class="stat-label">Facilities</div>
-                </div>
-            </div>
         </div>
-        
         <div id="preview-leaderboard" class="preview-panel">
             <i class="bi bi-trophy-fill preview-icon-large text-warning"></i>
             <h2 class="preview-title">Rankings</h2>
             <p class="preview-desc">View top performing operators and global safety scores.</p>
-            <div class="preview-stats-row">
-                <div class="stat-box">
-                    <div class="stat-value">TOP 10</div>
-                    <div class="stat-label">Displayed</div>
-                </div>
-            </div>
         </div>
-
         <div id="preview-library" class="preview-panel">
             <i class="bi bi-collection-play preview-icon-large"></i>
             <h2 class="preview-title">Archives</h2>
             <p class="preview-desc">Access the complete database of safety modules and historical records.</p>
-            <div class="preview-stats-row">
-                <div class="stat-box">
-                    <div class="stat-value">11</div>
-                    <div class="stat-label">Modules</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value">2</div>
-                    <div class="stat-label">Domains</div>
-                </div>
-            </div>
         </div>
         <div id="preview-analytics" class="preview-panel">
             <i class="bi bi-graph-up-arrow preview-icon-large text-warning"></i>
             <h2 class="preview-title">Performance</h2>
             <p class="preview-desc">Analyze user metrics, completion rates, and proficiency scores.</p>
-            <div class="preview-stats-row">
-                <div class="stat-box">
-                    <div class="stat-value">72%</div>
-                    <div class="stat-label">Rating</div>
-                </div>
-            </div>
         </div>
-        
-        <div id="preview-faculty" class="preview-panel">
-            <i class="bi bi-person-video3 preview-icon-large text-warning"></i>
-            <h2 class="preview-title">Faculty Ops</h2>
-            <p class="preview-desc">Instructor Dashboard: Monitor student progress and manage course data.</p>
+        <!-- PREVIEW FOR CERTIFICATES -->
+        <div id="preview-certificates" class="preview-panel">
+            <i class="bi bi-award-fill preview-icon-large text-info"></i>
+            <h2 class="preview-title">Awards & Certs</h2>
+            <p class="preview-desc">View earned credentials and progress towards certification.</p>
         </div>
-
-        <div id="preview-admin" class="preview-panel">
-            <i class="bi bi-speedometer2 preview-icon-large text-danger"></i>
-            <h2 class="preview-title">Admin Console</h2>
-            <p class="preview-desc">System Administration: Manage users, scenarios, and system settings.</p>
-        </div>
-
         <div id="preview-profile" class="preview-panel">
             <i class="bi bi-person-badge-fill preview-icon-large text-primary"></i>
             <h2 class="preview-title">Identity</h2>
@@ -254,7 +224,8 @@
     <div id="global-overlay"></div>
 
     <main class="flex-grow-1 position-relative main-content-wrapper">
-        <div class="content-spacer d-md-none" style="height: 60px;"></div> {% block content %}{% endblock %}
+        <div class="content-spacer d-md-none" style="height: 60px;"></div> 
+        {% block content %}{% endblock %}
     </main>
 
     <div class="position-fixed top-0 end-0 mt-3 me-3 d-none d-md-block" style="z-index: 1050;">
@@ -264,7 +235,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <script src="{{ url_for('static', filename='js/theme-toggle.js') }}"></script>
 
     <script>
@@ -279,25 +249,17 @@
             // --- Desktop Hover Previews ---
             sidebarLinks.forEach(link => {
                 link.addEventListener('mouseenter', function () {
-                    // Disable previews on mobile
                     if (window.innerWidth < 768) return;
-
-                    if (this.id === 'themeToggle') return; // Skip preview for toggle button
-
-                    // Hide all previews first
+                    if (this.id === 'themeToggle') return; 
+                    
                     previewPanels.forEach(p => p.classList.remove('active'));
-
-                    // Get target
+                    
                     const targetId = 'preview-' + this.getAttribute('data-preview');
                     const targetPanel = document.getElementById(targetId);
-
-                    if (targetPanel) {
-                        targetPanel.classList.add('active');
-                    }
+                    if (targetPanel) targetPanel.classList.add('active');
                 });
             });
 
-            // Hide previews when leaving the sidebar area completely
             sidebar.addEventListener('mouseleave', function () {
                 if (window.innerWidth < 768) return;
                 previewPanels.forEach(p => p.classList.remove('active'));
@@ -309,22 +271,13 @@
                 globalOverlay.classList.toggle('active');
             }
 
-            if (mobileMenuToggle) {
-                mobileMenuToggle.addEventListener('click', toggleMobileMenu);
-            }
+            if (mobileMenuToggle) mobileMenuToggle.addEventListener('click', toggleMobileMenu);
+            if (mobileMenuClose) mobileMenuClose.addEventListener('click', toggleMobileMenu);
+            if (globalOverlay) globalOverlay.addEventListener('click', function () {
+                sidebar.classList.remove('mobile-open');
+                globalOverlay.classList.remove('active');
+            });
 
-            if (mobileMenuClose) {
-                mobileMenuClose.addEventListener('click', toggleMobileMenu);
-            }
-
-            if (globalOverlay) {
-                globalOverlay.addEventListener('click', function () {
-                    sidebar.classList.remove('mobile-open');
-                    globalOverlay.classList.remove('active');
-                });
-            }
-
-            // Close mobile menu on link click
             sidebarLinks.forEach(link => {
                 link.addEventListener('click', function () {
                     if (window.innerWidth < 768) {
@@ -334,49 +287,28 @@
                 });
             });
         });
+
         document.addEventListener('DOMContentLoaded', function () {
             const cursor = document.getElementById('custom-cursor');
             const cursorRing = document.querySelector('.cursor-ring');
 
-            // 1. Move Cursor
             document.addEventListener('mousemove', function (e) {
-                // Direct movement for the container (high performance)
                 cursor.style.left = e.clientX + 'px';
                 cursor.style.top = e.clientY + 'px';
             });
 
-            // 2. Hover Effects (Targeting System)
-            // Select all interactive elements
             const interactiveElements = document.querySelectorAll('a, button, input, select, textarea, .btn, .nav-link, .subcategory-card');
-
             interactiveElements.forEach(el => {
-                el.addEventListener('mouseenter', () => {
-                    cursor.classList.add('cursor-hover');
-                });
-                el.addEventListener('mouseleave', () => {
-                    cursor.classList.remove('cursor-hover');
-                });
+                el.addEventListener('mouseenter', () => cursor.classList.add('cursor-hover'));
+                el.addEventListener('mouseleave', () => cursor.classList.remove('cursor-hover'));
             });
 
-            // 3. Click Effect (Pulse)
-            document.addEventListener('mousedown', () => {
-                cursorRing.style.transform = 'scale(0.8)';
-            });
-
-            document.addEventListener('mouseup', () => {
-                cursorRing.style.transform = 'scale(1)';
-            });
-
-            // 4. Re-initialize listeners for dynamic content (optional but good for safety)
-            // If you load new content via AJAX, call this setup again.
+            document.addEventListener('mousedown', () => cursorRing.style.transform = 'scale(0.8)');
+            document.addEventListener('mouseup', () => cursorRing.style.transform = 'scale(1)');
         });
     </script>
 
-    {% block scripts %}
-
-    {% endblock %}
+    {% block scripts %}{% endblock %}
     {% block extra_js %}{% endblock %}
-
 </body>
-
 </html>

@@ -1,119 +1,141 @@
-from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session
+# Added 'current_user' to the imports below
 from flask_login import login_user, logout_user, login_required, current_user
 from models import User
 from extensions import supabase
-from gotrue.errors import AuthApiError
 
-auth_bp = Blueprint('auth', __name__)
+auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
-@auth_bp.route("/auth")
+@auth_bp.route('/', methods=['GET'])
 def auth():
+    # Now this check will work without crashing
     if current_user.is_authenticated:
+        if session.get('user_role') == 'admin':
+            return redirect(url_for('admin.dashboard'))
         return redirect(url_for('general.index'))
-    return render_template("auth.html")
+    return render_template('auth/auth.html')
 
-@auth_bp.route("/auth/register", methods=['POST'])
-def register():
-    data = request.get_json()
-    email = data.get('email')
-    password = data.get('password')
-
-    if not email or not password:
-        return jsonify({'success': False, 'message': 'Missing email or password'}), 400
-
-    try:
-        response = supabase.auth.sign_up({
-            "email": email, 
-            "password": password
-        })
-
-        if response.user:
-            return jsonify({
-                'success': True, 
-                'message': 'Registration successful. Please check your email to verify your account.'
-            })
-        else:
-            return jsonify({'success': False, 'message': 'Registration failed.'}), 400
-
-    except AuthApiError as e:
-        return jsonify({'success': False, 'message': e.message}), 400
-    except Exception as e:
-        return jsonify({'success': False, 'message': f'System error: {str(e)}'}), 500
-
-@auth_bp.route("/auth/login", methods=['POST'])
+@auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
 
     try:
+        # 1. Authenticate with Supabase Auth
         response = supabase.auth.sign_in_with_password({
-            "email": email, 
+            "email": email,
             "password": password
         })
+        
+        user_data = response.user
+        if user_data:
+            # 2. Fetch additional profile info
+            profile_res = supabase.table('profiles').select('*').eq('id', user_data.id).execute()
+            
+            role = 'student'
+            full_name = ''
+            
+            if profile_res.data:
+                role = profile_res.data[0].get('role', 'student')
+                full_name = profile_res.data[0].get('full_name', '')
 
-        if response.user:
-            user = User(id=response.user.id, email=response.user.email)
+            # 3. Create User Object for Flask-Login
+            display_name = full_name if full_name else user_data.email.split('@')[0]
+            
+            user = User(
+                id=user_data.id, 
+                email=user_data.email, 
+                role=role,
+                username=display_name
+            )
+            
+            # 4. CONNECT FLASK-LOGIN
             login_user(user)
             
-            # Fetch User Role for Session
-            role = 'student'
-            try:
-                profile_res = supabase.table('profiles').select('role').eq('id', response.user.id).single().execute()
-                if profile_res.data:
-                    role = profile_res.data.get('role', 'student')
-            except Exception as e:
-                print(f"Error fetching role: {e}")
-
-            session['supabase_token'] = response.session.access_token
-            session['user_email'] = response.user.email
+            # 5. Set Backup Session Data
             session['user_role'] = role
+            session['user'] = {
+                'id': user_data.id,
+                'email': user_data.email,
+                'name': display_name,
+                'role': role
+            }
+
+            target = url_for('admin.dashboard') if role == 'admin' else url_for('general.index')
+            return jsonify({'success': True, 'redirect': target})
             
-            return jsonify({'success': True, 'message': 'Login successful'})
-
-    except AuthApiError:
-        return jsonify({'success': False, 'message': 'Invalid Login Credentials'}), 401
     except Exception as e:
-        return jsonify({'success': False, 'message': f'System error: {str(e)}'}), 500
+        print(f"Login Error: {e}")
+        return jsonify({'success': False, 'message': str(e)})
 
-@auth_bp.route("/auth/logout")
+    return jsonify({'success': False, 'message': 'Invalid credentials'})
+
+@auth_bp.route('/register', methods=['POST'])
+def register():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+    full_name = data.get('full_name', '')
+
+    try:
+        # 1. Create Auth User
+        response = supabase.auth.sign_up({
+            "email": email,
+            "password": password,
+            "options": {
+                "data": {
+                    "full_name": full_name
+                }
+            }
+        })
+        
+        if response.user:
+            # 2. Sync Profile to Database
+            try:
+                supabase.table('profiles').upsert({
+                    'id': response.user.id,
+                    'email': email,
+                    'full_name': full_name,
+                    'role': 'student'
+                }).execute()
+            except Exception as db_err:
+                print(f"Profile creation warning: {db_err}")
+
+            # 3. Auto Login after register
+            user = User(
+                id=response.user.id, 
+                email=email, 
+                role='student',
+                username=full_name
+            )
+            
+            login_user(user)
+            
+            session['user_role'] = 'student'
+            session['user'] = {
+                'id': response.user.id,
+                'email': email,
+                'name': full_name,
+                'role': 'student'
+            }
+            
+            return jsonify({'success': True, 'redirect': url_for('general.index')})
+            
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+
+    return jsonify({'success': False, 'message': 'Registration failed'})
+
+@auth_bp.route('/logout')
 @login_required
 def logout():
     try:
         supabase.auth.sign_out()
-    except:
-        pass 
+    except Exception as e:
+        print(f"Supabase signout warning: {e}")
+        
     logout_user()
     session.clear()
-    return redirect(url_for('general.index'))
-
-# --- API Helper Endpoints for Auth ---
-
-@auth_bp.route("/api/update_email", methods=['POST'])
-@login_required
-def update_email():
-    data = request.get_json()
-    new_email = data.get('email')
-    if not new_email:
-        return jsonify({'success': False, 'message': 'New email required'}), 400
-    try:
-        supabase.auth.update_user({"email": new_email})
-        return jsonify({'success': True, 'message': 'Confirmation email sent.'})
-    except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-@auth_bp.route("/api/reset_password", methods=['POST'])
-@login_required
-def reset_password():
-    data = request.get_json()
-    new_password = data.get('password')
     
-    try:
-        if not new_password:
-            supabase.auth.reset_password_email(current_user.email)
-            return jsonify({'success': True, 'message': 'Reset link sent.'})
-        
-        supabase.auth.update_user({"password": new_password})
-        return jsonify({'success': True, 'message': 'Password updated.'})
-    except Exception as e:
-         return jsonify({'success': False, 'message': str(e)}), 400
+    return redirect(url_for('auth.auth'))

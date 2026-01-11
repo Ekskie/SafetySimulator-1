@@ -52,7 +52,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (data.success) {
-                window.location.href = '/scenario_select'; 
+                // Redirect based on backend response
+                window.location.href = data.redirect || '/scenario_select'; 
             } else {
                 showError(data.message);
                 setLoading(false);
@@ -70,6 +71,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const email = document.getElementById('reg-email').value;
         const password = document.getElementById('reg-password').value;
         const confirm = document.getElementById('reg-confirm').value;
+        
+        // --- NEW: Capture Name Fields ---
+        const fname = document.getElementById('reg-fname').value;
+        const lname = document.getElementById('reg-lname').value;
 
         if (password !== confirm) {
             showError("Passwords do not match.");
@@ -84,25 +89,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ email, password })
+                // --- NEW: Send full_name in body to match auth.py ---
+                body: JSON.stringify({ 
+                    email: email, 
+                    password: password,
+                    full_name: `${fname} ${lname}`.trim() 
+                })
             });
 
             const data = await response.json();
 
             if (data.success) {
-                // STOPPED AUTOMATIC REDIRECT
                 setLoading(false);
                 
-                // Switch back to login view so they can see where to log in
-                if (!isLoginView) {
-                    toggleBtn.click();
-                }
-                
-                // Show success message (using success type green color)
+                // Show success message
                 showError(data.message, 'success');
                 
-                // Clear the register form
-                registerForm.reset();
+                // Redirect after a short delay
+                setTimeout(() => {
+                    window.location.href = data.redirect || '/';
+                }, 1000);
             } else {
                 showError(data.message);
                 setLoading(false);
@@ -123,5 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
         alertMsg.textContent = msg;
         alertBox.classList.remove('d-none', 'alert-danger', 'alert-success');
         alertBox.classList.add(`alert-${type}`);
+        alertBox.classList.remove('d-none'); // Ensure it becomes visible
     }
 });

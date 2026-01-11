@@ -36,9 +36,9 @@
                         </div>
 
                         <h3 class="fw-bold  mb-1">
-                            <!-- SAFE CHECK: Only try to split if user_email exists -->
-                            {% if user_email and '@' in user_email %}
-                                {{ user_email.split('@')[0] | upper }}
+                            <!-- Display Name Logic -->
+                            {% if current_user.is_authenticated %}
+                                {{ current_user.username | upper }}
                             {% else %}
                                 OPERATOR
                             {% endif %}
@@ -71,7 +71,7 @@
                             </div>
                         </div>
 
-                        <button class="btn btn-outline-light w-100 text-uppercase fw-bold" style="font-size: 0.85rem;" disabled title="Edit feature coming soon">
+                        <button class="btn btn-outline-light w-100 text-uppercase fw-bold" style="font-size: 0.85rem;" data-bs-toggle="modal" data-bs-target="#editProfileModal">
                             <i class="bi bi-pencil-square me-2"></i> Edit Details
                         </button>
                     </div>
@@ -171,6 +171,31 @@
 
 <!-- Modals for Actions -->
 
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-black border border-secondary text-light">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title fw-bold text-uppercase" id="editProfileModalLabel">Edit Identity</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="profileForm">
+                    <div class="mb-3">
+                        <label for="editFullName" class="form-label text-muted small text-uppercase">Full Name</label>
+                        <input type="text" class="form-control bg-dark text-light border-secondary" id="editFullName" value="{{ current_user.username }}">
+                    </div>
+                    <div id="profileMsg" class="alert d-none small"></div>
+                </form>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-outline-light btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success btn-sm" id="saveProfileBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Change Email Modal -->
 <div class="modal fade" id="changeEmailModal" tabindex="-1" aria-labelledby="changeEmailModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -243,6 +268,48 @@
 <!-- JS for Modals -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // --- Edit Profile Logic ---
+        const saveProfileBtn = document.getElementById('saveProfileBtn');
+        const profileMsg = document.getElementById('profileMsg');
+
+        saveProfileBtn.addEventListener('click', async () => {
+            const newName = document.getElementById('editFullName').value;
+            if(!newName) return;
+
+            saveProfileBtn.disabled = true;
+            saveProfileBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
+
+            try {
+                const res = await fetch('/api/update_profile', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ full_name: newName })
+                });
+                const data = await res.json();
+
+                profileMsg.classList.remove('d-none', 'alert-success', 'alert-danger');
+                if (data.success) {
+                    profileMsg.classList.add('alert-success');
+                    profileMsg.textContent = "Profile updated successfully.";
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    profileMsg.classList.add('alert-danger');
+                    profileMsg.textContent = data.message || 'Error updating profile.';
+                    saveProfileBtn.disabled = false;
+                    saveProfileBtn.textContent = 'Save Changes';
+                }
+            } catch (err) {
+                console.error(err);
+                profileMsg.classList.remove('d-none');
+                profileMsg.classList.add('alert-danger');
+                profileMsg.textContent = 'System error occurred.';
+                saveProfileBtn.disabled = false;
+                saveProfileBtn.textContent = 'Save Changes';
+            }
+        });
+
         // --- Email Update Logic ---
         const saveEmailBtn = document.getElementById('saveEmailBtn');
         const emailMsg = document.getElementById('emailMsg');
